@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { ReactElement } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import "./Result.css";
 
 const rows = [

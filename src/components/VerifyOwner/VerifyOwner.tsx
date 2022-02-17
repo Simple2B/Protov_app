@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { store } from "../../store";
 import "./VerifyOwner.css";
 
 export default function VerifyOwner(): ReactElement {
@@ -27,10 +28,32 @@ export default function VerifyOwner(): ReactElement {
   };
 
   const verify = () => {
-    if (password === "123") {
-      setVerification("Verification Success!");
+    if (location.path === "/transact") {
+      if (password === "123") {
+        const data = {
+          artist: location.artist,
+          title: location.title,
+          year: location.year,
+          objectId: location.objectId,
+        };
+        store.dispatch({ type: "ADD_OWNER_STATUS", payload: "SUCCESS" });
+        navigate("/transact", { state: data });
+      } else {
+        const data = {
+          artist: location.artist,
+          title: location.title,
+          year: location.year,
+          objectId: location.objectId,
+        };
+        store.dispatch({ type: "ADD_OWNER_STATUS", payload: "FAIL" });
+        navigate("/transact", { state: data });
+      }
     } else {
-      setVerification("Verification Fail!");
+      if (password === "123") {
+        setVerification("Verification Success!");
+      } else {
+        setVerification("Verification Fail!");
+      }
     }
   };
   return (

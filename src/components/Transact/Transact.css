@@ -1,0 +1,151 @@
+.transact__id {
+  margin-top: 20px;
+}
+
+.transact__buttons {
+  margin-top: 40px;
+}
+
+.transact__button {
+  background: #D7F2F3;
+  border-radius: 6px;
+  width: 300px;
+  height: 55px;
+  border: none;
+  font-family: "GT Walsheim Pro";
+  font-size: 16px;
+  line-height: 18px;
+  cursor: pointer;
+  transition: background 1s;
+}
+
+.transact__button:not(:last-child) {
+  margin-right: 20px;
+}
+
+
+.transact__button:hover {
+  background: #086E7D;
+  color: #fff;
+}
+
+.transact__statuses {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 40px;
+  width: 620px;
+
+  margin: 40px auto;
+}
+
+.transact__owner {
+  margin-right: 220px;
+}
+
+.transact__status-success {
+  color: #05B102;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.transact__status-error {
+  color: #E01919;
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.sale__info {
+  margin-bottom: 20px;
+}
+
+.sale__id {
+  margin-bottom: 30px;
+}
+
+.sale__input {
+  width: 340px;
+  height: 50px;
+  border: 1px solid #BAE4EA;
+  border-radius: 6px;
+  font-family: "GT Walsheim Pro";
+  font-size: 16px;
+  line-height: 18px;
+  padding-left: 20px;
+}
+
+.sale__input:not(:last-child) {
+  margin-right: 20px;
+}
+
+.sale__inputs {
+  margin-bottom: 20px;
+}
+
+.sale__button {
+  background: #086E7D;
+  border-radius: 6px;
+  width: 300px;
+  height: 55px;
+  font-family: "GT Walsheim Pro";
+  font-size: 16px;
+  line-height: 18px;
+  color: #FFFFFF;
+  cursor: pointer;
+  border: none;
+  transition: background 1s;
+}
+
+.sale__button:hover {
+  background: #06525d;
+}
+
+.check_success {
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 25px;
+  text-transform: uppercase;
+  color: #05B102;
+}
+
+.check_error {
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 25px;
+  text-transform: uppercase;
+  color: #E01919;
+}
+
+.method__button {
+  background: #086E7D;
+  border-radius: 6px;
+  width: 300px;
+  height: 55px;
+  font-family: "GT Walsheim Pro";
+  font-size: 16px;
+  line-height: 18px;
+  color: #FFFFFF;
+  cursor: pointer;
+  border: none;
+  transition: background 1s;
+}
+
+.method__button:hover {
+  background: #06525d;
+}
+
+.method__button:not(:last-child) {
+  margin-right: 20px;
+}
+
+.method__info {
+  margin-bottom: 20px;
+}
+
+.method__id {
+  margin-bottom: 50px;
+}
+
+.method__buttons_set {
+  margin-top: 30px;
+}

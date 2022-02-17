@@ -7,6 +7,8 @@ import EnterInfo from "./components/EnterInfo/EnterInfo";
 import MainScreen from "./components/MainScreen/MainScreen";
 import Provenance from "./components/Provenance/Provenance";
 import Result from "./components/Result/Result";
+import AddMethod from "./components/Transact/AddMethod";
+import Sale from "./components/Transact/Sale";
 import Transact from "./components/Transact/Transact";
 import VerifyObject from "./components/VerifyObject/VerifyObject";
 import VerifyOwner from "./components/VerifyOwner/VerifyOwner";
@@ -24,6 +26,8 @@ function App() {
         <Route path="/add" element={<Add />} />
         <Route path="/add-status" element={<AddSubmit />} />
         <Route path="/transact" element={<Transact />} />
+        <Route path="/sale" element={<Sale />} />
+        <Route path="/add-method" element={<AddMethod />} />
       </Routes>
     </div>
   );

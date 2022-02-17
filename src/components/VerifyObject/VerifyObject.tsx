@@ -1,9 +1,9 @@
 import { Theme } from "@emotion/react";
 import { Select, MenuItem, FormControl } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { cleanup } from "@testing-library/react";
 import React, { ReactElement, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { store } from "../../store";
 import "./VerifyObject.css";
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -85,10 +85,32 @@ export default function VerifyObject(): ReactElement {
   };
 
   const handleVerify = () => {
-    if (location.objectId === "4734698345") {
-      setVerification("Verification Success!");
+    if (location.path === "/transact") {
+      if (location.objectId === "4734698345") {
+        const data = {
+          artist: location.artist,
+          title: location.title,
+          year: location.year,
+          objectId: location.objectId,
+        };
+        store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "SUCCESS" });
+        navigate("/transact", { state: data });
+      } else {
+        const data = {
+          artist: location.artist,
+          title: location.title,
+          year: location.year,
+          objectId: location.objectId,
+        };
+        store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "FAIL" });
+        navigate("/transact", { state: data });
+      }
     } else {
-      setVerification("Verification Fail!");
+      if (location.objectId === "4734698345") {
+        setVerification("Verification Success!");
+      } else {
+        setVerification("Verification Fail!");
+      }
     }
   };
 
@@ -142,7 +164,7 @@ export default function VerifyObject(): ReactElement {
           <div className="verify_object-info">
             {location.artist}, {location.title}, {location.year}
           </div>
-          <div className="verify_object-id">{location.objectId}</div>
+          <div className="verify_object-id">ID: {location.objectId}</div>
         </>
       )}
       {verification ? (
