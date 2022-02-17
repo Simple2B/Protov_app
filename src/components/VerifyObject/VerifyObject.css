@@ -1,0 +1,95 @@
+.uploading-label {
+  cursor: pointer;
+}
+
+.uploading-input {
+  display: none;
+}
+
+.buttons_block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.add_method {
+  border: 1px solid #086E7D;
+  box-sizing: border-box;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 300px;
+  height: 55px;
+  background-color: #fff;
+  font-family: "GT Walsheim Pro";
+  font-size: 16px;
+  line-height: 18px;
+  text-align: center;
+  color: #086E7D;
+  margin-bottom: 20px;
+  margin-top: 30px;
+  transition: background 1s;
+}
+
+.add_method:hover {
+  background-color: #0a6d7c11;
+}
+
+.verify {
+  background: #086E7D;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 300px;
+  height: 55px;
+  font-family: "GT Walsheim Pro";
+  font-size: 16px;
+  line-height: 18px;
+  text-align: center;
+  color: #fff;
+  transition: background 1s;
+  border: none;
+}
+
+.verify:hover {
+  background: #06525d;
+}
+
+.input_text {
+  width: 340px;
+  height: 50px;
+  border: 1px solid #BAE4EA;
+  border-radius: 6px;
+  font-family: "GT Walsheim Pro";
+  font-size: 18px;
+  padding-left: 20px;
+  margin-left: 20px;
+}
+
+.input_file {
+  display: none;
+}
+
+.input_file-label {
+  cursor: pointer;
+}
+
+.input_file-image {
+  width: 40px;
+}
+
+.input_file-container {
+  display: inline-block;
+  width: 340px;
+  margin-left: 20px;
+}
+
+.uploading-text {
+  margin-bottom: 40px;
+}
+
+.verify_object-info {
+  margin-bottom: 20px;
+}
+
+.verify_object-id {
+  margin-bottom: 50px;
+}

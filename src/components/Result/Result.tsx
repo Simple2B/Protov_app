@@ -1,3 +1,4 @@
+import { Theme } from "@emotion/react";
 import {
   TableContainer,
   Table,
@@ -5,12 +6,26 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Theme,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { ReactElement } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import "./Provenance.css";
+import { useLocation, useNavigate, useParams } from "react-router";
+import "./Result.css";
+
+const rows = [
+  {
+    artist: "Picasso",
+    title: "Guernica",
+    year: "1937",
+    objectId: "4734698345",
+  },
+  {
+    artist: "Picasso",
+    title: "The Old Guitarist",
+    year: "1904",
+    objectId: "3457896454",
+  },
+];
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -44,10 +59,13 @@ const useStyle = makeStyles((theme: Theme) => ({
     borderBottom: "1px solid #BAE4EA !important",
     borderRight: "1px solid #BAE4EA !important",
   },
+  tableRow: {
+    cursor: "pointer",
+  },
 }));
 
 interface Column {
-  id: "ownerID" | "action" | "verificationMethods" | "date";
+  id: "artist" | "title" | "year" | "objectId";
   label: string;
   minWidth?: number;
   align?: "left";
@@ -55,74 +73,58 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: "ownerID", label: "Owner ID", minWidth: 150 },
-  { id: "date", label: "Date", minWidth: 250 },
+  { id: "artist", label: "Artist", minWidth: 150 },
+  { id: "title", label: "Title", minWidth: 250 },
   {
-    id: "action",
-    label: "Action",
+    id: "year",
+    label: "Year",
     minWidth: 250,
     align: "left",
-    format: (value: number) => value.toLocaleString("en-US"),
   },
   {
-    id: "verificationMethods",
-    label: "Verification methods",
+    id: "objectId",
+    label: "Object Id",
     minWidth: 390,
     align: "left",
-    format: (value: number) => value.toLocaleString("en-US"),
   },
 ];
 
-interface Data {
-  ownerID: string;
-  date: string;
-  action: number;
-  verificationMethods: number;
-}
-
-function createData(
-  ownerID: string,
-  date: string,
-  action: number,
-  verificationMethods: number
-): Data {
-  return { ownerID, date, action, verificationMethods };
-}
-
-const rows = [
-  createData("India", "IN", 1324171354, 3287263),
-  createData("China", "CN", 1403500365, 9596961),
-  createData("Italy", "IT", 60483973, 301340),
-  createData("United States", "US", 327167434, 9833520),
-  createData("Canada", "CA", 37602103, 9984670),
-  createData("Australia", "AU", 25475400, 7692024),
-  createData("Germany", "DE", 83019200, 357578),
-  createData("Ireland", "IE", 4857000, 70273),
-  createData("Mexico", "MX", 126577691, 1972550),
-  createData("Japan", "JP", 126317000, 377973),
-  createData("France", "FR", 67022000, 640679),
-  createData("United Kingdom", "GB", 67545757, 242495),
-  createData("Russia", "RU", 146793744, 17098246),
-  createData("Nigeria", "NG", 200962417, 923768),
-  createData("Brazil", "BR", 210147125, 8515767),
-];
-
-export default function Provenance(): ReactElement {
-  const classes = useStyle();
-  const location: any = useLocation().state;
+export default function Result(): ReactElement {
+  const navigate = useNavigate();
+  const location = useLocation().state;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const navigate = useNavigate();
+  console.log(location);
+
+  const handleObjectId = (
+    artist: string,
+    title: string,
+    year: string,
+    objectId: string
+  ) => {
+    const data = { artist, title, year, objectId };
+    console.log(data);
+
+    if (location === "Provenance") navigate("/provenance", { state: data });
+    if (location === "Verify owner") navigate("/verify-owner", { state: data });
+    if (location === "Verify object")
+      navigate("/verify-object", { state: data });
+    if (location === "Transact") navigate("/transact", { state: data });
+  };
+
+  const classes = useStyle();
+
   const handleBack = () => {
-    navigate("/result", { state: "Provenance" });
+    navigate("/enter-info");
   };
 
   const handleHome = () => {
     navigate("/");
   };
+
   return (
-    <div className="provenance">
+    <div className="result">
       <div className="header">
         <div onClick={handleBack} className="header__back">
           <img
@@ -135,12 +137,8 @@ export default function Provenance(): ReactElement {
           <img src="/images/home.svg" className="back_main" alt="main"></img>
         </div>
       </div>
+      <h1 className="result__title">Search Result</h1>
 
-      <h1 className="provenance__title">Provenance</h1>
-      <div className="provenance__address">
-        {location.artist}, {location.title}, {location.year}
-      </div>
-      <div className="provenance__id">ID: {location.objectId}</div>
       <div className="provenance__table">
         <TableContainer sx={{ width: 1043 }}>
           <Table
@@ -179,22 +177,29 @@ export default function Provenance(): ReactElement {
                       hover
                       role="checkbox"
                       tabIndex={-1}
-                      key={row.ownerID}
+                      key={row.objectId}
+                      classes={{ hover: classes.tableRow }}
+                      onClick={() =>
+                        handleObjectId(
+                          row.artist,
+                          row.title,
+                          row.year,
+                          row.objectId
+                        )
+                      }
                     >
-                      {columns.map((column) => {
-                        const value = row[column.id];
-                        return (
-                          <TableCell
-                            classes={{ root: classes.tableCell }}
-                            key={column.id}
-                            align={column.align}
-                          >
-                            {column.format && typeof value === "number"
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
-                        );
-                      })}
+                      <TableCell classes={{ root: classes.tableCell }}>
+                        {row.artist}
+                      </TableCell>
+                      <TableCell classes={{ root: classes.tableCell }}>
+                        {row.title}
+                      </TableCell>
+                      <TableCell classes={{ root: classes.tableCell }}>
+                        {row.year}
+                      </TableCell>
+                      <TableCell classes={{ root: classes.tableCell }}>
+                        {row.objectId}
+                      </TableCell>
                     </TableRow>
                   );
                 })}

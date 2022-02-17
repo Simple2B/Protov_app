@@ -69,12 +69,7 @@ export default function EnterInfo(): ReactElement {
   };
 
   const handleNext = () => {
-    if (searchItem === "Provenance") {
-      navigate("/provenance");
-    }
-    if (searchItem === "Verify owner") {
-      navigate("/verify-owner");
-    }
+    navigate("/result", { state: searchItem });
   };
 
   return (
@@ -93,10 +88,7 @@ export default function EnterInfo(): ReactElement {
       </div>
       <h1 className="info__header">Enter Info</h1>
       <div className="info__search">
-        <FormControl
-          // sx={{ height: 50, width: 340, margin: 0 }}
-          classes={{ root: classes.root }}
-        >
+        <FormControl classes={{ root: classes.root }}>
           <Select
             value={searchItem}
             onChange={handleChangeSearchItem}

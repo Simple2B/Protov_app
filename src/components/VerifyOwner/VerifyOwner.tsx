@@ -1,14 +1,15 @@
 import React, { ReactElement, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./VerifyOwner.css";
 
 export default function VerifyOwner(): ReactElement {
+  const location: any = useLocation().state;
   const [password, setPassword] = useState<string>();
   const [verification, setVerification] = useState<string | null>();
 
   const navigate = useNavigate();
   const handleBack = () => {
-    navigate("/enter-info");
+    navigate("/result", { state: "Verify owner" });
   };
 
   const handleHome = () => {
@@ -49,10 +50,10 @@ export default function VerifyOwner(): ReactElement {
 
       <h1 className="verify_owner-title">Owner Verification</h1>
       <div className="verify_owner-address">
-        Picasso, The Old Guitarist, 1904
+        {location.artist}, {location.title}, {location.year}
       </div>
 
-      <div className="verify_owner-id">ID: 3457896454</div>
+      <div className="verify_owner-id">ID: {location.objectId}</div>
 
       {verification ? (
         <div className="verify_owner-search">
