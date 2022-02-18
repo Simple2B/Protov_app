@@ -59,7 +59,9 @@ export default function AddMethod(): ReactElement {
   const [check, setCheck] = useState<string>();
 
   const handleBack = () => {
-    navigate("/transact", { state: { data: location.data } });
+    navigate("/transact", {
+      state: { data: location.data, allData: location.allData },
+    });
   };
 
   const handleHome = () => {

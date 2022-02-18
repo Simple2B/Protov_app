@@ -53,7 +53,9 @@ export default function VerifyOwner(): ReactElement {
           object_id: location.data.object_id,
         };
         store.dispatch({ type: "ADD_OWNER_STATUS", payload: "SUCCESS" });
-        navigate("/transact", { state: { data: data } });
+        navigate("/transact", {
+          state: { data: data, allData: location.allData },
+        });
       } else {
         const data = {
           artist_surname: location.data.artist_surname,
@@ -62,7 +64,9 @@ export default function VerifyOwner(): ReactElement {
           object_id: location.data.object_id,
         };
         store.dispatch({ type: "ADD_OWNER_STATUS", payload: "FAIL" });
-        navigate("/transact", { state: { data: data } });
+        navigate("/transact", {
+          state: { data: data, allData: location.allData },
+        });
       }
     } else {
       if (fakeData.owner_ver_status) {

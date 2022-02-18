@@ -106,7 +106,9 @@ export default function VerifyObject(): ReactElement {
           object_id: location.data.object_id,
         };
         store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "SUCCESS" });
-        navigate("/transact", { state: { data: data } });
+        navigate("/transact", {
+          state: { data: data, allData: location.allData },
+        });
       } else {
         const data = {
           artist_surname: location.data.artist_surname,
@@ -115,7 +117,9 @@ export default function VerifyObject(): ReactElement {
           object_id: location.data.object_id,
         };
         store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "FAIL" });
-        navigate("/transact", { state: { data: data } });
+        navigate("/transact", {
+          state: { data: data, allData: location.allData },
+        });
       }
     } else {
       if (fakeData.object_ver_success) {

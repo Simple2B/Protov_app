@@ -75,7 +75,9 @@ export default function Transact(): ReactElement {
       object_id: location.data.object_id,
       path: "/transact",
     };
-    navigate("/verify-owner", { state: { data: data } });
+    navigate("/verify-owner", {
+      state: { data: data, allData: location.allData },
+    });
   };
 
   const handleVerifyObject = () => {
@@ -86,7 +88,9 @@ export default function Transact(): ReactElement {
       object_id: location.data.object_id,
       path: "/transact",
     };
-    navigate("/verify-object", { state: { data: data } });
+    navigate("/verify-object", {
+      state: { data: data, allData: location.allData },
+    });
   };
 
   const handleSelectChange = () => {};
@@ -98,7 +102,7 @@ export default function Transact(): ReactElement {
       year: location.data.year,
       object_id: location.data.object_id,
     };
-    navigate("/sale", { state: { data: data } });
+    navigate("/sale", { state: { data: data, allData: location.allData } });
   };
 
   const handleAddMethod = () => {
@@ -108,7 +112,9 @@ export default function Transact(): ReactElement {
       year: location.data.year,
       object_id: location.data.object_id,
     };
-    navigate("/add-method", { state: { data: data } });
+    navigate("/add-method", {
+      state: { data: data, allData: location.allData },
+    });
   };
 
   return (
