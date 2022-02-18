@@ -55,3 +55,8 @@
 .info__button:hover {
   background: #06525d;
 }
+
+.info__button:disabled {
+  background: #677274;
+  cursor: not-allowed;
+}

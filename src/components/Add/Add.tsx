@@ -4,6 +4,8 @@ import { Theme } from "@emotion/react";
 import React, { ReactElement, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Add.css";
+import { axiosInstance } from "../../axios/axiosInstance";
+import API3Response from "../../fake_api/API3_response.json";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -147,18 +149,27 @@ export default function Add(): ReactElement {
 
   const handleSubmit = () => {
     const data = {
-      name,
-      surname,
+      artist_firstname: name,
+      artist_surname: surname,
       title,
       year,
-      id: finalKey !== "" ? finalKey : artistKey,
+      artist_id: finalKey,
+      object_image: image,
       methods: {
-        methodSelect1: value1,
-        methodSelect2: value2,
+        method1: value1,
+        method2: value2,
       },
     };
 
-    navigate("/add-status", { state: data });
+    axiosInstance.post("/", data).then(function (response) {
+      const responseData = response.data;
+    });
+
+    const fakeResponse = API3Response;
+
+    console.log(fakeResponse);
+
+    navigate("/add-status", { state: { data, responseData: fakeResponse } });
   };
 
   return (

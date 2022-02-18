@@ -54,56 +54,61 @@ export default function Transact(): ReactElement {
   const [selectValue, setSelectValue] = useState<string>("Select method");
   const navigate = useNavigate();
   const location: any = useLocation().state;
+
   const handleBack = () => {
-    navigate("/result", { state: "Transact" });
+    navigate("/result", {
+      state: { searchItem: "Transact", responseData: location.allData },
+    });
   };
 
   const handleHome = () => {
     navigate("/");
   };
 
+  console.log(location);
+
   const handleVerifyOwner = () => {
     const data = {
-      artist: location.artist,
-      title: location.title,
-      year: location.year,
-      objectId: location.objectId,
+      artist_surname: location.data.artist_surname,
+      title: location.data.title,
+      year: location.data.year,
+      object_id: location.data.object_id,
       path: "/transact",
     };
-    navigate("/verify-owner", { state: data });
+    navigate("/verify-owner", { state: { data: data } });
   };
 
   const handleVerifyObject = () => {
     const data = {
-      artist: location.artist,
-      title: location.title,
-      year: location.year,
-      objectId: location.objectId,
+      artist_surname: location.data.artist_surname,
+      title: location.data.title,
+      year: location.data.year,
+      object_id: location.data.object_id,
       path: "/transact",
     };
-    navigate("/verify-object", { state: data });
+    navigate("/verify-object", { state: { data: data } });
   };
 
   const handleSelectChange = () => {};
 
   const handleSales = () => {
     const data = {
-      artist: location.artist,
-      title: location.title,
-      year: location.year,
-      objectId: location.objectId,
+      artist_surname: location.data.artist_surname,
+      title: location.data.title,
+      year: location.data.year,
+      object_id: location.data.object_id,
     };
-    navigate("/sale", { state: data });
+    navigate("/sale", { state: { data: data } });
   };
 
   const handleAddMethod = () => {
     const data = {
-      artist: location.artist,
-      title: location.title,
-      year: location.year,
-      objectId: location.objectId,
+      artist_surname: location.data.artist_surname,
+      title: location.data.title,
+      year: location.data.year,
+      object_id: location.data.object_id,
     };
-    navigate("/add-method", { state: data });
+    navigate("/add-method", { state: { data: data } });
   };
 
   return (
@@ -123,9 +128,10 @@ export default function Transact(): ReactElement {
       <h1 className="transact__title">Transact</h1>
 
       <div className="transact__info">
-        {location.artist}, {location.title}, {location.year}
+        {location.data.artist_surname}, {location.data.title},{" "}
+        {location.data.year}
       </div>
-      <div className="transact__id">ID: {location.objectId}</div>
+      <div className="transact__id">ID: {location.data.object_id}</div>
 
       <div className="transact__buttons">
         <button onClick={handleVerifyOwner} className="transact__button">

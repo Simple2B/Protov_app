@@ -3,6 +3,8 @@ import { Theme } from "@emotion/react";
 import { Select, MenuItem, FormControl } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router";
+import { axiosInstance } from "../../axios/axiosInstance";
+import API4Response from "../../fake_api/API4_response.json";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -57,7 +59,7 @@ export default function AddMethod(): ReactElement {
   const [check, setCheck] = useState<string>();
 
   const handleBack = () => {
-    navigate("/transact", { state: "Transact" });
+    navigate("/transact", { state: { data: location.data } });
   };
 
   const handleHome = () => {
@@ -101,10 +103,23 @@ export default function AddMethod(): ReactElement {
   };
 
   const handleSubmit = () => {
-    if (value1 !== "123") {
-      setCheck("FAIL");
-    } else {
+    const data = {
+      object_id: location.data.object_id,
+      methods: {
+        method1: value1,
+        method2: value2,
+      },
+    };
+    axiosInstance.post("/", data).then(function (response) {
+      const responseData = response.data;
+    });
+
+    const fakeData = API4Response;
+
+    if (API4Response.add_method_success) {
       setCheck("SUCCESS");
+    } else {
+      setCheck("FAIL");
     }
   };
 
@@ -126,9 +141,10 @@ export default function AddMethod(): ReactElement {
       <h1 className="method__title">Transact</h1>
 
       <div className="method__info">
-        {location.artist}, {location.title}, {location.year}
+        {location.data.artist_surname}, {location.data.title},{" "}
+        {location.data.year}
       </div>
-      <div className="method__id">ID: {location.objectId}</div>
+      <div className="method__id">ID: {location.data.object_id}</div>
 
       {check ? (
         <div className={check === "SUCCESS" ? "check_success" : "check_error"}>

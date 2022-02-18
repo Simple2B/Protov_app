@@ -89,33 +89,17 @@ function createData(
   return { ownerID, date, action, verificationMethods };
 }
 
-const rows = [
-  createData("India", "IN", 1324171354, 3287263),
-  createData("China", "CN", 1403500365, 9596961),
-  createData("Italy", "IT", 60483973, 301340),
-  createData("United States", "US", 327167434, 9833520),
-  createData("Canada", "CA", 37602103, 9984670),
-  createData("Australia", "AU", 25475400, 7692024),
-  createData("Germany", "DE", 83019200, 357578),
-  createData("Ireland", "IE", 4857000, 70273),
-  createData("Mexico", "MX", 126577691, 1972550),
-  createData("Japan", "JP", 126317000, 377973),
-  createData("France", "FR", 67022000, 640679),
-  createData("United Kingdom", "GB", 67545757, 242495),
-  createData("Russia", "RU", 146793744, 17098246),
-  createData("Nigeria", "NG", 200962417, 923768),
-  createData("Brazil", "BR", 210147125, 8515767),
-];
-
 export default function Provenance(): ReactElement {
   const classes = useStyle();
   const location: any = useLocation().state;
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  console.log(location);
 
   const navigate = useNavigate();
   const handleBack = () => {
-    navigate("/result", { state: "Provenance" });
+    navigate("/result", {
+      state: { searchItem: "Provenance", responseData: location.allData },
+    });
   };
 
   const handleHome = () => {
@@ -138,9 +122,10 @@ export default function Provenance(): ReactElement {
 
       <h1 className="provenance__title">Provenance</h1>
       <div className="provenance__address">
-        {location.artist}, {location.title}, {location.year}
+        {location.data.artist_surname}, {location.data.title},{" "}
+        {location.data.year}
       </div>
-      <div className="provenance__id">ID: {location.objectId}</div>
+      <div className="provenance__id">ID: {location.data.object_id}</div>
       <div className="provenance__table">
         <TableContainer sx={{ width: 1043 }}>
           <Table
@@ -171,33 +156,30 @@ export default function Provenance(): ReactElement {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.ownerID}
-                    >
-                      {columns.map((column) => {
-                        const value = row[column.id];
-                        return (
-                          <TableCell
-                            classes={{ root: classes.tableCell }}
-                            key={column.id}
-                            align={column.align}
-                          >
-                            {column.format && typeof value === "number"
-                              ? column.format(value)
-                              : value}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
+              {Object.values(location.responseData).map((row: any) => {
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.owner_id}
+                  >
+                    <TableCell classes={{ root: classes.tableCell }}>
+                      {row.owner_id}
+                    </TableCell>
+                    <TableCell classes={{ root: classes.tableCell }}>
+                      {row.date}
+                    </TableCell>
+                    <TableCell classes={{ root: classes.tableCell }}>
+                      {row.action}
+                    </TableCell>
+                    <TableCell classes={{ root: classes.tableCell }}>
+                      {Object.keys(row.verification_methods)[0]},{" "}
+                      {Object.keys(row.verification_methods)[1]}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

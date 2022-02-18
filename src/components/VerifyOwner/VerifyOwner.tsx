@@ -1,16 +1,22 @@
 import React, { ReactElement, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { axiosInstance } from "../../axios/axiosInstance";
 import { store } from "../../store";
 import "./VerifyOwner.css";
+import API2Response from "../../fake_api/API2_response_succeed.json";
 
 export default function VerifyOwner(): ReactElement {
   const location: any = useLocation().state;
   const [password, setPassword] = useState<string>();
   const [verification, setVerification] = useState<string | null>();
 
+  console.log(location);
+
   const navigate = useNavigate();
   const handleBack = () => {
-    navigate("/result", { state: "Verify owner" });
+    navigate("/result", {
+      state: { searchItem: "Verify owner", responseData: location.allData },
+    });
   };
 
   const handleHome = () => {
@@ -28,34 +34,45 @@ export default function VerifyOwner(): ReactElement {
   };
 
   const verify = () => {
-    if (location.path === "/transact") {
-      if (password === "123") {
+    const data = {
+      object_id: location.object_id,
+      owner_password: password,
+    };
+    axiosInstance.post("/", data).then(function (response) {
+      const responseData = response.data;
+    });
+
+    const fakeData = API2Response;
+
+    if (location.data.path === "/transact") {
+      if (fakeData.owner_ver_status) {
         const data = {
-          artist: location.artist,
-          title: location.title,
-          year: location.year,
-          objectId: location.objectId,
+          artist_surname: location.data.artist_surname,
+          title: location.data.title,
+          year: location.data.year,
+          object_id: location.data.object_id,
         };
         store.dispatch({ type: "ADD_OWNER_STATUS", payload: "SUCCESS" });
-        navigate("/transact", { state: data });
+        navigate("/transact", { state: { data: data } });
       } else {
         const data = {
-          artist: location.artist,
-          title: location.title,
-          year: location.year,
-          objectId: location.objectId,
+          artist_surname: location.data.artist_surname,
+          title: location.data.title,
+          year: location.data.year,
+          object_id: location.data.object_id,
         };
         store.dispatch({ type: "ADD_OWNER_STATUS", payload: "FAIL" });
-        navigate("/transact", { state: data });
+        navigate("/transact", { state: { data: data } });
       }
     } else {
-      if (password === "123") {
+      if (fakeData.owner_ver_status) {
         setVerification("Verification Success!");
       } else {
         setVerification("Verification Fail!");
       }
     }
   };
+
   return (
     <div className="verify_owner">
       <div className="header">
@@ -73,10 +90,11 @@ export default function VerifyOwner(): ReactElement {
 
       <h1 className="verify_owner-title">Owner Verification</h1>
       <div className="verify_owner-address">
-        {location.artist}, {location.title}, {location.year}
+        {location.data.artist_surname}, {location.data.title},{" "}
+        {location.data.year}
       </div>
 
-      <div className="verify_owner-id">ID: {location.objectId}</div>
+      <div className="verify_owner-id">ID: {location.data.object_id}</div>
 
       {verification ? (
         <div className="verify_owner-search">

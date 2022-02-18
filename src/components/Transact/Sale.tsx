@@ -1,5 +1,11 @@
+import { AxiosResponse } from "axios";
 import React, { ReactElement, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { axiosInstance } from "../../axios/axiosInstance";
+import { IAPI2Response } from "../../types/API2";
+import { IAPI7Response } from "../../types/API7";
+import API2Response from "../../fake_api/API2_response_succeed.json";
+import API7Response from "../../fake_api/API7_resposne.json";
 
 export default function Sale(): ReactElement {
   const navigate = useNavigate();
@@ -9,7 +15,7 @@ export default function Sale(): ReactElement {
   const [check, setCheck] = useState<string>();
 
   const handleBack = () => {
-    navigate("/transact", { state: "Transact" });
+    navigate("/transact", { state: { data: location.data } });
   };
 
   const handleHome = () => {
@@ -28,11 +34,58 @@ export default function Sale(): ReactElement {
     setNewPassword(e.target.value);
   };
 
-  const handleSubmit = () => {
-    if (newPassword === currentPassword) {
-      setCheck("FAIL");
-    } else {
-      setCheck("SUCCESS");
+  const handleSubmit = async () => {
+    const data = {
+      object_id: location.data.object_id,
+      owner_password: currentPassword,
+    };
+
+    //!!REAL RESPONSE
+    // const response: AxiosResponse<API2Response> = await axiosInstance.post(
+    //   "/",
+    //   data
+    // );
+
+    //FAKE RESPONSE
+    const response = API2Response;
+
+    const today = new Date();
+
+    const date =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
+
+    const time =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+    const dateTime = date + " " + time;
+
+    const data2 = {
+      object_id: location.data.object_id,
+      new_owner_id: newPassword,
+      date: dateTime,
+      methods: {
+        method1: "",
+        method2: "",
+      },
+    };
+
+    if (response.owner_ver_status) {
+      //REAL RESPONSE
+      // const saleConfirmation: AxiosResponse<IAPI7Response> =
+      //   await axiosInstance.post("/", data2);
+
+      //FARE RESPONSE
+      const saleConfirmation = API7Response;
+
+      if (!response.owner_ver_status || !saleConfirmation.sale_success) {
+        setCheck("FAIL");
+      } else {
+        setCheck("SUCCESS");
+      }
     }
   };
 
@@ -54,9 +107,10 @@ export default function Sale(): ReactElement {
       <h1 className="sale__title">Transact</h1>
 
       <div className="sale__info">
-        {location.artist}, {location.title}, {location.year}
+        {location.data.artist_surname}, {location.data.title},{" "}
+        {location.data.year}
       </div>
-      <div className="sale__id">ID: {location.objectId}</div>
+      <div className="sale__id">ID: {location.data.object_id}</div>
 
       {check ? (
         <div className={check === "SUCCESS" ? "check_success" : "check_error"}>

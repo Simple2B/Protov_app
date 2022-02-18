@@ -9,6 +9,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { makeStyles, createStyles } from "@mui/styles";
 import React, { ReactElement, useEffect, useState } from "react";
 import "./EnterInfo.css";
+import { axiosInstance } from "../../axios/axiosInstance";
+import { IAPI1RequestData } from "../../types/API1";
+import API1Response from "../../fake_api/API1_response.json";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -55,6 +58,14 @@ export default function EnterInfo(): ReactElement {
   const navigate = useNavigate();
   const { state } = useLocation();
   const [searchItem, setSearchItem] = useState<string | any>(state);
+  const [name, setName] = useState<string>();
+  const [surname, setSurname] = useState<string>();
+  const [title, setTitle] = useState<string>();
+  const [year, setYear] = useState<string>();
+  const [objectID, setObjectID] = useState<string>();
+  const [checkData, setCheckData] = useState<boolean>(false);
+
+  useEffect(() => {}, []);
 
   const handleChangeSearchItem = (event: SelectChangeEvent) => {
     setSearchItem(event.target.value);
@@ -68,8 +79,70 @@ export default function EnterInfo(): ReactElement {
     navigate("/");
   };
 
+  const handleName = (e: {
+    target: { value: React.SetStateAction<string | undefined> };
+  }) => {
+    setName(e.target.value);
+    setCheckData(true);
+    if (e.target.value === "") {
+      setCheckData(false);
+    }
+  };
+
+  const handleSurname = (e: {
+    target: { value: React.SetStateAction<string | undefined> };
+  }) => {
+    setSurname(e.target.value);
+    setCheckData(true);
+    if (e.target.value === "") {
+      setCheckData(false);
+    }
+  };
+
+  const handleTitle = (e: {
+    target: { value: React.SetStateAction<string | undefined> };
+  }) => {
+    setTitle(e.target.value);
+    setCheckData(true);
+    if (e.target.value === "") {
+      setCheckData(false);
+    }
+  };
+
+  const handleYear = (e: {
+    target: { value: React.SetStateAction<string | undefined> };
+  }) => {
+    setYear(e.target.value);
+    setCheckData(true);
+    if (e.target.value === "") {
+      setCheckData(false);
+    }
+  };
+
+  const handleObjectID = (e: {
+    target: { value: React.SetStateAction<string | undefined> };
+  }) => {
+    setObjectID(e.target.value);
+    setCheckData(true);
+    if (e.target.value === "") {
+      setCheckData(false);
+    }
+  };
+
   const handleNext = () => {
-    navigate("/result", { state: searchItem });
+    const data: IAPI1RequestData = {
+      artist_surname: name,
+      artist_firstname: surname,
+      title: title,
+      year: year,
+      object_id: objectID,
+    };
+    axiosInstance.post("/", data).then(function (response) {
+      const responseData = response.data;
+    });
+    const fakeResponse = API1Response;
+
+    navigate("/result", { state: { searchItem, responseData: fakeResponse } });
   };
 
   return (
@@ -113,13 +186,47 @@ export default function EnterInfo(): ReactElement {
           </Select>
         </FormControl>
 
-        <input placeholder="Artist Surname" className="info__input" />
-        <input placeholder="Artist First Name" className="info__input" />
-        <input placeholder="Title" className="info__input" />
-        <input placeholder="Year" className="info__input" />
-        <input placeholder="Object ID" className="info__input" />
+        <input
+          value={name}
+          onChange={handleName}
+          type="text"
+          placeholder="Artist Surname"
+          className="info__input"
+        />
+        <input
+          value={surname}
+          onChange={handleSurname}
+          type="text"
+          placeholder="Artist First Name"
+          className="info__input"
+        />
+        <input
+          value={title}
+          onChange={handleTitle}
+          type="text"
+          placeholder="Title"
+          className="info__input"
+        />
+        <input
+          value={year}
+          onChange={handleYear}
+          type="number"
+          placeholder="Year"
+          className="info__input"
+        />
+        <input
+          value={objectID}
+          onChange={handleObjectID}
+          type="text"
+          placeholder="Object ID"
+          className="info__input"
+        />
 
-        <button onClick={handleNext} className="info__button">
+        <button
+          disabled={!checkData}
+          onClick={handleNext}
+          className="info__button"
+        >
           Search
         </button>
       </div>

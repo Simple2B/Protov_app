@@ -3,8 +3,10 @@ import { Select, MenuItem, FormControl } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { ReactElement, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { axiosInstance } from "../../axios/axiosInstance";
 import { store } from "../../store";
 import "./VerifyObject.css";
+import API5Response from "../../fake_api/API5_response_succeed.json";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -47,15 +49,8 @@ const useStyle = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface ILocation {
-  artist: string;
-  title: string;
-  year: string;
-  objectId: string;
-}
-
 export default function VerifyObject(): ReactElement {
-  const location: ILocation | any = useLocation().state;
+  const location: any = useLocation().state;
   const classes = useStyle();
   const navigate = useNavigate();
   const [showInput, setShowInput] = useState<boolean>(false);
@@ -66,8 +61,12 @@ export default function VerifyObject(): ReactElement {
   const [value2, setValue2] = useState<string>("");
   const [verification, setVerification] = useState<string | null>();
 
+  console.log(location);
+
   const handleBack = () => {
-    navigate("/result", { state: "Verify object" });
+    navigate("/result", {
+      state: { searchItem: "Verify object", responseData: location.allData },
+    });
   };
 
   const handleHome = () => {
@@ -85,28 +84,41 @@ export default function VerifyObject(): ReactElement {
   };
 
   const handleVerify = () => {
-    if (location.path === "/transact") {
-      if (location.objectId === "4734698345") {
+    const data = {
+      object_id: location.data.object_id,
+      methods: {
+        method1: value1,
+        method2: value2,
+      },
+    };
+    axiosInstance.post("/", data).then(function (response) {
+      const responseData = response.data;
+    });
+
+    const fakeData = API5Response;
+
+    if (location.data.path === "/transact") {
+      if (fakeData.object_ver_success) {
         const data = {
-          artist: location.artist,
-          title: location.title,
-          year: location.year,
-          objectId: location.objectId,
+          artist_surname: location.data.artist_surname,
+          title: location.data.title,
+          year: location.data.year,
+          object_id: location.data.object_id,
         };
         store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "SUCCESS" });
-        navigate("/transact", { state: data });
+        navigate("/transact", { state: { data: data } });
       } else {
         const data = {
-          artist: location.artist,
-          title: location.title,
-          year: location.year,
-          objectId: location.objectId,
+          artist_surname: location.data.artist_surname,
+          title: location.data.title,
+          year: location.data.year,
+          object_id: location.data.object_id,
         };
         store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "FAIL" });
-        navigate("/transact", { state: data });
+        navigate("/transact", { state: { data: data } });
       }
     } else {
-      if (location.objectId === "4734698345") {
+      if (fakeData.object_ver_success) {
         setVerification("Verification Success!");
       } else {
         setVerification("Verification Fail!");
@@ -162,9 +174,10 @@ export default function VerifyObject(): ReactElement {
       {location && (
         <>
           <div className="verify_object-info">
-            {location.artist}, {location.title}, {location.year}
+            {location.data.artist_surname}, {location.data.title},{" "}
+            {location.data.year}
           </div>
-          <div className="verify_object-id">ID: {location.objectId}</div>
+          <div className="verify_object-id">ID: {location.data.object_id}</div>
         </>
       )}
       {verification ? (

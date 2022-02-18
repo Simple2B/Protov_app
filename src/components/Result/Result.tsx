@@ -11,21 +11,8 @@ import { makeStyles } from "@mui/styles";
 import React, { ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router";
 import "./Result.css";
-
-const rows = [
-  {
-    artist: "Picasso",
-    title: "Guernica",
-    year: "1937",
-    objectId: "4734698345",
-  },
-  {
-    artist: "Picasso",
-    title: "The Old Guitarist",
-    year: "1904",
-    objectId: "3457896454",
-  },
-];
+import API6Response from "../../fake_api/API6_response.json";
+import { axiosInstance } from "../../axios/axiosInstance";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -91,26 +78,42 @@ const columns: readonly Column[] = [
 
 export default function Result(): ReactElement {
   const navigate = useNavigate();
-  const location = useLocation().state;
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const location: any = useLocation().state;
 
   console.log(location);
 
   const handleObjectId = (
-    artist: string,
+    artist_surname: string,
     title: string,
     year: string,
-    objectId: string
+    object_id: string
   ) => {
-    const data = { artist, title, year, objectId };
-    console.log(data);
+    const data = { artist_surname, title, year, object_id };
+    axiosInstance.post("/", object_id).then(function (response) {
+      // const responseData = response.data;
+    });
+    const fakeResponse = API6Response;
 
-    if (location === "Provenance") navigate("/provenance", { state: data });
-    if (location === "Verify owner") navigate("/verify-owner", { state: data });
-    if (location === "Verify object")
-      navigate("/verify-object", { state: data });
-    if (location === "Transact") navigate("/transact", { state: data });
+    if (location.searchItem === "Provenance")
+      navigate("/provenance", {
+        state: {
+          data,
+          responseData: fakeResponse,
+          allData: location.responseData,
+        },
+      });
+    if (location.searchItem === "Verify owner")
+      navigate("/verify-owner", {
+        state: { data, allData: location.responseData },
+      });
+    if (location.searchItem === "Verify object")
+      navigate("/verify-object", {
+        state: { data, allData: location.responseData },
+      });
+    if (location.searchItem === "Transact")
+      navigate("/transact", {
+        state: { data, allData: location.responseData },
+      });
   };
 
   const classes = useStyle();
@@ -169,40 +172,38 @@ export default function Result(): ReactElement {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => {
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.objectId}
-                      classes={{ hover: classes.tableRow }}
-                      onClick={() =>
-                        handleObjectId(
-                          row.artist,
-                          row.title,
-                          row.year,
-                          row.objectId
-                        )
-                      }
-                    >
-                      <TableCell classes={{ root: classes.tableCell }}>
-                        {row.artist}
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCell }}>
-                        {row.title}
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCell }}>
-                        {row.year}
-                      </TableCell>
-                      <TableCell classes={{ root: classes.tableCell }}>
-                        {row.objectId}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+              {location.responseData.map((row: any) => {
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    tabIndex={-1}
+                    key={row.object_id}
+                    classes={{ hover: classes.tableRow }}
+                    onClick={() =>
+                      handleObjectId(
+                        row.artist_surname,
+                        row.title,
+                        row.year,
+                        row.object_id
+                      )
+                    }
+                  >
+                    <TableCell classes={{ root: classes.tableCell }}>
+                      {row.artist_surname}
+                    </TableCell>
+                    <TableCell classes={{ root: classes.tableCell }}>
+                      {row.title}
+                    </TableCell>
+                    <TableCell classes={{ root: classes.tableCell }}>
+                      {row.year}
+                    </TableCell>
+                    <TableCell classes={{ root: classes.tableCell }}>
+                      {row.object_id}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
