@@ -65,8 +65,6 @@ export default function Transact(): ReactElement {
     navigate("/");
   };
 
-  console.log(location);
-
   const handleVerifyOwner = () => {
     const data = {
       artist_surname: location.data.artist_surname,

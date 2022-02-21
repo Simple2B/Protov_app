@@ -167,8 +167,6 @@ export default function Add(): ReactElement {
 
     const fakeResponse = API3Response;
 
-    console.log(fakeResponse);
-
     navigate("/add-status", { state: { data, responseData: fakeResponse } });
   };
 

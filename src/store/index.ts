@@ -8,7 +8,3 @@ const combineReducer = combineReducers({
 });
 
 export const store = createStore(combineReducer);
-
-store.subscribe(() => {
-  console.log(store.getState());
-});

@@ -93,8 +93,6 @@ export default function Provenance(): ReactElement {
   const classes = useStyle();
   const location: any = useLocation().state;
 
-  console.log(location);
-
   const navigate = useNavigate();
   const handleBack = () => {
     navigate("/result", {

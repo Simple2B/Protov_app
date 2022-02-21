@@ -61,8 +61,6 @@ export default function VerifyObject(): ReactElement {
   const [value2, setValue2] = useState<string>("");
   const [verification, setVerification] = useState<string | null>();
 
-  console.log(location);
-
   const handleBack = () => {
     if (location.data.path === "/transact") {
       const data = {

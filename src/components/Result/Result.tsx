@@ -80,8 +80,6 @@ export default function Result(): ReactElement {
   const navigate = useNavigate();
   const location: any = useLocation().state;
 
-  console.log(location);
-
   const handleObjectId = (
     artist_surname: string,
     title: string,

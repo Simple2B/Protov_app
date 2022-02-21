@@ -10,8 +10,6 @@ export default function VerifyOwner(): ReactElement {
   const [password, setPassword] = useState<string>();
   const [verification, setVerification] = useState<string | null>();
 
-  console.log(location);
-
   const navigate = useNavigate();
   const handleBack = () => {
     if (location.data.path === "/transact") {
