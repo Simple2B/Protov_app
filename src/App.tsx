@@ -16,8 +16,8 @@ import VerifyOwner from "./components/VerifyOwner/VerifyOwner";
 
 function App() {
   return (
-    <StylesProvider>
-      <div className="App">
+    <div className="App">
+      <StylesProvider injectFirst>
         <Routes>
           <Route path="/" element={<MainScreen />} />
           <Route path="/enter-info" element={<EnterInfo />} />
@@ -31,8 +31,8 @@ function App() {
           <Route path="/sale" element={<Sale />} />
           <Route path="/add-method" element={<AddMethod />} />
         </Routes>
-      </div>
-    </StylesProvider>
+      </StylesProvider>
+    </div>
   );
 }
 
