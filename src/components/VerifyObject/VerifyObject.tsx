@@ -64,9 +64,21 @@ export default function VerifyObject(): ReactElement {
   console.log(location);
 
   const handleBack = () => {
-    navigate("/result", {
-      state: { searchItem: "Verify object", responseData: location.allData },
-    });
+    if (location.data.path === "/transact") {
+      const data = {
+        artist_surname: location.data.artist_surname,
+        title: location.data.title,
+        year: location.data.year,
+        object_id: location.data.object_id,
+      };
+      navigate("/transact", {
+        state: { data: data, allData: location.allData },
+      });
+    } else {
+      navigate("/result", {
+        state: { searchItem: "Verify object", responseData: location.allData },
+      });
+    }
   };
 
   const handleHome = () => {
