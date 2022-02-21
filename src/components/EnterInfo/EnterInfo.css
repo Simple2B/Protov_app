@@ -1,0 +1,62 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 80px 200px 0;
+}
+
+.info__header {
+  font-weight: bold;
+  font-size: 30px;
+  line-height: 34px;
+}
+
+.info__search {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header__back {
+  cursor: pointer;
+}
+
+.header__main {
+  cursor: pointer;
+}
+
+.info__input {
+  width: 340px;
+  height: 50px;
+  border: 1px solid #BAE4EA;
+  box-sizing: border-box;
+  border-radius: 6px;
+  margin-top: 10px;
+  padding-left: 20px;
+  font-family: 'GT Walsheim Pro';
+  font-size: 16px;
+}
+
+.info__button {
+  background: #086E7D;
+  border-radius: 6px;
+  font-family: 'GT Walsheim Pro';
+  font-size: 16px;
+  line-height: 18px;
+  text-align: center;
+  color: #FFFFFF;
+  width: 300px;
+  height: 55px;
+  border: none;
+  margin-top: 40px;
+  transition: background 1s;
+  cursor: pointer;
+}
+
+.info__button:hover {
+  background: #06525d;
+}
+
+.info__button:disabled {
+  background: #677274;
+  cursor: not-allowed;
+}
