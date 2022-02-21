@@ -73,22 +73,6 @@ const columns: readonly Column[] = [
   },
 ];
 
-interface Data {
-  ownerID: string;
-  date: string;
-  action: number;
-  verificationMethods: number;
-}
-
-function createData(
-  ownerID: string,
-  date: string,
-  action: number,
-  verificationMethods: number
-): Data {
-  return { ownerID, date, action, verificationMethods };
-}
-
 export default function Provenance(): ReactElement {
   const classes = useStyle();
   const location: any = useLocation().state;

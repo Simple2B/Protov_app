@@ -1,3 +1,4 @@
+import { StylesProvider } from "@mui/styles";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
@@ -15,21 +16,23 @@ import VerifyOwner from "./components/VerifyOwner/VerifyOwner";
 
 function App() {
   return (
-    <div className="App">
-      <Routes>
-        <Route path="/" element={<MainScreen />} />
-        <Route path="/enter-info" element={<EnterInfo />} />
-        <Route path="/provenance" element={<Provenance />} />
-        <Route path="/verify-owner" element={<VerifyOwner />} />
-        <Route path="/result" element={<Result />} />
-        <Route path="/verify-object" element={<VerifyObject />} />
-        <Route path="/add" element={<Add />} />
-        <Route path="/add-status" element={<AddSubmit />} />
-        <Route path="/transact" element={<Transact />} />
-        <Route path="/sale" element={<Sale />} />
-        <Route path="/add-method" element={<AddMethod />} />
-      </Routes>
-    </div>
+    <StylesProvider>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<MainScreen />} />
+          <Route path="/enter-info" element={<EnterInfo />} />
+          <Route path="/provenance" element={<Provenance />} />
+          <Route path="/verify-owner" element={<VerifyOwner />} />
+          <Route path="/result" element={<Result />} />
+          <Route path="/verify-object" element={<VerifyObject />} />
+          <Route path="/add" element={<Add />} />
+          <Route path="/add-status" element={<AddSubmit />} />
+          <Route path="/transact" element={<Transact />} />
+          <Route path="/sale" element={<Sale />} />
+          <Route path="/add-method" element={<AddMethod />} />
+        </Routes>
+      </div>
+    </StylesProvider>
   );
 }
 

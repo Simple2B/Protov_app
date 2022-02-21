@@ -13,45 +13,47 @@ import { axiosInstance } from "../../axios/axiosInstance";
 import { IAPI1RequestData } from "../../types/API1";
 import API1Response from "../../fake_api/API1_response.json";
 
-const useStyle = makeStyles((theme: Theme) => ({
-  root: {
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: "none",
+const useStyle = makeStyles(
+  (theme: Theme) => ({
+    root: {
+      "& .MuiOutlinedInput-notchedOutline": {
+        border: "none",
+      },
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        border: "none",
+      },
+      border: "none !important",
+      width: "340px",
+      padding: 0,
+      alignItems: "start",
+      fontFamily: "GT Walsheim Pro",
+      fontSize: "16px",
     },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-      border: "none",
+    nativeInput: {
+      paddingRight: 0,
     },
-    border: "none !important",
-    width: "340px",
-    // height: "50px",
-    padding: 0,
-    alignItems: "start",
-    fontFamily: "GT Walsheim Pro",
-    fontSize: "16px",
-  },
-  nativeInput: {
-    paddingRight: 0,
-  },
-  select: {
-    width: "340px",
-    height: "50px",
-    border: "1px solid #086E7D",
-    borderRadius: "6px !important",
-    margin: 0,
-    padding: 0,
-    textAlign: "start",
-    fontFamily: "GT Walsheim Pro !important",
-    fontSize: "16px !important",
-  },
-  icon: {
-    color: "#086E7D !important",
-  },
-  rootItem: {
-    "&:focus": {
-      background: "#BAE4EA",
+    select: {
+      width: "340px",
+      height: "50px",
+      border: "1px solid #086E7D",
+      borderRadius: "6px !important",
+      margin: 0,
+      padding: 0,
+      textAlign: "start",
+      fontFamily: "GT Walsheim Pro !important",
+      fontSize: "16px !important",
     },
-  },
-}));
+    icon: {
+      color: "#086E7D !important",
+    },
+    rootItem: {
+      "&:focus": {
+        background: "#BAE4EA",
+      },
+    },
+  }),
+  { index: 1 }
+);
 
 export default function EnterInfo(): ReactElement {
   const classes = useStyle();
@@ -64,8 +66,6 @@ export default function EnterInfo(): ReactElement {
   const [year, setYear] = useState<string>();
   const [objectID, setObjectID] = useState<string>();
   const [checkData, setCheckData] = useState<boolean>(false);
-
-  useEffect(() => {}, []);
 
   const handleChangeSearchItem = (event: SelectChangeEvent) => {
     setSearchItem(event.target.value);
