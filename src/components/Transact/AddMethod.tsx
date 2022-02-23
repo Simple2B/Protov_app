@@ -5,6 +5,7 @@ import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router";
 import { axiosInstance } from "../../axios/axiosInstance";
 import API4Response from "../../fake_api/API4_response.json";
+import { store } from "../../store";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -52,11 +53,12 @@ export default function AddMethod(): ReactElement {
   const classes = useStyle();
   const location: any = useLocation().state;
   const [countInput, setCountInput] = useState<number[]>([1]);
-  const [methodSelect1, setMethodSelect1] = useState<string>("string");
-  const [methodSelect2, setMethodSelect2] = useState<string>("string");
+  const [methodSelect1, setMethodSelect1] = useState<string>("method1");
+  const [methodSelect2, setMethodSelect2] = useState<string>("method1");
   const [value1, setValue1] = useState<string>("");
   const [value2, setValue2] = useState<string>("");
   const [check, setCheck] = useState<string>();
+  const [hideButton, setHideButton] = useState<boolean>(false);
 
   const handleBack = () => {
     navigate("/transact", {
@@ -65,6 +67,8 @@ export default function AddMethod(): ReactElement {
   };
 
   const handleHome = () => {
+    store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
+    store.dispatch({ type: "ADD_OWNER_STATUS", payload: "" });
     navigate("/");
   };
 
@@ -105,6 +109,7 @@ export default function AddMethod(): ReactElement {
   };
 
   const handleSubmit = () => {
+    setHideButton(true);
     const data = {
       object_id: location.data.object_id,
       methods: {
@@ -128,13 +133,17 @@ export default function AddMethod(): ReactElement {
   return (
     <div className="method">
       <div className="header">
-        <div onClick={handleBack} className="header__back">
-          <img
-            src="/images/arrow_back.svg"
-            className="back_img"
-            alt="back"
-          ></img>
-        </div>
+        {hideButton ? (
+          <div></div>
+        ) : (
+          <div onClick={handleBack} className="header__back">
+            <img
+              src="/images/arrow_back.svg"
+              className="back_img"
+              alt="back"
+            ></img>
+          </div>
+        )}
         <div onClick={handleHome} className="header__main">
           <img src="/images/home.svg" className="back_main" alt="main"></img>
         </div>
@@ -146,7 +155,7 @@ export default function AddMethod(): ReactElement {
         {location.data.artist_surname}, {location.data.title},{" "}
         {location.data.year}
       </div>
-      <div className="method__id">ID: {location.data.object_id}</div>
+      <div className="method__id">object ID: {location.data.object_id}</div>
 
       {check ? (
         <div className={check === "SUCCESS" ? "check_success" : "check_error"}>
@@ -177,15 +186,15 @@ export default function AddMethod(): ReactElement {
                   >
                     <MenuItem
                       classes={{ root: classes.rootItem }}
-                      value="string"
+                      value="method1"
                     >
-                      String
+                      method1
                     </MenuItem>
-                    <MenuItem value="image">Image</MenuItem>
+                    <MenuItem value="method2">method2</MenuItem>
                   </Select>
                 </FormControl>
 
-                {method === "string" ? (
+                {method === "method1" ? (
                   <>
                     <input
                       className="input_text"
@@ -215,6 +224,12 @@ export default function AddMethod(): ReactElement {
                     </label>
                   </div>
                 )}
+
+                <img
+                  src="/images/cross.svg"
+                  className="cross_img"
+                  alt="cross"
+                />
               </div>
             );
           })}

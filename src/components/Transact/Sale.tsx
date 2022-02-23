@@ -6,6 +6,7 @@ import { IAPI2Response } from "../../types/API2";
 import { IAPI7Response } from "../../types/API7";
 import API2Response from "../../fake_api/API2_response_succeed.json";
 import API7Response from "../../fake_api/API7_resposne.json";
+import { store } from "../../store";
 
 export default function Sale(): ReactElement {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function Sale(): ReactElement {
   const [currentPassword, setCurrentPassword] = useState<string>();
   const [newPassword, setNewPassword] = useState<string>();
   const [check, setCheck] = useState<string>();
+  const [hideButton, setHideButton] = useState<boolean>(false);
 
   const handleBack = () => {
     navigate("/transact", {
@@ -21,6 +23,8 @@ export default function Sale(): ReactElement {
   };
 
   const handleHome = () => {
+    store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
+    store.dispatch({ type: "ADD_OWNER_STATUS", payload: "" });
     navigate("/");
   };
 
@@ -37,6 +41,7 @@ export default function Sale(): ReactElement {
   };
 
   const handleSubmit = async () => {
+    setHideButton(true);
     const data = {
       object_id: location.data.object_id,
       owner_password: currentPassword,
@@ -94,13 +99,18 @@ export default function Sale(): ReactElement {
   return (
     <div className="sale">
       <div className="header">
-        <div onClick={handleBack} className="header__back">
-          <img
-            src="/images/arrow_back.svg"
-            className="back_img"
-            alt="back"
-          ></img>
-        </div>
+        {hideButton ? (
+          <div></div>
+        ) : (
+          <div onClick={handleBack} className="header__back">
+            <img
+              src="/images/arrow_back.svg"
+              className="back_img"
+              alt="back"
+            ></img>
+          </div>
+        )}
+
         <div onClick={handleHome} className="header__main">
           <img src="/images/home.svg" className="back_main" alt="main"></img>
         </div>
@@ -112,7 +122,7 @@ export default function Sale(): ReactElement {
         {location.data.artist_surname}, {location.data.title},{" "}
         {location.data.year}
       </div>
-      <div className="sale__id">ID: {location.data.object_id}</div>
+      <div className="sale__id">object ID: {location.data.object_id}</div>
 
       {check ? (
         <div className={check === "SUCCESS" ? "check_success" : "check_error"}>

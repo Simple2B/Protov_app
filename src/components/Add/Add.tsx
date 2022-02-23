@@ -1,4 +1,9 @@
-import { FormControl, Select, MenuItem } from "@mui/material";
+import {
+  FormControl,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Theme } from "@emotion/react";
 import React, { ReactElement, useState } from "react";
@@ -48,12 +53,19 @@ const useStyle = makeStyles((theme: Theme) => ({
   },
 }));
 
+enum InputMethod {
+  "STRING",
+  "IMAGE",
+}
+interface IMutableRow {
+  value: string;
+  method: InputMethod;
+}
+
+const MAX_ROWS = 2;
+
 export default function Add(): ReactElement {
   const [artistKey, setArtistKey] = useState<string>("Artist key");
-  const [showInput, setShowInput] = useState<boolean>(false);
-  const [countInput, setCountInput] = useState<number[]>([]);
-  const [methodSelect1, setMethodSelect1] = useState<string>("method1");
-  const [methodSelect2, setMethodSelect2] = useState<string>("method1");
   const [value1, setValue1] = useState<string>("");
   const [value2, setValue2] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -63,6 +75,7 @@ export default function Add(): ReactElement {
   const [year, setYear] = useState<string>("");
   const [newKey, setNewKey] = useState<string>();
   const [finalKey, setFinalKey] = useState<string | undefined>("");
+  const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
 
   const navigate = useNavigate();
   const classes = useStyle();
@@ -75,40 +88,47 @@ export default function Add(): ReactElement {
     navigate("/");
   };
 
-  let counter = 0;
   const handleAddMethod = () => {
-    if (countInput.length > 1) {
-      return;
+    let newRowMethod = InputMethod.STRING;
+
+    if (mutableRows.length > 0) {
+      newRowMethod =
+        mutableRows[0].method === InputMethod.STRING
+          ? InputMethod.IMAGE
+          : InputMethod.STRING;
     }
-    setShowInput(true);
-    setCountInput((prev) => [...prev, counter]);
-    counter++;
+
+    setMutableRows((prev) => [...prev, { method: newRowMethod, value: "" }]);
   };
 
   const handleSelectChange = (
     index: number,
-    event: {
-      target: { value: React.SetStateAction<string> };
-    }
+    event: SelectChangeEvent<InputMethod>
   ) => {
-    if (index === 0) {
-      setMethodSelect1(event.target.value);
-    } else {
-      setMethodSelect2(event.target.value);
-    }
+    setMutableRows((prev) =>
+      prev.map((row, idx) => {
+        if (idx === index) {
+          row.method = event.target.value as InputMethod;
+        }
+        return row;
+      })
+    );
   };
 
   const handleInputChange = (
     index: number,
     event: {
-      target: { value: React.SetStateAction<string> };
+      target: { value: string };
     }
   ) => {
-    if (index === 0) {
-      setValue1(event.target.value);
-    } else {
-      setValue2(event.target.value);
-    }
+    setMutableRows((prev) =>
+      prev.map((row, idx) => {
+        if (idx === index) {
+          row.value = event.target.value;
+        }
+        return row;
+      })
+    );
   };
 
   const handleName = (event: {
@@ -147,6 +167,14 @@ export default function Add(): ReactElement {
     setFinalKey(event.target.value);
   };
 
+  const handleDeleteMethod = (index: number) => {
+    console.log("index", index);
+    const newArray = [...mutableRows];
+    newArray.splice(index, 1);
+
+    setMutableRows(newArray);
+  };
+
   const handleSubmit = () => {
     const data = {
       artist_firstname: name,
@@ -156,14 +184,18 @@ export default function Add(): ReactElement {
       artist_id: finalKey,
       object_image: image,
       methods: {
-        method1: value1,
-        method2: value2,
+        method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+          ?.value,
+        method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+          ?.value,
       },
     };
 
     axiosInstance.post("/", data).then(function (response) {
       const responseData = response.data;
     });
+
+    console.log(data);
 
     const fakeResponse = API3Response;
 
@@ -250,73 +282,84 @@ export default function Add(): ReactElement {
         </div>
       </div>
 
-      {showInput &&
-        countInput.map((item, index) => {
-          const method = index === 0 ? methodSelect1 : methodSelect2;
-          return (
-            <div className="inputs_container" key={index}>
-              <FormControl classes={{ root: classes.root }}>
-                <Select
-                  value={index === 0 ? methodSelect1 : methodSelect2}
-                  onChange={(e) => {
-                    handleSelectChange(index, e);
-                  }}
-                  className={classes.select}
-                  classes={{
-                    select: classes.select,
-                    nativeInput: classes.nativeInput,
-                  }}
-                  inputProps={{
-                    classes: {
-                      icon: classes.icon,
-                    },
-                  }}
+      {mutableRows.map((item, index) => {
+        return (
+          <div className="inputs_container" key={index}>
+            <FormControl classes={{ root: classes.root }}>
+              <Select
+                disabled={mutableRows.length > 1}
+                value={item.method}
+                onChange={(e) => {
+                  handleSelectChange(index, e);
+                }}
+                className={classes.select}
+                classes={{
+                  select: classes.select,
+                  nativeInput: classes.nativeInput,
+                }}
+                inputProps={{
+                  classes: {
+                    icon: classes.icon,
+                  },
+                }}
+              >
+                <MenuItem
+                  classes={{ root: classes.rootItem }}
+                  value={InputMethod.STRING}
                 >
-                  <MenuItem
-                    classes={{ root: classes.rootItem }}
-                    value="method1"
-                  >
-                    Method1
-                  </MenuItem>
-                  <MenuItem value="method2">Method2</MenuItem>
-                </Select>
-              </FormControl>
-              {method === "method1" ? (
-                <>
+                  Method1
+                </MenuItem>
+                <MenuItem value={InputMethod.IMAGE}>Method2</MenuItem>
+              </Select>
+            </FormControl>
+
+            {item.method === InputMethod.STRING ? (
+              <>
+                <input
+                  className="input_text"
+                  value={item.value}
+                  onChange={(e) => {
+                    handleInputChange(index, e);
+                  }}
+                  type="text"
+                />
+              </>
+            ) : (
+              <div className="input_file-container">
+                <label className="input_file-label">
+                  <img
+                    className="input_file-image"
+                    src="/images/upload.svg"
+                    alt="upload"
+                  />
                   <input
-                    className="input_text"
-                    value={index === 0 ? value1 : value2}
+                    value={item.value}
                     onChange={(e) => {
                       handleInputChange(index, e);
                     }}
-                    type="text"
+                    type="file"
+                    className="input_file"
                   />
-                </>
-              ) : (
-                <div className="input_file-container">
-                  <label className="input_file-label">
-                    <img
-                      className="input_file-image"
-                      src="/images/upload.svg"
-                      alt="upload"
-                    />
-                    <input
-                      value={index === 0 ? value1 : value2}
-                      onChange={(e) => {
-                        handleInputChange(index, e);
-                      }}
-                      type="file"
-                      className="input_file"
-                    />
-                  </label>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                </label>
+              </div>
+            )}
+
+            <img
+              onClick={() => handleDeleteMethod(index)}
+              src="/images/cross.svg"
+              className="cross_img"
+              alt="cross"
+            />
+          </div>
+        );
+      })}
 
       <div className="add__buttons-container">
-        <button onClick={handleAddMethod} className="add__method">
+        <button
+          disabled={mutableRows.length >= MAX_ROWS}
+          onClick={handleAddMethod}
+          className="add__method"
+        >
           Add Method
         </button>
         <button onClick={handleSubmit} className="add__submit">

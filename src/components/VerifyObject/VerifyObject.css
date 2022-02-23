@@ -93,3 +93,15 @@
 .verify_object-id {
   margin-bottom: 50px;
 }
+
+@media (max-width: 425px) {
+  .input_text {
+    margin-left: 0;
+  }
+
+  .cross_img {
+    display: block;
+    width: 30px;
+    margin: 10px auto;
+  }
+}

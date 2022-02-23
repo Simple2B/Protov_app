@@ -55,8 +55,8 @@ export default function VerifyObject(): ReactElement {
   const navigate = useNavigate();
   const [showInput, setShowInput] = useState<boolean>(false);
   const [countInput, setCountInput] = useState<number[]>([]);
-  const [methodSelect1, setMethodSelect1] = useState<string>("string");
-  const [methodSelect2, setMethodSelect2] = useState<string>("string");
+  const [methodSelect1, setMethodSelect1] = useState<string>("method1");
+  const [methodSelect2, setMethodSelect2] = useState<string>("method1");
   const [value1, setValue1] = useState<string>("");
   const [value2, setValue2] = useState<string>("");
   const [verification, setVerification] = useState<string | null>();
@@ -191,7 +191,9 @@ export default function VerifyObject(): ReactElement {
             {location.data.artist_surname}, {location.data.title},{" "}
             {location.data.year}
           </div>
-          <div className="verify_object-id">ID: {location.data.object_id}</div>
+          <div className="verify_object-id">
+            object ID: {location.data.object_id}
+          </div>
         </>
       )}
       {verification ? (
@@ -202,7 +204,7 @@ export default function VerifyObject(): ReactElement {
             {verification}
           </div>
           <button onClick={handleSearch} className="verify_owner-button">
-            Search
+            Retry
           </button>
         </div>
       ) : (
@@ -239,15 +241,15 @@ export default function VerifyObject(): ReactElement {
                     >
                       <MenuItem
                         classes={{ root: classes.rootItem }}
-                        value="string"
+                        value="method1"
                       >
-                        String
+                        method1
                       </MenuItem>
-                      <MenuItem value="image">Image</MenuItem>
+                      <MenuItem value="method2">method2</MenuItem>
                     </Select>
                   </FormControl>
 
-                  {method === "string" ? (
+                  {method === "method1" ? (
                     <>
                       <input
                         className="input_text"
@@ -277,9 +279,15 @@ export default function VerifyObject(): ReactElement {
                       </label>
                     </div>
                   )}
+                  <img
+                    src="/images/cross.svg"
+                    className="cross_img"
+                    alt="cross"
+                  />
                 </div>
               );
             })}
+
           <div className="buttons_block">
             <button onClick={handleAddMethod} className="add_method">
               Add Method

@@ -107,7 +107,7 @@ export default function Provenance(): ReactElement {
         {location.data.artist_surname}, {location.data.title},{" "}
         {location.data.year}
       </div>
-      <div className="provenance__id">ID: {location.data.object_id}</div>
+      <div className="provenance__id">object ID: {location.data.object_id}</div>
       <div className="provenance__table">
         <TableContainer sx={{ width: 1043 }}>
           <Table
@@ -156,8 +156,15 @@ export default function Provenance(): ReactElement {
                       {row.action}
                     </TableCell>
                     <TableCell classes={{ root: classes.tableCell }}>
-                      {Object.keys(row.verification_methods)[0]},{" "}
-                      {Object.keys(row.verification_methods)[1]}
+                      {Object.keys(row.verification_methods).length === 1 ? (
+                        Object.keys(row.verification_methods)
+                      ) : (
+                        <>
+                          {Object.keys(row.verification_methods)[0]}
+                          {", "}
+                          {Object.keys(row.verification_methods)[1]}
+                        </>
+                      )}
                     </TableCell>
                   </TableRow>
                 );

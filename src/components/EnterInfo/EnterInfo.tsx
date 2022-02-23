@@ -176,10 +176,9 @@ export default function EnterInfo(): ReactElement {
               },
             }}
           >
-            <MenuItem classes={{ root: classes.rootItem }} value="Add">
-              Add
+            <MenuItem classes={{ root: classes.rootItem }} value="Provenance">
+              Provenance
             </MenuItem>
-            <MenuItem value="Provenance">Provenance</MenuItem>
             <MenuItem value="Verify owner">Verify owner</MenuItem>
             <MenuItem value="Verify object">Verify object</MenuItem>
             <MenuItem value="Transact">Transact</MenuItem>

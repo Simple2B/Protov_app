@@ -56,12 +56,16 @@ export default function Transact(): ReactElement {
   const location: any = useLocation().state;
 
   const handleBack = () => {
+    store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
+    store.dispatch({ type: "ADD_OWNER_STATUS", payload: "" });
     navigate("/result", {
       state: { searchItem: "Transact", responseData: location.allData },
     });
   };
 
   const handleHome = () => {
+    store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
+    store.dispatch({ type: "ADD_OWNER_STATUS", payload: "" });
     navigate("/");
   };
 
@@ -135,37 +139,40 @@ export default function Transact(): ReactElement {
         {location.data.artist_surname}, {location.data.title},{" "}
         {location.data.year}
       </div>
-      <div className="transact__id">ID: {location.data.object_id}</div>
+      <div className="transact__id">object ID: {location.data.object_id}</div>
 
       <div className="transact__buttons">
-        <button onClick={handleVerifyOwner} className="transact__button">
-          Verify owner
-        </button>
-        <button onClick={handleVerifyObject} className="transact__button">
-          Verify object
-        </button>
+        <div className="transact_block">
+          <button onClick={handleVerifyOwner} className="transact__button">
+            Verify owner
+          </button>
+          <div
+            className={
+              ownerStatus === "SUCCESS"
+                ? "transact__status-success"
+                : "transact__status-error"
+            }
+          >
+            {ownerStatus}
+          </div>
+        </div>
+
+        <div className="transact_block">
+          <button onClick={handleVerifyObject} className="transact__button">
+            Verify object
+          </button>
+          <div
+            className={
+              objectStatus === "SUCCESS"
+                ? "transact__status-success"
+                : "transact__status-error"
+            }
+          >
+            {objectStatus}
+          </div>
+        </div>
       </div>
 
-      <div className="transact__statuses">
-        <div
-          className={
-            ownerStatus === "SUCCESS"
-              ? "transact__status-success"
-              : "transact__status-error"
-          }
-        >
-          {ownerStatus}
-        </div>
-        <div
-          className={
-            objectStatus === "SUCCESS"
-              ? "transact__status-success"
-              : "transact__status-error"
-          }
-        >
-          {objectStatus}
-        </div>
-      </div>
       {objectStatus === "SUCCESS" && ownerStatus === "SUCCESS" && (
         <div className="transact__select-block">
           <FormControl classes={{ root: classes.root }}>

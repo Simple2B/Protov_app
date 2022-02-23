@@ -108,7 +108,9 @@ export default function VerifyOwner(): ReactElement {
         {location.data.year}
       </div>
 
-      <div className="verify_owner-id">ID: {location.data.object_id}</div>
+      <div className="verify_owner-id">
+        object ID: {location.data.object_id}
+      </div>
 
       {verification ? (
         <div className="verify_owner-search">
@@ -118,7 +120,7 @@ export default function VerifyOwner(): ReactElement {
             {verification}
           </div>
           <button onClick={handleSearch} className="verify_owner-button">
-            Search
+            Retry
           </button>
         </div>
       ) : (
@@ -129,7 +131,11 @@ export default function VerifyOwner(): ReactElement {
             className="verify_owner-input"
             onChange={handlePassword}
           />
-          <button onClick={verify} className="verify_owner-button">
+          <button
+            disabled={!password}
+            onClick={verify}
+            className="verify_owner-button"
+          >
             Verify
           </button>
         </div>
