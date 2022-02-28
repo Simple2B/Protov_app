@@ -307,9 +307,9 @@ export default function Add(): ReactElement {
                   classes={{ root: classes.rootItem }}
                   value={InputMethod.STRING}
                 >
-                  Method1
+                  method1
                 </MenuItem>
-                <MenuItem value={InputMethod.IMAGE}>Method2</MenuItem>
+                <MenuItem value={InputMethod.IMAGE}>method2</MenuItem>
               </Select>
             </FormControl>
 
