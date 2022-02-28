@@ -65,13 +65,11 @@ interface IMutableRow {
 const MAX_ROWS = 2;
 
 export default function Add(): ReactElement {
-  const [artistKey, setArtistKey] = useState<string>("Artist key");
   const [name, setName] = useState<string>("");
   const [surname, setSurname] = useState<string>("");
   const [title, setTitle] = useState<string>("");
   const [image, setImage] = useState<string>("");
   const [year, setYear] = useState<string>("");
-  const [newKey, setNewKey] = useState<string>();
   const [finalKey, setFinalKey] = useState<string | undefined>("");
   const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
 
@@ -179,7 +177,7 @@ export default function Add(): ReactElement {
       artist_surname: surname,
       title,
       year,
-      artist_id: finalKey,
+      artist_id: "",
       object_image: image,
       methods: {
         method1: mutableRows.find((el) => el.method === InputMethod.STRING)
@@ -261,22 +259,6 @@ export default function Add(): ReactElement {
             ></input>
           </label>
           <div className="uploading-text">Upload photo of object</div>
-        </div>
-        <div className="add__inputs-block">
-          <input
-            value={artistKey}
-            placeholder="Artist key"
-            type="text"
-            className="add__input"
-            readOnly
-          />
-          <input
-            value={newKey}
-            onChange={handleKey}
-            placeholder="New key"
-            type="text"
-            className="add__input"
-          />
         </div>
       </div>
 
