@@ -158,7 +158,7 @@
   margin-top: 30px;
 }
 
-@media (max-width: 425px) {
+@media (max-width: 699px) {
   .transact__buttons {
     flex-direction: column;
   }

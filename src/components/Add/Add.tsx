@@ -66,8 +66,6 @@ const MAX_ROWS = 2;
 
 export default function Add(): ReactElement {
   const [artistKey, setArtistKey] = useState<string>("Artist key");
-  const [value1, setValue1] = useState<string>("");
-  const [value2, setValue2] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [surname, setSurname] = useState<string>("");
   const [title, setTitle] = useState<string>("");
