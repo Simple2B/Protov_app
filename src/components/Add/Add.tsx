@@ -148,7 +148,8 @@ export default function Add(): ReactElement {
   const handleYear = (event: {
     target: { value: React.SetStateAction<string> };
   }) => {
-    setYear(event.target.value);
+    const clearValue = event.target.value.toString().replace(/([,.])/g, "");
+    setYear(clearValue);
   };
 
   const handleImage = (event: {
@@ -241,10 +242,10 @@ export default function Add(): ReactElement {
             className="add__input"
           />
           <input
+            type="number"
             value={year}
             onChange={handleYear}
             placeholder="Year"
-            type="text"
             className="add__input"
           />
         </div>
