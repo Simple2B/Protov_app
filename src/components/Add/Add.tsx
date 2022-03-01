@@ -148,7 +148,7 @@ export default function Add(): ReactElement {
   const handleYear = (event: {
     target: { value: React.SetStateAction<string> };
   }) => {
-    const clearValue = event.target.value.toString().replace(/([,.])/g, "");
+    const clearValue = event.target.value.toString().replace(/\D/g, "");
     setYear(clearValue);
   };
 
@@ -242,7 +242,6 @@ export default function Add(): ReactElement {
             className="add__input"
           />
           <input
-            type="number"
             value={year}
             onChange={handleYear}
             placeholder="Year"

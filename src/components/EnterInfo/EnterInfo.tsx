@@ -110,9 +110,10 @@ export default function EnterInfo(): ReactElement {
   };
 
   const handleYear = (e: {
-    target: { value: React.SetStateAction<string | undefined> };
+    target: { value: React.SetStateAction<string> };
   }) => {
-    setYear(e.target.value);
+    const clearValue = e.target.value.toString().replace(/\D/g, "");
+    setYear(clearValue);
     setCheckData(true);
     if (e.target.value === "") {
       setCheckData(false);
@@ -217,7 +218,6 @@ export default function EnterInfo(): ReactElement {
         <input
           value={year}
           onChange={handleYear}
-          type="number"
           placeholder="Year"
           className="info__input"
         />
