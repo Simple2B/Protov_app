@@ -88,3 +88,23 @@
   line-height: 21px;
   margin-top: 40px;
 }
+
+.cross_img {
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+.inputs_container {
+  position: relative;
+  left: 10px;
+}
+
+@media (max-width: 699px) {
+  .add__input:not(:last-child) {
+    margin-right: 0;
+  }
+
+  .inputs_container {
+    left: 0;
+  }
+}

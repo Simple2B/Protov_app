@@ -16,7 +16,6 @@ const useStyle = makeStyles((theme: Theme) => ({
     },
     border: "none !important",
     width: "340px",
-    // height: "50px",
     padding: 0,
     alignItems: "start",
     fontFamily: "GT Walsheim Pro",
@@ -49,19 +48,24 @@ const useStyle = makeStyles((theme: Theme) => ({
 
 export default function Transact(): ReactElement {
   const classes = useStyle();
-  const [objectStatus, setObjectStatus] = useState(store.getState().object);
-  const [ownerStatus, setOwnerStatus] = useState(store.getState().owner);
-  const [selectValue, setSelectValue] = useState<string>("Select method");
+  const [selectValue] = useState<string>("Select method");
   const navigate = useNavigate();
   const location: any = useLocation().state;
 
+  const objectStatus = store.getState().object;
+  const ownerStatus = store.getState().owner;
+
   const handleBack = () => {
+    store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
+    store.dispatch({ type: "ADD_OWNER_STATUS", payload: "" });
     navigate("/result", {
       state: { searchItem: "Transact", responseData: location.allData },
     });
   };
 
   const handleHome = () => {
+    store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
+    store.dispatch({ type: "ADD_OWNER_STATUS", payload: "" });
     navigate("/");
   };
 
@@ -99,6 +103,7 @@ export default function Transact(): ReactElement {
       title: location.data.title,
       year: location.data.year,
       object_id: location.data.object_id,
+      methods: location.data.methods,
     };
     navigate("/sale", { state: { data: data, allData: location.allData } });
   };
@@ -135,37 +140,40 @@ export default function Transact(): ReactElement {
         {location.data.artist_surname}, {location.data.title},{" "}
         {location.data.year}
       </div>
-      <div className="transact__id">ID: {location.data.object_id}</div>
+      <div className="transact__id">object ID: {location.data.object_id}</div>
 
       <div className="transact__buttons">
-        <button onClick={handleVerifyOwner} className="transact__button">
-          Verify owner
-        </button>
-        <button onClick={handleVerifyObject} className="transact__button">
-          Verify object
-        </button>
+        <div className="transact_block">
+          <button onClick={handleVerifyOwner} className="transact__button">
+            Verify owner
+          </button>
+          <div
+            className={
+              ownerStatus === "SUCCESS"
+                ? "transact__status-success"
+                : "transact__status-error"
+            }
+          >
+            {ownerStatus}
+          </div>
+        </div>
+
+        <div className="transact_block">
+          <button onClick={handleVerifyObject} className="transact__button">
+            Verify object
+          </button>
+          <div
+            className={
+              objectStatus === "SUCCESS"
+                ? "transact__status-success"
+                : "transact__status-error"
+            }
+          >
+            {objectStatus}
+          </div>
+        </div>
       </div>
 
-      <div className="transact__statuses">
-        <div
-          className={
-            ownerStatus === "SUCCESS"
-              ? "transact__status-success"
-              : "transact__status-error"
-          }
-        >
-          {ownerStatus}
-        </div>
-        <div
-          className={
-            objectStatus === "SUCCESS"
-              ? "transact__status-success"
-              : "transact__status-error"
-          }
-        >
-          {objectStatus}
-        </div>
-      </div>
       {objectStatus === "SUCCESS" && ownerStatus === "SUCCESS" && (
         <div className="transact__select-block">
           <FormControl classes={{ root: classes.root }}>

@@ -6,8 +6,8 @@ import {
   Theme,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import { makeStyles, createStyles } from "@mui/styles";
-import React, { ReactElement, useEffect, useState } from "react";
+import { makeStyles } from "@mui/styles";
+import React, { ReactElement, useState } from "react";
 import "./EnterInfo.css";
 import { axiosInstance } from "../../axios/axiosInstance";
 import { IAPI1RequestData } from "../../types/API1";
@@ -110,9 +110,10 @@ export default function EnterInfo(): ReactElement {
   };
 
   const handleYear = (e: {
-    target: { value: React.SetStateAction<string | undefined> };
+    target: { value: React.SetStateAction<string> };
   }) => {
-    setYear(e.target.value);
+    const clearValue = e.target.value.toString().replace(/\D/g, "");
+    setYear(clearValue);
     setCheckData(true);
     if (e.target.value === "") {
       setCheckData(false);
@@ -176,23 +177,14 @@ export default function EnterInfo(): ReactElement {
               },
             }}
           >
-            <MenuItem classes={{ root: classes.rootItem }} value="Add">
-              Add
+            <MenuItem classes={{ root: classes.rootItem }} value="Provenance">
+              Provenance
             </MenuItem>
-            <MenuItem value="Provenance">Provenance</MenuItem>
             <MenuItem value="Verify owner">Verify owner</MenuItem>
             <MenuItem value="Verify object">Verify object</MenuItem>
             <MenuItem value="Transact">Transact</MenuItem>
           </Select>
         </FormControl>
-
-        {/* <select>
-          <option>Add</option>
-          <option>Provenance</option>
-          <option>Verify owner</option>
-          <option>Verify object</option>
-          <option>Transact</option>
-        </select> */}
 
         <input
           value={name}
@@ -218,7 +210,6 @@ export default function EnterInfo(): ReactElement {
         <input
           value={year}
           onChange={handleYear}
-          type="number"
           placeholder="Year"
           className="info__input"
         />

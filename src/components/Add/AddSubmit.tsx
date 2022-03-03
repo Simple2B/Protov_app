@@ -43,12 +43,20 @@ export default function AddSubmit(): ReactElement {
         {location.data.artist_firstname} {location.artist_surname},{" "}
         {location.data.title}, {location.data.year}
       </div>
-      <div className="add_submit-id">ID: {location.data.artist_id}</div>
+      <div className="add_submit-id">artist ID: {location.data.artist_id}</div>
       <h2 className="verify_methods-title">Verification methods:</h2>
-      {Object.values(location.data.methods)[0] &&
-        Object.keys(location.data.methods)[0]}{" "}
-      {Object.values(location.data.methods)[1] &&
-        Object.keys(location.data.methods)[1]}
+      <div>
+        <>
+          {Object.values(location.data.methods)[0] &&
+            Object.keys(location.data.methods)[0]}
+        </>
+      </div>
+      <div>
+        <>
+          {Object.values(location.data.methods)[1] &&
+            Object.keys(location.data.methods)[1]}
+        </>
+      </div>
       <div
         className={
           status === "Success!"

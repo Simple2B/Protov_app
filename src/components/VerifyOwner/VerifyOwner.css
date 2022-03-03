@@ -34,6 +34,11 @@
   background: #06525d;
 }
 
+.verify_owner-button:disabled {
+  background: #677274;
+  cursor: not-allowed;
+}
+
 .verify_owner-search {
   display: flex;
   flex-direction: column;
@@ -54,4 +59,8 @@
   font-weight: bold;
   font-size: 22px;
   margin-bottom: 50px;
+}
+
+.input_error {
+  border: 1px solid #E01919;
 }
