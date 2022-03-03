@@ -165,7 +165,6 @@ export default function Add(): ReactElement {
   };
 
   const handleDeleteMethod = (index: number) => {
-    console.log("index", index);
     const newArray = [...mutableRows];
     newArray.splice(index, 1);
 
@@ -191,8 +190,6 @@ export default function Add(): ReactElement {
     axiosInstance.post("/", data).then(function (response) {
       const responseData = response.data;
     });
-
-    console.log(data);
 
     const fakeResponse = API3Response;
 

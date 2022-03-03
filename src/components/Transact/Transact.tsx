@@ -16,7 +16,6 @@ const useStyle = makeStyles((theme: Theme) => ({
     },
     border: "none !important",
     width: "340px",
-    // height: "50px",
     padding: 0,
     alignItems: "start",
     fontFamily: "GT Walsheim Pro",
@@ -103,6 +102,7 @@ export default function Transact(): ReactElement {
       title: location.data.title,
       year: location.data.year,
       object_id: location.data.object_id,
+      methods: location.data.methods,
     };
     navigate("/sale", { state: { data: data, allData: location.allData } });
   };

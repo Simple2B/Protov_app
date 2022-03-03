@@ -118,7 +118,6 @@ export default function VerifyObject(): ReactElement {
           ?.value,
       },
     };
-    console.log(data);
 
     axiosInstance.post("/", data).then(function (response) {
       const responseData = response.data;
@@ -133,6 +132,12 @@ export default function VerifyObject(): ReactElement {
           title: location.data.title,
           year: location.data.year,
           object_id: location.data.object_id,
+          methods: {
+            method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+              ?.value,
+            method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+              ?.value,
+          },
         };
         store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "SUCCESS" });
         navigate("/transact", {
@@ -144,6 +149,12 @@ export default function VerifyObject(): ReactElement {
           title: location.data.title,
           year: location.data.year,
           object_id: location.data.object_id,
+          methods: {
+            method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+              ?.value,
+            method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+              ?.value,
+          },
         };
         store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "FAIL" });
         navigate("/transact", {
@@ -194,7 +205,6 @@ export default function VerifyObject(): ReactElement {
   };
 
   const handleDeleteMethod = (index: number) => {
-    console.log("index", index);
     const newArray = [...mutableRows];
     newArray.splice(index, 1);
 

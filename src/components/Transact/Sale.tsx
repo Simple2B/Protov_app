@@ -74,10 +74,7 @@ export default function Sale(): ReactElement {
       object_id: location.data.object_id,
       new_owner_id: newPassword,
       date: dateTime,
-      methods: {
-        method1: "",
-        method2: "",
-      },
+      methods: location.data.methods,
     };
 
     if (response.owner_ver_status) {
