@@ -186,14 +186,6 @@ export default function EnterInfo(): ReactElement {
           </Select>
         </FormControl>
 
-        {/* <select>
-          <option>Add</option>
-          <option>Provenance</option>
-          <option>Verify owner</option>
-          <option>Verify object</option>
-          <option>Transact</option>
-        </select> */}
-
         <input
           value={name}
           onChange={handleName}

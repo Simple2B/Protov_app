@@ -1,6 +1,7 @@
 .provenance__table {
-  width: 1040px;
+  max-width: 1040px;
   margin: 20px auto;
+  padding: 0 10px;
 }
 
 .provenance__address {

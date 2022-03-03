@@ -141,7 +141,7 @@ export default function Result(): ReactElement {
       <h1 className="result__title">Search Result</h1>
 
       <div className="provenance__table">
-        <TableContainer sx={{ width: 1043 }}>
+        <TableContainer sx={{ maxWidth: "100%" }}>
           <Table
             classes={{ root: classes.root }}
             stickyHeader

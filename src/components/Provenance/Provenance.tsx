@@ -109,7 +109,7 @@ export default function Provenance(): ReactElement {
       </div>
       <div className="provenance__id">object ID: {location.data.object_id}</div>
       <div className="provenance__table">
-        <TableContainer sx={{ width: 1043 }}>
+        <TableContainer sx={{ maxWidth: "100%" }}>
           <Table
             classes={{ root: classes.root }}
             stickyHeader
