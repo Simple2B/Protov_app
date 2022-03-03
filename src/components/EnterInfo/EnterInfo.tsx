@@ -6,8 +6,8 @@ import {
   Theme,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import { makeStyles, createStyles } from "@mui/styles";
-import React, { ReactElement, useEffect, useState } from "react";
+import { makeStyles } from "@mui/styles";
+import React, { ReactElement, useState } from "react";
 import "./EnterInfo.css";
 import { axiosInstance } from "../../axios/axiosInstance";
 import { IAPI1RequestData } from "../../types/API1";

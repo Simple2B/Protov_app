@@ -70,7 +70,6 @@ export default function Add(): ReactElement {
   const [title, setTitle] = useState<string>("");
   const [image, setImage] = useState<string>("");
   const [year, setYear] = useState<string>("");
-  const [finalKey, setFinalKey] = useState<string | undefined>("");
   const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
 
   const navigate = useNavigate();
@@ -156,12 +155,6 @@ export default function Add(): ReactElement {
     target: { value: React.SetStateAction<string> };
   }) => {
     setImage(event.target.value);
-  };
-
-  const handleKey = (event: {
-    target: { value: React.SetStateAction<string | undefined> };
-  }) => {
-    setFinalKey(event.target.value);
   };
 
   const handleDeleteMethod = (index: number) => {

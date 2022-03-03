@@ -48,11 +48,12 @@ const useStyle = makeStyles((theme: Theme) => ({
 
 export default function Transact(): ReactElement {
   const classes = useStyle();
-  const [objectStatus, setObjectStatus] = useState(store.getState().object);
-  const [ownerStatus, setOwnerStatus] = useState(store.getState().owner);
-  const [selectValue, setSelectValue] = useState<string>("Select method");
+  const [selectValue] = useState<string>("Select method");
   const navigate = useNavigate();
   const location: any = useLocation().state;
+
+  const objectStatus = store.getState().object;
+  const ownerStatus = store.getState().owner;
 
   const handleBack = () => {
     store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });

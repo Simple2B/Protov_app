@@ -6,13 +6,12 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { axiosInstance } from "../../axios/axiosInstance";
 import { store } from "../../store";
 import "./VerifyObject.css";
 import API5Response from "../../fake_api/API5_response_succeed.json";
-import { DefaultDeserializer } from "v8";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -63,8 +62,6 @@ interface IMutableRow {
   value: string;
   method: InputMethod;
 }
-
-const MAX_ROWS = 2;
 
 export default function VerifyObject(): ReactElement {
   const location: any = useLocation().state;
