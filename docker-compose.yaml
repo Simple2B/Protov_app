@@ -2,5 +2,6 @@ version: "3"
 services:
   app:
     build: .
+    image: istacat/protov
     ports:
       - 127.0.0.1:9500:80
