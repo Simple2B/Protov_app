@@ -17,23 +17,13 @@ export default function AddSubmit(): ReactElement {
     }
   }, []);
 
-  const handleBack = () => {
-    navigate("/add");
-  };
-
   const handleHome = () => {
     navigate("/");
   };
   return (
     <div className="add_submit">
       <div className="header">
-        <div onClick={handleBack} className="header__back">
-          <img
-            src="/images/arrow_back.svg"
-            className="back_img"
-            alt="back"
-          ></img>
-        </div>
+        <div className="header__back"></div>
         <div onClick={handleHome} className="header__main">
           <img src="/images/home.svg" className="back_main" alt="main"></img>
         </div>

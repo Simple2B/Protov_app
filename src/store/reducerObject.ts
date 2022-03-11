@@ -1,8 +1,3 @@
-interface IAction {
-  type: string;
-  payload: string;
-}
-
 const initialState = "";
 
 export const reducerObject = (state: string = initialState, action: any) => {

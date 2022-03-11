@@ -5,6 +5,7 @@ import { axiosInstance } from "../../axios/axiosInstance";
 import { IAPI2Response } from "../../types/API2";
 import { IAPI7Response } from "../../types/API7";
 import API2Response from "../../fake_api/API2_response_succeed.json";
+import API2ResponseFail from "../../fake_api/API2_response_fail.json";
 import API7Response from "../../fake_api/API7_resposne.json";
 import { store } from "../../store";
 
@@ -55,6 +56,9 @@ export default function Sale(): ReactElement {
 
     //FAKE RESPONSE
     const response = API2Response;
+
+    // to test fail response change var response on responseFail
+    const responseFail = API2ResponseFail;
 
     const today = new Date();
 

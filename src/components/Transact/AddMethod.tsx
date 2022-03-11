@@ -1,6 +1,11 @@
 import React, { ReactElement, useState } from "react";
 import { Theme } from "@emotion/react";
-import { Select, MenuItem, FormControl } from "@mui/material";
+import {
+  Select,
+  MenuItem,
+  FormControl,
+  SelectChangeEvent,
+} from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router";
 import { axiosInstance } from "../../axios/axiosInstance";
@@ -48,17 +53,24 @@ const useStyle = makeStyles((theme: Theme) => ({
   },
 }));
 
+enum InputMethod {
+  "STRING",
+  "IMAGE",
+}
+interface IMutableRow {
+  value: string;
+  method: InputMethod;
+}
+
+const MAX_ROWS = 2;
+
 export default function AddMethod(): ReactElement {
   const navigate = useNavigate();
   const classes = useStyle();
   const location: any = useLocation().state;
-  const [countInput, setCountInput] = useState<number[]>([1]);
-  const [methodSelect1, setMethodSelect1] = useState<string>("method1");
-  const [methodSelect2, setMethodSelect2] = useState<string>("method1");
-  const [value1, setValue1] = useState<string>("");
-  const [value2, setValue2] = useState<string>("");
   const [check, setCheck] = useState<string>();
   const [hideButton, setHideButton] = useState<boolean>(false);
+  const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
 
   const handleBack = () => {
     navigate("/transact", {
@@ -72,40 +84,54 @@ export default function AddMethod(): ReactElement {
     navigate("/");
   };
 
-  let counter = 0;
   const handleAddMethod = () => {
-    if (countInput.length > 1) {
-      return;
+    let newRowMethod = InputMethod.STRING;
+
+    if (mutableRows.length > 0) {
+      newRowMethod =
+        mutableRows[0].method === InputMethod.STRING
+          ? InputMethod.IMAGE
+          : InputMethod.STRING;
     }
 
-    setCountInput((prev) => [...prev, counter]);
-    counter++;
+    setMutableRows((prev) => [...prev, { method: newRowMethod, value: "" }]);
   };
 
   const handleSelectChange = (
     index: number,
-    event: {
-      target: { value: React.SetStateAction<string> };
-    }
+    event: SelectChangeEvent<InputMethod>
   ) => {
-    if (index === 0) {
-      setMethodSelect1(event.target.value);
-    } else {
-      setMethodSelect2(event.target.value);
-    }
+    setMutableRows((prev) =>
+      prev.map((row, idx) => {
+        if (idx === index) {
+          row.method = event.target.value as InputMethod;
+        }
+        return row;
+      })
+    );
   };
 
   const handleInputChange = (
     index: number,
     event: {
-      target: { value: React.SetStateAction<string> };
+      target: { value: string };
     }
   ) => {
-    if (index === 0) {
-      setValue1(event.target.value);
-    } else {
-      setValue2(event.target.value);
-    }
+    setMutableRows((prev) =>
+      prev.map((row, idx) => {
+        if (idx === index) {
+          row.value = event.target.value;
+        }
+        return row;
+      })
+    );
+  };
+
+  const handleDeleteMethod = (index: number) => {
+    const newArray = [...mutableRows];
+    newArray.splice(index, 1);
+
+    setMutableRows(newArray);
   };
 
   const handleSubmit = () => {
@@ -113,8 +139,10 @@ export default function AddMethod(): ReactElement {
     const data = {
       object_id: location.data.object_id,
       methods: {
-        method1: value1,
-        method2: value2,
+        method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+          ?.value,
+        method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+          ?.value,
       },
     };
     axiosInstance.post("/", data).then(function (response) {
@@ -123,7 +151,7 @@ export default function AddMethod(): ReactElement {
 
     const fakeData = API4Response;
 
-    if (API4Response.add_method_success) {
+    if (fakeData.add_method_success) {
       setCheck("SUCCESS");
     } else {
       setCheck("FAIL");
@@ -163,13 +191,13 @@ export default function AddMethod(): ReactElement {
         </div>
       ) : (
         <>
-          {countInput.map((item, index) => {
-            const method = index === 0 ? methodSelect1 : methodSelect2;
+          {mutableRows.map((item, index) => {
             return (
               <div className="inputs_container" key={index}>
                 <FormControl classes={{ root: classes.root }}>
                   <Select
-                    value={index === 0 ? methodSelect1 : methodSelect2}
+                    disabled={mutableRows.length > 1}
+                    value={item.method}
                     onChange={(e) => {
                       handleSelectChange(index, e);
                     }}
@@ -186,19 +214,19 @@ export default function AddMethod(): ReactElement {
                   >
                     <MenuItem
                       classes={{ root: classes.rootItem }}
-                      value="method1"
+                      value={InputMethod.STRING}
                     >
                       method1
                     </MenuItem>
-                    <MenuItem value="method2">method2</MenuItem>
+                    <MenuItem value={InputMethod.IMAGE}>method2</MenuItem>
                   </Select>
                 </FormControl>
 
-                {method === "method1" ? (
+                {item.method === InputMethod.STRING ? (
                   <>
                     <input
                       className="input_text"
-                      value={index === 0 ? value1 : value2}
+                      value={item.value}
                       onChange={(e) => {
                         handleInputChange(index, e);
                       }}
@@ -214,7 +242,7 @@ export default function AddMethod(): ReactElement {
                         alt="upload"
                       />
                       <input
-                        value={index === 0 ? value1 : value2}
+                        value={item.value}
                         onChange={(e) => {
                           handleInputChange(index, e);
                         }}
@@ -226,6 +254,7 @@ export default function AddMethod(): ReactElement {
                 )}
 
                 <img
+                  onClick={() => handleDeleteMethod(index)}
                   src="/images/cross.svg"
                   className="cross_img"
                   alt="cross"
@@ -233,12 +262,15 @@ export default function AddMethod(): ReactElement {
               </div>
             );
           })}
-
           <div className="method__buttons_set">
             <button onClick={handleSubmit} className="method__button">
               Submit
             </button>
-            <button onClick={handleAddMethod} className="method__button">
+            <button
+              disabled={mutableRows.length >= MAX_ROWS}
+              onClick={handleAddMethod}
+              className="method__button"
+            >
               Add Method
             </button>
           </div>
