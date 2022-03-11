@@ -4,6 +4,7 @@ import { axiosInstance } from "../../axios/axiosInstance";
 import { store } from "../../store";
 import "./VerifyOwner.css";
 import API2Response from "../../fake_api/API2_response_succeed.json";
+import API2ResponseFail from "../../fake_api/API2_response_fail.json";
 
 export default function VerifyOwner(): ReactElement {
   const location: any = useLocation().state;
@@ -53,6 +54,9 @@ export default function VerifyOwner(): ReactElement {
     });
 
     const fakeData = API2Response;
+
+    // to test fail response change var fakeData on fakeDataFail
+    const fakeDataFail = API2ResponseFail;
 
     if (location.data.path === "/transact") {
       if (fakeData.owner_ver_status) {

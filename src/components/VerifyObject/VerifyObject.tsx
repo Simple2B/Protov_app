@@ -12,6 +12,7 @@ import { axiosInstance } from "../../axios/axiosInstance";
 import { store } from "../../store";
 import "./VerifyObject.css";
 import API5Response from "../../fake_api/API5_response_succeed.json";
+import API5ResponseFail from "../../fake_api/API5_response_fail.json";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -62,6 +63,8 @@ interface IMutableRow {
   value: string;
   method: InputMethod;
 }
+
+const MAX_ROWS = 2;
 
 export default function VerifyObject(): ReactElement {
   const location: any = useLocation().state;
@@ -121,6 +124,8 @@ export default function VerifyObject(): ReactElement {
     });
 
     const fakeData = API5Response;
+    // to test fail response change var fakeData on fakeDataFail
+    const fakeDataFail = API5ResponseFail;
 
     if (location.data.path === "/transact") {
       if (fakeData.object_ver_success) {
@@ -328,7 +333,11 @@ export default function VerifyObject(): ReactElement {
           })}
 
           <div className="buttons_block">
-            <button onClick={handleAddMethod} className="add_method">
+            <button
+              disabled={mutableRows.length >= MAX_ROWS}
+              onClick={handleAddMethod}
+              className="add_method"
+            >
               Add Method
             </button>
             <button onClick={handleVerify} className="verify">
