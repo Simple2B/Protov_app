@@ -1,0 +1,10 @@
+server {
+    server_name protov.simple2b.net;
+    root /home/runner/Protov_app/build;
+    index index.html index.htm;
+
+
+    location / {
+        try_files $uri /index.html;
+    }
+}
