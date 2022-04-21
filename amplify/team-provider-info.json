@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-protovapi-dev-123705-authRole",
+      "UnauthRoleArn": "arn:aws:iam::696820062963:role/amplify-protovapi-dev-123705-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::696820062963:role/amplify-protovapi-dev-123705-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-protovapi-dev-123705-deployment",
+      "UnauthRoleName": "amplify-protovapi-dev-123705-unauthRole",
+      "StackName": "amplify-protovapi-dev-123705",
+      "StackId": "arn:aws:cloudformation:us-east-1:696820062963:stack/amplify-protovapi-dev-123705/9ecb8910-c156-11ec-a60f-0ed687792769",
+      "AmplifyAppId": "d35vyjzt0awgqt"
+    },
+    "categories": {
+      "function": {
+        "protovapi": {
+          "deploymentBucketName": "amplify-protovapi-dev-123705-deployment",
+          "s3Key": "amplify-builds/protovapi-596a4342322f56755350-build.zip"
+        }
+      }
+    }
+  }
+}

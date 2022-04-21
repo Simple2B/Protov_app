@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "storage": {
+      "protovdb": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

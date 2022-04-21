@@ -1,0 +1,10 @@
+{
+  "resourceName": "protovdb",
+  "tableName": "awsObject",
+  "partitionKey": {
+    "fieldName": "id_object",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}
