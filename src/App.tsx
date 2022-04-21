@@ -74,7 +74,7 @@ export default function App() {
   
   return (
     <div className="App">
-      <button onClick={deleteObject} style={{marginTop: '50px'}}>Test delete object</button>
+      {/* <button onClick={deleteObject} style={{marginTop: '50px'}}>Test delete object</button> */}
       <StylesProvider injectFirst>
         <Routes>
           <Route path="/" element={<MainScreen />} />
