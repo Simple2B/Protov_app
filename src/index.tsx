@@ -2,18 +2,24 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import { BrowserRouter } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+} from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { Amplify } from 'aws-amplify';
+import config from './aws-exports.js';
+
+Amplify.configure(config)
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
       <Provider store={store}>
-        <App />
+        <Router>
+          <App />
+        </Router>
       </Provider>
-    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );
