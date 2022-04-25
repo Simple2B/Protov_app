@@ -1,110 +1,109 @@
 .add__input {
-  width: 340px;
-  height: 50px;
-  border: 1px solid #BAE4EA;
-  border-radius: 6px;
-  padding-left: 20px;
-  font-family: "GT Walsheim Pro";
-  font-size: 16px;
-  line-height: 18px;
-  margin-bottom: 20px;
+    width: 340px;
+    height: 50px;
+    border: 1px solid #BAE4EA;
+    border-radius: 6px;
+    padding-left: 20px;
+    font-family: "GT Walsheim Pro";
+    font-size: 16px;
+    line-height: 18px;
+    margin-bottom: 20px;
 }
 
 .add__input:not(:last-child) {
-  margin-right: 20px;
+    margin-right: 20px;
 }
 
 .add__method {
-  border: 1px solid #086E7D;
-  width: 300px;
-  height: 55px;
-  border-radius: 6px;
-  font-family: "GT Walsheim Pro";
-  font-size: 16px;
-  line-height: 18px;
-  text-align: center;
-  color: #086E7D;
-  background: none;
-  margin-bottom: 20px;
-  cursor: pointer;
-  transition: background 1s;
+    border: 1px solid #086E7D;
+    width: 300px;
+    height: 55px;
+    border-radius: 6px;
+    font-family: "GT Walsheim Pro";
+    font-size: 16px;
+    line-height: 18px;
+    text-align: center;
+    color: #086E7D;
+    background: none;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: background 1s;
 }
 
 .add__method:hover {
-  background-color: #0a6d7c11;
+    background-color: #0a6d7c11;
 }
 
 .add__buttons-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .add__submit {
-  width: 300px;
-  height: 55px;
-  border: none;
-  background: #086E7D;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: "GT Walsheim Pro";
-  font-size: 16px;
-  line-height: 18px;
-  text-align: center;
-  color: #FFFFFF;
-  transition: background 1s;
+    width: 300px;
+    height: 55px;
+    border: none;
+    background: #086E7D;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: "GT Walsheim Pro";
+    font-size: 16px;
+    line-height: 18px;
+    text-align: center;
+    color: #FFFFFF;
+    transition: background 1s;
 }
 
 .add__submit:hover {
-  background: #06525d;
+    background: #06525d;
 }
 
 .verify_status-success {
-  font-weight: bold;
-  font-size: 22px;
-  line-height: 25px;
-  text-transform: uppercase;
-  color: #05B102;
-  margin-top: 55px;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 25px;
+    text-transform: uppercase;
+    color: #05B102;
+    margin-top: 55px;
 }
 
 .verify_status-error {
-  font-weight: bold;
-  font-size: 22px;
-  line-height: 25px;
-  text-transform: uppercase;
-  color: #E01919;
-  ;
-  margin-top: 55px;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 25px;
+    text-transform: uppercase;
+    color: #E01919;
+    ;
+    margin-top: 55px;
 }
 
 .add_submit-id {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 .verify_methods-title {
-  font-weight: bold;
-  font-size: 18px;
-  line-height: 21px;
-  margin-top: 40px;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 21px;
+    margin-top: 40px;
 }
 
 .cross_img {
-  padding-left: 10px;
-  cursor: pointer;
+    padding-left: 10px;
+    cursor: pointer;
 }
 
 .inputs_container {
-  position: relative;
-  left: 10px;
+    position: relative;
+    left: 10px;
 }
 
 @media (max-width: 699px) {
-  .add__input:not(:last-child) {
-    margin-right: 0;
-  }
-
-  .inputs_container {
-    left: 0;
-  }
+    .add__input:not(:last-child) {
+        margin-right: 0;
+    }
+    .inputs_container {
+        left: 0;
+    }
 }
