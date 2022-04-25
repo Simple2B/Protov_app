@@ -29,19 +29,21 @@ export default function App() {
     console.log('GET: getObject -> data', data)
   };
 
-  const createData = async () => {
-    const data = await API.post('protovapi', '/awsobject', {
-      body: {
-        artist_surname: 'Picasso',
-        artist_firstname: 'Pablo',
-        artist_id: '',
-        object_image: '',
-        title: 'The Old Guitarist',
-        year: 1904,
-      }
-    })
-    console.log('POST: protovobject data', data)
-  }
+  // const createData = async () => {
+  //   const data = await API.post('protovapi', '/awsobject', {
+  //     body: {
+  //       artist_surname: 'Picasso',
+  //       artist_firstname: 'Pablo',
+  //       artist_id: '',
+  //       object_image: '',
+  //       methods1: '',
+  //       methods2: '',
+  //       title: 'The Old Guitarist',
+  //       year: 1904,
+  //     }
+  //   })
+  //   console.log('POST: protovobject data', data)
+  // }
 
   const testIdDeleteObject = '7IF79HS9J4U2U4SH0M3O0UA20VVV4KQNSO5AEMVJF66Q9ASUAAJG';
 
@@ -57,6 +59,8 @@ export default function App() {
         artist_firstname: 'Pablo update',
         artist_id: '',
         object_image: '',
+        methods1: '',
+        methods2: '',
         title: 'The Old Guitarist update',
         year: 1904,
       }

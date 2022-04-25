@@ -6,11 +6,14 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Theme } from "@emotion/react";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Add.css";
-import { axiosInstance } from "../../axios/axiosInstance";
 import API3Response from "../../fake_api/API3_response.json";
+import { saveAs } from 'file-saver';
+import Dropzone from 'react-dropzone';
+import { API } from 'aws-amplify';
+
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -22,7 +25,6 @@ const useStyle = makeStyles((theme: Theme) => ({
     },
     border: "none !important",
     width: "340px",
-    // height: "50px",
     padding: 0,
     alignItems: "start",
     fontFamily: "GT Walsheim Pro",
@@ -57,6 +59,7 @@ enum InputMethod {
   "STRING",
   "IMAGE",
 }
+
 interface IMutableRow {
   value: string;
   method: InputMethod;
@@ -72,6 +75,18 @@ export default function Add(): ReactElement {
   const [year, setYear] = useState<string>("");
   const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
 
+  const [isOpen, setOpen] = useState<boolean>(false);
+
+  const [file, setFile] = useState<File[] | null>(null); // state for storing actual image
+  
+
+  const dropRef: any = useRef();
+
+  const [fileMethod2, setFileMethod2] = useState<File[] | null>(null);
+  const [isOpenMethod2, setOpenMethod2] = useState<boolean>(false);
+
+  const dropMethod2Ref: any = useRef();
+
   const navigate = useNavigate();
   const classes = useStyle();
 
@@ -85,14 +100,12 @@ export default function Add(): ReactElement {
 
   const handleAddMethod = () => {
     let newRowMethod = InputMethod.STRING;
-
     if (mutableRows.length > 0) {
       newRowMethod =
         mutableRows[0].method === InputMethod.STRING
           ? InputMethod.IMAGE
           : InputMethod.STRING;
     }
-
     setMutableRows((prev) => [...prev, { method: newRowMethod, value: "" }]);
   };
 
@@ -155,6 +168,7 @@ export default function Add(): ReactElement {
     target: { value: React.SetStateAction<string> };
   }) => {
     setImage(event.target.value);
+    setOpen(true);
   };
 
   const handleDeleteMethod = (index: number) => {
@@ -162,7 +176,16 @@ export default function Add(): ReactElement {
     newArray.splice(index, 1);
 
     setMutableRows(newArray);
+    if (mutableRows[index].method === InputMethod.IMAGE) {
+        console.log(" method ", mutableRows[index].method)
+        setFileMethod2(null);
+        setOpenMethod2(false);
+    }
   };
+
+  // const downloadImage = (img: string ) => {
+  //   saveAs('./downloadImages/', img) 
+  // }
 
   const handleSubmit = () => {
     const data = {
@@ -171,7 +194,7 @@ export default function Add(): ReactElement {
       title,
       year,
       artist_id: "",
-      object_image: image,
+      object_image: file,
       methods: {
         method1: mutableRows.find((el) => el.method === InputMethod.STRING)
           ?.value,
@@ -180,15 +203,53 @@ export default function Add(): ReactElement {
       },
     };
 
-    axiosInstance.post("/", data).then(function (response) {
-      const responseData = response.data;
-    });
+    // axiosInstance.post("/", data).then(function (response) {
+    //   const responseData = response.data;
+    // });
+    
 
     const fakeResponse = API3Response;
     // const fakeResponseFail - dont have fail response
+    console.log('====================================');
+    console.log("Add: fakeResponse ", fakeResponse);
+    console.log('====================================');
 
     navigate("/add-status", { state: { data, responseData: fakeResponse } });
   };
+
+  const onDrop = (uploadedFile: any) => {
+      setFile(uploadedFile);
+      setOpen(true);
+      const fileReader = new FileReader();
+      // fileReader.onload = () => {
+      //   setPreviewSrc(fileReader.result);
+      // };
+      
+      fileReader.readAsDataURL(uploadedFile);
+      // setIsPreviewAvailable(uploadedFile.name.match(/\.(jpeg|jpg|png|ico)$/));
+  };
+
+  const onDropMethod2 = (uploadedFile: any) => {
+      setFileMethod2(uploadedFile);
+      setOpenMethod2(true);
+      // setOpen(true);
+      const fileReader = new FileReader();
+      // fileReader.onload = () => {
+      //   setPreviewSrc(fileReader.result);
+      // };
+      
+      fileReader.readAsDataURL(uploadedFile);
+  }
+
+
+  const handleClose = () => {
+    setOpen(false);
+    setFile(null);
+  };
+
+  console.log("fileMethod2 =>", fileMethod2);
+
+  console.log("isOpenMethod2 =>", isOpenMethod2);
 
   return (
     <div className="add">
@@ -239,20 +300,42 @@ export default function Add(): ReactElement {
             className="add__input"
           />
         </div>
+
         <div className="uploading">
-          <label className="uploading-label">
-            <img src="/images/upload.svg" alt="upload" />
-            <input
-              value={image}
-              onChange={handleImage}
-              type="file"
-              className="uploading-input"
-            ></input>
-          </label>
-          <div className="uploading-text">Upload photo of object</div>
+          {
+            (file && isOpen) && 
+            (
+              <div className="uploading-file">
+                <div onClick={handleClose} className="arrow">x</div>
+                <strong>Selected file: </strong> <span className="file-name">{file[0].name}</span>
+              </div>
+            ) 
+          }
+          {
+            (file === null && !isOpen) &&
+            (
+              <Dropzone onDrop={onDrop}>
+                {({ getRootProps, getInputProps }) => (
+                  <div {...getRootProps({ className: 'drop-zone' })} ref={dropRef}>
+                    <input {...getInputProps()} />
+                    <label className="uploading-label">
+                      <img src="/images/upload.svg" alt="upload" />
+                      <input
+                        value={image}
+                        onChange={handleImage}
+                        type="file"
+                        className="uploading-input"
+                        accept="downloadImages/*"
+                      ></input>
+                    </label>
+                    <div className="uploading-text">Upload photo of object</div>
+                  </div>
+                )}
+              </Dropzone>
+            )
+          }
         </div>
       </div>
-
       {mutableRows.map((item, index) => {
         return (
           <div className="inputs_container" key={index}>
@@ -296,22 +379,48 @@ export default function Add(): ReactElement {
                 />
               </>
             ) : (
+
+
               <div className="input_file-container">
-                <label className="input_file-label">
-                  <img
-                    className="input_file-image"
-                    src="/images/upload.svg"
-                    alt="upload"
-                  />
-                  <input
-                    value={item.value}
-                    onChange={(e) => {
-                      handleInputChange(index, e);
-                    }}
-                    type="file"
-                    className="input_file"
-                  />
-                </label>
+
+                {(fileMethod2 && isOpenMethod2) && 
+                  (
+                    <div className="input_file-upload">
+                      <div onClick={() => {
+                          setFileMethod2(null);
+                          setOpenMethod2(false);
+                        }} className="arrow">x</div>
+                      <span className="file-name">{fileMethod2[0].name}</span>
+                    </div>
+                  ) 
+                }
+                {
+                  (fileMethod2 === null && !isOpenMethod2 ) &&
+                  (
+                    <Dropzone onDrop={onDropMethod2}>
+                      {({ getRootProps, getInputProps }) => (
+                        <div {...getRootProps({ className: 'drop-zone' })} ref={dropMethod2Ref}>
+                          <input {...getInputProps()} />
+                            <label className="input_file-label">
+                              <img
+                                className="input_file-image"
+                                src="/images/upload.svg"
+                                alt="upload"
+                              />
+                              <input
+                                value={item.value}
+                                onChange={(e) => {
+                                  handleInputChange(index, e);
+                                }}
+                                type="file"
+                                className="input_file"
+                              />
+                            </label>
+                          </div>
+                      )}
+                    </Dropzone>
+                  )
+                }
               </div>
             )}
 
