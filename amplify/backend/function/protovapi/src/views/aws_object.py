@@ -78,6 +78,7 @@ def get_object():
 
     print("get_object: objects_data => ", objects_data)
     if len(objects_data) > 0:
+
         objects_data = [{
             'artist_firstname': obj['artist_firstname']['S'],
             'artist_id': obj['artist_id']['S'],

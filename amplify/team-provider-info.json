@@ -19,11 +19,17 @@
       "function": {
         "protovapi": {
           "deploymentBucketName": "amplify-protovapi-dev-182003-deployment",
-          "s3Key": "amplify-builds/protovapi-307774644e4852355171-build.zip"
+          "s3Key": "amplify-builds/protovapi-34577343454b384a3036-build.zip"
         },
         "transactionapi": {
           "deploymentBucketName": "amplify-protovapi-dev-182003-deployment",
           "s3Key": "amplify-builds/transactionapi-396153476a4a632b3058-build.zip"
+        }
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d23gmxpwle8rig",
+          "type": "manual"
         }
       }
     }

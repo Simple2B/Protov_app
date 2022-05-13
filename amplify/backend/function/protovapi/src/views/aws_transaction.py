@@ -54,26 +54,18 @@ def get_transaction(object_id):
     for obj in objects['Items']:
         print("get_transaction: obj => ", obj)
         if obj['id_object']['S'] == object_id:
-            objects_data.append({
-                'owner_id': obj['owner_id']['S'],
-                'date': obj['date']['S'],
-                'action': obj['action']['S'],
-                'verification_methods': {
-                    'method1': obj['methods1']['S'],
-                    'method2': obj['methods2']['S'],
-                }
-            })
+            objects_data.append(obj)
     print("get_transaction: objects_data => ", objects_data)
-    # if len(objects_data) > 0:
-    #     objects_data = [{
-    #         'owner_id': obj['owner_id']['S'],
-    #         'date': obj['date']['S'],
-    #         'action': obj['action']['S'],
-    #         'verification_methods': {
-    #             'method1': obj['methods1']['S'],
-    #             'method2': obj['methods2']['S'],
-    #         }
-    #     } for obj in objects_data]
+    if len(objects_data) > 0:
+        objects_data = [{
+            'owner_id': obj['owner_id']['S'],
+            'date': obj['date']['S'],
+            'action': obj['action']['S'],
+            'verification_methods': {
+                'method1': obj['methods1']['S'],
+                'method2': obj['methods2']['S'],
+            }
+        } for obj in objects_data]
     return jsonify(data=objects_data)
 
 
