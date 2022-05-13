@@ -99,6 +99,16 @@
     left: 10px;
 }
 
+.addContainer {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(8, 110, 125, 0.1);
+}
+
 @media (max-width: 699px) {
     .add__input:not(:last-child) {
         margin-right: 0;

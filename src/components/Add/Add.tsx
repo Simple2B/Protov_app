@@ -6,13 +6,13 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Theme } from "@emotion/react";
-import React, { ReactElement, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Add.css";
-import API3Response from "../../fake_api/API3_response.json";
-// import { saveAs } from 'file-saver';
 import Dropzone from 'react-dropzone';
-import { API } from 'aws-amplify';
+import { API, Storage } from 'aws-amplify';
+import { v4 as uuid } from "uuid";
+import Loader from "../Loader/Loader";
 
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -67,23 +67,24 @@ interface IMutableRow {
 
 const MAX_ROWS = 2;
 
-export default function Add(): ReactElement {
+
+const Add = () =>  {
   const [name, setName] = useState<string>("");
   const [surname, setSurname] = useState<string>("");
   const [title, setTitle] = useState<string>("");
-  const [image, setImage] = useState<string>("");
+  const [image, setImage] = useState();
   const [year, setYear] = useState<string>("");
-  const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
-
-  const [isOpen, setOpen] = useState<boolean>(false);
+  const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]); 
 
   const [file, setFile] = useState<File[] | null>(null); // state for storing actual image
+  const [isOpen, setOpen] = useState<boolean>(false);
   
-
   const dropRef: any = useRef();
 
   const [fileMethod2, setFileMethod2] = useState<File[] | null>(null);
   const [isOpenMethod2, setOpenMethod2] = useState<boolean>(false);
+
+  const [isLoad, setLoad] = useState(false);
 
   const dropMethod2Ref: any = useRef();
 
@@ -164,13 +165,6 @@ export default function Add(): ReactElement {
     setYear(clearValue);
   };
 
-  const handleImage = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    setImage(event.target.value);
-    setOpen(true);
-  };
-
   const handleDeleteMethod = (index: number) => {
     const newArray = [...mutableRows];
     newArray.splice(index, 1);
@@ -183,269 +177,317 @@ export default function Add(): ReactElement {
     }
   };
 
-  // const downloadImage = (img: string ) => {
-  //   saveAs('./downloadImages/', img) 
-  // }
+  const uploadFile = (e: { preventDefault: () => void; }) => {
+    e.preventDefault()
+    const fileKey = file ? `${uuid()}_${file[0].name}` : '';
+    const fileMethod2Key = fileMethod2 ? `${uuid()}_${fileMethod2[0].name}` : '';
+    if (file) {
+      Storage.put(`${fileKey}`, file[0], {
+        contentType: file[0].type,
+      })
+        .then((res) => {
+          console.log("file key => ", res.key)
+        })
+        .catch((err) => {
+          console.log("err ", err)
+        })
+    } else {
+      console.log("uploadFile: ", "Files needed")
+    }
+    if (fileMethod2) {
+        Storage.put(`${fileMethod2Key}`, fileMethod2[0], {
+          contentType: fileMethod2[0].type,
+        })
+        .then((res) => {
+          console.log("fileMethod2 key => ", res.key)
+        })
+        .catch((err) => {
+          console.log("err ", err)
+        })
 
-  const handleSubmit = () => {
-    const data = {
-      artist_firstname: name,
-      artist_surname: surname,
-      title,
-      year,
-      artist_id: "",
-      object_image: file,
-      methods: {
-        method1: mutableRows.find((el) => el.method === InputMethod.STRING)
-          ?.value,
-        method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
-          ?.value,
-      },
+    } else {
+      console.log("uploadFile: ", "fileMethod2 needed")
+    }
+    const methods1 = mutableRows.find((el) => el.method === InputMethod.STRING)?.value;
+    const dataToBack = {
+        artist_firstname: name,
+        artist_surname: surname,
+        object_image: file ? file[0].name : "",
+        image_file_key: fileKey,
+        methods1: methods1 !== undefined ? methods1 : "",
+        methods2: fileMethod2 ? fileMethod2[0].name : "",
+        image_method2_key: fileMethod2Key,
+        artist_id: "",
+        title: title,
+        year: year,
     };
+    const createAwsObject = async() => {
+      setLoad(true);
+      const awsObject = await API.post('protovapi', '/protovobject', {body: dataToBack});
+      console.log(" awsObject => ", awsObject);
+      if (awsObject.message.add_object_success === 'true') {
+        setLoad(false);
+        const todayArr = new Date().toISOString().split('T');
+        const date = todayArr[0].split("-");
+        const time = todayArr[1].split(":");
+        const dateToBack = `${date[1]}/${date[2]}/${date[0]} ${time[0]}:${time[1]}`;
+        const transactionData = {
+          id_object: awsObject.message.id_object.trim(),
+          action: "onboard",
+          date: dateToBack,
+          methods1: methods1 !== undefined ? methods1.trim() : "",
+          methods2: fileMethod2 ? fileMethod2[0].name.trim() : "",
+          owner_id: "",
+        };
+        const data = {
+          artist_firstname: awsObject.message.artist_firstname.trim(),
+          artist_surname: awsObject.message.artist_surname.trim(),
+          title: title.trim(),
+          year: year.trim(),
+          artist_id: "",
+          object_image: image,
+          methods: {
+            method1: methods1 !== undefined ? methods1 : "",
+            method2: fileMethod2 ? fileMethod2[0].name : "",
+          },
+        };
 
-    // axiosInstance.post("/", data).then(function (response) {
-    //   const responseData = response.data;
-    // });
-    
+        navigate("/add-status", { state: { data, responseData: awsObject } });
 
-    const fakeResponse = API3Response;
-    // const fakeResponseFail - dont have fail response
-    console.log('====================================');
-    console.log("Add: fakeResponse ", fakeResponse);
-    console.log('====================================');
+        const transObject = await API.post('protovapi', '/transactionobject', {body: transactionData});
+        console.log("! transObject => ", transObject);
+      }
+    }
+    createAwsObject();
+    setFile(null);
+    setOpen(false); 
+    setFileMethod2(null);
+    setOpenMethod2(false);
+  }
 
-    navigate("/add-status", { state: { data, responseData: fakeResponse } });
-  };
 
   const onDrop = (uploadedFile: any) => {
+      console.log(" uploadedFile ", uploadedFile);
       setFile(uploadedFile);
       setOpen(true);
-      const fileReader = new FileReader();
-      // fileReader.onload = () => {
-      //   setPreviewSrc(fileReader.result);
-      // };
-      
-      fileReader.readAsDataURL(uploadedFile);
-      // setIsPreviewAvailable(uploadedFile.name.match(/\.(jpeg|jpg|png|ico)$/));
-  };
+}
 
   const onDropMethod2 = (uploadedFile: any) => {
       setFileMethod2(uploadedFile);
       setOpenMethod2(true);
-      // setOpen(true);
-      const fileReader = new FileReader();
-      // fileReader.onload = () => {
-      //   setPreviewSrc(fileReader.result);
-      // };
-      
-      fileReader.readAsDataURL(uploadedFile);
   }
 
 
   const handleClose = () => {
     setOpen(false);
     setFile(null);
+    setFileMethod2(null);
   };
 
-  console.log("fileMethod2 =>", fileMethod2);
-
-  console.log("isOpenMethod2 =>", isOpenMethod2);
 
   return (
-    <div className="add">
-      <div className="header">
-        <div onClick={handleBack} className="header__back">
-          <img
-            src="/images/arrow_back.svg"
-            className="back_img"
-            alt="back"
-          ></img>
-        </div>
-        <div onClick={handleHome} className="header__main">
-          <img src="/images/home.svg" className="back_main" alt="main"></img>
-        </div>
-      </div>
+    <div className={isLoad ? "addContainer": ""}>
+      {
+        isLoad ? <Loader/>
+        : 
+        <div className="add">
+          <div className="header">
+            <div onClick={handleBack} className="header__back">
+              <img
+                src="/images/arrow_back.svg"
+                className="back_img"
+                alt="back"
+              ></img>
+            </div>
+            <div onClick={handleHome} className="header__main">
+              <img src="/images/home.svg" className="back_main" alt="main"></img>
+            </div>
+          </div>
 
-      <h1 className="add__title">Add</h1>
+          <h1 className="add__title">Add</h1>
 
-      <div className="add__inputs-container">
-        <div className="add__inputs-block">
-          <input
-            value={name}
-            onChange={handleName}
-            placeholder="Artist First Name"
-            type="text"
-            className="add__input"
-          />
-          <input
-            value={surname}
-            onChange={handleSurname}
-            placeholder="Artist Surname"
-            type="text"
-            className="add__input"
-          />
-        </div>
-        <div className="add__inputs-block">
-          <input
-            value={title}
-            onChange={handleTitle}
-            placeholder="Title"
-            type="text"
-            className="add__input"
-          />
-          <input
-            value={year}
-            onChange={handleYear}
-            placeholder="Year"
-            className="add__input"
-          />
-        </div>
+          <div className="add__inputs-container">
+            <div className="add__inputs-block">
+              <input
+                value={name}
+                onChange={handleName}
+                placeholder="Artist First Name"
+                type="text"
+                className="add__input"
+              />
+              <input
+                value={surname}
+                onChange={handleSurname}
+                placeholder="Artist Surname"
+                type="text"
+                className="add__input"
+              />
+            </div>
+            <div className="add__inputs-block">
+              <input
+                value={title}
+                onChange={handleTitle}
+                placeholder="Title"
+                type="text"
+                className="add__input"
+              />
+              <input
+                value={year}
+                onChange={handleYear}
+                placeholder="Year"
+                className="add__input"
+              />
+            </div>
 
-        <div className="uploading">
-          {
-            (file && isOpen) && 
-            (
-              <div className="uploading-file">
-                <div onClick={handleClose} className="arrow">x</div>
-                <strong>Selected file: </strong> <span className="file-name">{file[0].name}</span>
-              </div>
-            ) 
-          }
-          {
-            (file === null && !isOpen) &&
-            (
-              <Dropzone onDrop={onDrop}>
-                {({ getRootProps, getInputProps }) => (
-                  <div {...getRootProps({ className: 'drop-zone' })} ref={dropRef}>
-                    <input {...getInputProps()} />
-                    <label className="uploading-label">
-                      <img src="/images/upload.svg" alt="upload" />
-                      <input
-                        value={image}
-                        onChange={handleImage}
-                        type="file"
-                        className="uploading-input"
-                        accept="downloadImages/*"
-                      ></input>
-                    </label>
-                    <div className="uploading-text">Upload photo of object</div>
+            <div className="uploading">
+              {
+                (file && isOpen) && 
+                (
+                  <div className="uploading-file">
+                    <div onClick={handleClose} className="arrow">x</div>
+                    <strong>Selected file: </strong> <span className="file-name">{file[0].name}</span>
+                  </div>
+                ) 
+              }
+              {
+                (file === null && !isOpen) &&
+                (
+                  <Dropzone onDrop={onDrop}>
+                    {({ getRootProps, getInputProps }) => (
+                      <div {...getRootProps({ className: 'drop-zone' })} ref={dropRef}>
+                        <input {...getInputProps()} />
+                        <label className="uploading-label">
+                          <img src="/images/upload.svg" alt="upload" />
+                          <input
+                            value={image}
+                            id='file-input'
+                            onChange={(e) => {
+                              console.log("onChange: => image ", image)
+                              // setImage(e.target)
+                            }} type="file"
+                            className="uploading-input"
+                            accept="downloadImages/*"
+                          ></input>
+                        </label>
+                        <div className="uploading-text">Upload photo of object</div>
+                      </div>
+                    )}
+                  </Dropzone>
+                )
+              }
+            </div>
+          </div>
+          {mutableRows.map((item, index) => {
+            return (
+              <div className="inputs_container" key={index}>
+                <FormControl classes={{ root: classes.root }}>
+                  <Select
+                    disabled={mutableRows.length > 1}
+                    value={item.method}
+                    onChange={(e) => {
+                      handleSelectChange(index, e);
+                    }}
+                    className={classes.select}
+                    classes={{
+                      select: classes.select,
+                      nativeInput: classes.nativeInput,
+                    }}
+                    inputProps={{
+                      classes: {
+                        icon: classes.icon,
+                      },
+                    }}
+                  >
+                    <MenuItem
+                      classes={{ root: classes.rootItem }}
+                      value={InputMethod.STRING}
+                    >
+                      method1
+                    </MenuItem>
+                    <MenuItem value={InputMethod.IMAGE}>method2</MenuItem>
+                  </Select>
+                </FormControl>
+
+                {item.method === InputMethod.STRING ? (
+                  <>
+                    <input
+                      className="input_text"
+                      value={item.value}
+                      onChange={(e) => {
+                        handleInputChange(index, e);
+                      }}
+                      type="text"
+                    />
+                  </>
+                ) : (
+                  <div className="input_file-container">
+
+                    {(fileMethod2 && isOpenMethod2) && 
+                      (
+                        <div className="input_file-upload">
+                          <div onClick={() => {
+                              setFileMethod2(null);
+                              setOpenMethod2(false);
+                            }} className="arrow">x</div>
+                          <span className="file-name">{fileMethod2[0].name}</span>
+                        </div>
+                      ) 
+                    }
+                    {
+                      (fileMethod2 === null && !isOpenMethod2 ) &&
+                      (
+                        <Dropzone onDrop={onDropMethod2}>
+                          {({ getRootProps, getInputProps }) => (
+                            <div {...getRootProps({ className: 'drop-zone' })} ref={dropMethod2Ref}>
+                              <input {...getInputProps()} />
+                                <label className="input_file-label">
+                                  <img
+                                    className="input_file-image"
+                                    src="/images/upload.svg"
+                                    alt="upload"
+                                  />
+                                  <input
+                                    value={item.value}
+                                    onChange={(e) => {
+                                      handleInputChange(index, e);
+                                    }}
+                                    type="file"
+                                    className="input_file"
+                                  />
+                                </label>
+                              </div>
+                          )}
+                        </Dropzone>
+                      )
+                    }
                   </div>
                 )}
-              </Dropzone>
-            )
-          }
-        </div>
-      </div>
-      {mutableRows.map((item, index) => {
-        return (
-          <div className="inputs_container" key={index}>
-            <FormControl classes={{ root: classes.root }}>
-              <Select
-                disabled={mutableRows.length > 1}
-                value={item.method}
-                onChange={(e) => {
-                  handleSelectChange(index, e);
-                }}
-                className={classes.select}
-                classes={{
-                  select: classes.select,
-                  nativeInput: classes.nativeInput,
-                }}
-                inputProps={{
-                  classes: {
-                    icon: classes.icon,
-                  },
-                }}
-              >
-                <MenuItem
-                  classes={{ root: classes.rootItem }}
-                  value={InputMethod.STRING}
-                >
-                  method1
-                </MenuItem>
-                <MenuItem value={InputMethod.IMAGE}>method2</MenuItem>
-              </Select>
-            </FormControl>
-
-            {item.method === InputMethod.STRING ? (
-              <>
-                <input
-                  className="input_text"
-                  value={item.value}
-                  onChange={(e) => {
-                    handleInputChange(index, e);
-                  }}
-                  type="text"
-                />
-              </>
-            ) : (
-
-
-              <div className="input_file-container">
-
-                {(fileMethod2 && isOpenMethod2) && 
-                  (
-                    <div className="input_file-upload">
-                      <div onClick={() => {
-                          setFileMethod2(null);
-                          setOpenMethod2(false);
-                        }} className="arrow">x</div>
-                      <span className="file-name">{fileMethod2[0].name}</span>
-                    </div>
-                  ) 
-                }
-                {
-                  (fileMethod2 === null && !isOpenMethod2 ) &&
-                  (
-                    <Dropzone onDrop={onDropMethod2}>
-                      {({ getRootProps, getInputProps }) => (
-                        <div {...getRootProps({ className: 'drop-zone' })} ref={dropMethod2Ref}>
-                          <input {...getInputProps()} />
-                            <label className="input_file-label">
-                              <img
-                                className="input_file-image"
-                                src="/images/upload.svg"
-                                alt="upload"
-                              />
-                              <input
-                                value={item.value}
-                                onChange={(e) => {
-                                  handleInputChange(index, e);
-                                }}
-                                type="file"
-                                className="input_file"
-                              />
-                            </label>
-                          </div>
-                      )}
-                    </Dropzone>
-                  )
-                }
+                  <img
+                    onClick={() => handleDeleteMethod(index)}
+                    src="/images/cross.svg"
+                    className="cross_img"
+                    alt="cross"
+                  />
               </div>
-            )}
-
-            <img
-              onClick={() => handleDeleteMethod(index)}
-              src="/images/cross.svg"
-              className="cross_img"
-              alt="cross"
-            />
+            );
+          })}
+          <div className="add__buttons-container">
+            <button
+              disabled={mutableRows.length >= MAX_ROWS}
+              onClick={handleAddMethod}
+              className="add__method"
+            >
+              Add Method
+            </button>
+            <button onClick={uploadFile} className="add__submit">
+              Submit
+            </button>
           </div>
-        );
-      })}
-
-      <div className="add__buttons-container">
-        <button
-          disabled={mutableRows.length >= MAX_ROWS}
-          onClick={handleAddMethod}
-          className="add__method"
-        >
-          Add Method
-        </button>
-        <button onClick={handleSubmit} className="add__submit">
-          Submit
-        </button>
-      </div>
+        </div>
+      }
+      
     </div>
   );
-}
+};
+
+export default Add;
