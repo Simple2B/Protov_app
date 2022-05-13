@@ -12,6 +12,8 @@ import "./EnterInfo.css";
 import { axiosInstance } from "../../axios/axiosInstance";
 import { IAPI1RequestData } from "../../types/API1";
 import API1Response from "../../fake_api/API1_response.json";
+import { API } from "aws-amplify";
+import Loader from "../Loader/Loader";
 
 const useStyle = makeStyles(
   (theme: Theme) => ({
@@ -66,6 +68,7 @@ export default function EnterInfo(): ReactElement {
   const [year, setYear] = useState<string>();
   const [objectID, setObjectID] = useState<string>();
   const [checkData, setCheckData] = useState<boolean>(false);
+  const [isLoad, setLoad] = useState(false);
 
   const handleChangeSearchItem = (event: SelectChangeEvent) => {
     setSearchItem(event.target.value);
@@ -132,22 +135,30 @@ export default function EnterInfo(): ReactElement {
 
   const handleNext = () => {
     const data: IAPI1RequestData = {
-      artist_surname: name,
-      artist_firstname: surname,
+      artist_surname: surname,
+      artist_firstname: name,
       title: title,
       year: year,
-      object_id: objectID,
+      object_id: objectID ? objectID : "",
     };
-    axiosInstance.post("/", data).then(function (response) {
-      const responseData = response.data;
-    });
-    const fakeResponse = API1Response;
 
-    navigate("/result", { state: { searchItem, responseData: fakeResponse } });
+    const getObject = async () => {
+      setLoad(true);
+      const dataObjects = await API.post('protovapi', `/protovobject/objects`, {body: data})
+      console.log('EnterInfo => POST: getObject -> !!! dataObjects', dataObjects.data);
+
+      
+      navigate("/result", { state: { searchItem, responseData: dataObjects.data } });
+
+      setLoad(false);
+      // const dataTransaction = await API.get('protovapi', `/transactionobject/${objectID}`, {})
+      // console.log('EnterInfo => GET: getObject -> !!! dataTransaction', dataTransaction);
+    };
+    getObject();
   };
 
   return (
-    <div className="info">
+    <div className={isLoad ? "infoLoader" : "info" }>
       <div className="header">
         <div onClick={handleBack} className="header__back">
           <img
@@ -190,14 +201,14 @@ export default function EnterInfo(): ReactElement {
           value={name}
           onChange={handleName}
           type="text"
-          placeholder="Artist Surname"
+          placeholder="Artist First Name"
           className="info__input"
         />
         <input
           value={surname}
           onChange={handleSurname}
           type="text"
-          placeholder="Artist First Name"
+          placeholder="Artist Surname"
           className="info__input"
         />
         <input
@@ -229,6 +240,7 @@ export default function EnterInfo(): ReactElement {
           Search
         </button>
       </div>
+      {isLoad && <Loader/>}
     </div>
   );
 }
