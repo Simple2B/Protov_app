@@ -1,0 +1,10 @@
+{
+    "resourceName": "dynamodb",
+    "tableName": "protovtable",
+    "partitionKey": {
+        "fieldName": "id_object",
+        "fieldType": "string"
+    },
+    "gsi": [],
+    "triggerFunctions": []
+}
