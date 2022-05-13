@@ -1,3 +1,4 @@
+import React, { ReactElement, useRef, useState } from "react";
 import { Theme } from "@emotion/react";
 import {
   Select,
@@ -6,13 +7,15 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { ReactElement, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../axios/axiosInstance";
 import { store } from "../../store";
 import "./VerifyObject.css";
 import API5Response from "../../fake_api/API5_response_succeed.json";
 import API5ResponseFail from "../../fake_api/API5_response_fail.json";
+import Dropzone from "react-dropzone";
+import { API, Storage } from 'aws-amplify';
+import { Readable } from "stream";
+
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -73,6 +76,16 @@ export default function VerifyObject(): ReactElement {
   const [verification, setVerification] = useState<string | null>();
   const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
 
+  const [image, setImage] = useState();
+  const [file, setFile] = useState<File[] | null>(null); // state for storing actual image
+  const [isOpen, setOpen] = useState<boolean>(false);
+  const verifyObjectRef: any = useRef();
+
+
+  const [fileMethod2, setFileMethod2] = useState<File[] | null>(null);
+  const [isOpenMethod2, setOpenMethod2] = useState<boolean>(false);
+  const verifyObjectMethod2Ref: any = useRef();
+
   const handleBack = () => {
     if (location.data.path === "/transact") {
       const data = {
@@ -108,7 +121,26 @@ export default function VerifyObject(): ReactElement {
     setMutableRows((prev) => [...prev, { method: newRowMethod, value: "" }]);
   };
 
-  const handleVerify = () => {
+  // function downloadBlob(blob: any, filename: string) {
+  //   if (blob !== undefined) {
+  //     const url = URL.createObjectURL(blob);
+  //     const a = document.createElement('a');
+  //     a.href = url;
+  //     a.download = filename || 'download';
+  //     const clickHandler = () => {
+  //       setTimeout(() => {
+  //         URL.revokeObjectURL(url);
+  //         a.removeEventListener('click', clickHandler);
+  //       }, 150);
+  //     };
+  //     a.addEventListener('click', clickHandler, false);
+  //     a.click();
+  //     return a;
+  //   }
+    
+  // }
+
+  const handleVerify = async() => {
     const data = {
       object_id: location.data.object_id,
       methods: {
@@ -119,16 +151,55 @@ export default function VerifyObject(): ReactElement {
       },
     };
 
-    axiosInstance.post("/", data).then(function (response) {
-      const responseData = response.data;
-    });
+    const dataObject = await API.get('protovapi', `/protovobject/${location.data.object_id}`, {});
+    console.log('VerifyObject => GET: getVerifyObject -> !!! dataObject', dataObject.data[0]);
 
-    const fakeData = API5Response;
-    // to test fail response change var fakeData on fakeDataFail
-    const fakeDataFail = API5ResponseFail;
+    let responseData = { "object_ver_success": false };
+
+    if (file && dataObject.data[0].image_file_key) {
+      const fileDate: any =  await Storage.get(dataObject.data[0].image_file_key, { download: true });
+      console.log("VerifyObject fileDate  size", fileDate.Body.size);
+      console.log("VerifyObject fileDate  type", fileDate.Body.type);
+      
+      if(file[0].name === dataObject.data[0].object_image 
+        && (file[0].size === fileDate.Body.size) && (file[0].type === fileDate.Body.type)) {
+            console.log("VerifyObject: file ", true)
+            setVerification("Verification Success!");
+            responseData = { "object_ver_success": true };
+      } else {
+        setVerification("Verification Fail!");
+        responseData = { "object_ver_success": false };
+      }
+    };
+
+    if (fileMethod2 && dataObject.data[0].image_method2_key) {
+        const fileDate: any =  await Storage.get(dataObject.data[0].image_method2_key, { download: true });
+        console.log("VerifyObject fileDate ", fileDate);
+        if(fileMethod2[0].name === dataObject.data[0].object_image 
+          && (fileMethod2[0].size === fileDate.Body.size) && (fileMethod2[0].type === fileDate.Body.type)) {
+              console.log("VerifyObject: fileMethod2 ", true)
+              setVerification("Verification Success!");
+              responseData = { "object_ver_success": true };
+        } else {
+          setVerification("Verification Fail!");
+          responseData = { "object_ver_success": false };
+        }
+    };
+
+    if ((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) !== undefined) {
+      if ((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) === dataObject.data[0].methods1) {
+        console.log("VerifyObject: methods1 ", true)
+        setVerification("Verification Success!");
+        responseData = { "object_ver_success": true };
+      } else {
+        setVerification("Verification Fail!");
+        responseData = { "object_ver_success": false };
+      }
+    }
+    
 
     if (location.data.path === "/transact") {
-      if (fakeData.object_ver_success) {
+      if (responseData.object_ver_success) {
         const data = {
           artist_surname: location.data.artist_surname,
           title: location.data.title,
@@ -164,7 +235,7 @@ export default function VerifyObject(): ReactElement {
         });
       }
     } else {
-      if (fakeData.object_ver_success) {
+      if (responseData.object_ver_success) {
         setVerification("Verification Success!");
       } else {
         setVerification("Verification Fail!");
@@ -211,6 +282,31 @@ export default function VerifyObject(): ReactElement {
     newArray.splice(index, 1);
 
     setMutableRows(newArray);
+    if (mutableRows[index].method === InputMethod.IMAGE) {
+        console.log(" method ", mutableRows[index].method)
+        setFileMethod2(null);
+        setOpenMethod2(false);
+    }
+  };
+
+  
+  
+
+  const onDrop = (uploadedFile: any) => {
+    console.log("VerifyObject: uploadedFile ", uploadedFile);
+    setFile(uploadedFile);
+    setOpen(true);
+  };
+
+  const onDropMethod2 = (uploadedFile: any) => {
+    setFileMethod2(uploadedFile);
+    setOpenMethod2(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setFile(null);
+    setFileMethod2(null);
   };
 
   return (
@@ -253,13 +349,42 @@ export default function VerifyObject(): ReactElement {
       ) : (
         <>
           <div className="uploading">
-            <label className="uploading-label">
-              <img src="/images/upload.svg" alt="upload" />
-              <input type="file" className="uploading-input"></input>
-            </label>
-            <div className="uploading-text">Upload photo of object</div>
+            {
+                  (file && isOpen) && 
+                  (
+                    <div className="uploading-file">
+                      <div onClick={handleClose} className="arrow">x</div>
+                      <strong>Selected file: </strong> <span className="file-name">{file[0].name}</span>
+                    </div>
+                  ) 
+            }
+            {
+                (file === null && !isOpen) &&
+                  (
+                    <Dropzone onDrop={onDrop}>
+                      {({ getRootProps, getInputProps }) => (
+                        <div {...getRootProps({ className: 'drop-zone' })} ref={verifyObjectRef}>
+                          <input {...getInputProps()} />
+                          <label className="uploading-label">
+                            <img src="/images/upload.svg" alt="upload" />
+                            <input
+                              value={image}
+                              id='file-input'
+                              onChange={(e) => {
+                                console.log("onChange: => image ", image)
+                                // setImage(e.target)
+                              }} type="file"
+                              className="uploading-input"
+                              accept="downloadImages/*"
+                            ></input>
+                          </label>
+                          <div className="uploading-text">Upload photo of object</div>
+                        </div>
+                      )}
+                    </Dropzone>
+                  )
+            }
           </div>
-
           {mutableRows.map((item, index) => {
             return (
               <div className="inputs_container" key={index}>
@@ -304,21 +429,45 @@ export default function VerifyObject(): ReactElement {
                   </>
                 ) : (
                   <div className="input_file-container">
-                    <label className="input_file-label">
-                      <img
-                        className="input_file-image"
-                        src="/images/upload.svg"
-                        alt="upload"
-                      />
-                      <input
-                        value={item.value}
-                        onChange={(e) => {
-                          handleInputChange(index, e);
-                        }}
-                        type="file"
-                        className="input_file"
-                      />
-                    </label>
+
+                    {(fileMethod2 && isOpenMethod2) && 
+                      (
+                        <div className="input_file-upload">
+                          <div onClick={() => {
+                              setFileMethod2(null);
+                              setOpenMethod2(false);
+                            }} className="arrow">x</div>
+                          <span className="file-name">{fileMethod2[0].name}</span>
+                        </div>
+                      ) 
+                    }
+                    {
+                      (fileMethod2 === null && !isOpenMethod2 ) &&
+                      (
+                        <Dropzone onDrop={onDropMethod2}>
+                          {({ getRootProps, getInputProps }) => (
+                            <div {...getRootProps({ className: 'drop-zone' })} ref={verifyObjectMethod2Ref}>
+                              <input {...getInputProps()} />
+                                <label className="input_file-label">
+                                  <img
+                                    className="input_file-image"
+                                    src="/images/upload.svg"
+                                    alt="upload"
+                                  />
+                                  <input
+                                    value={item.value}
+                                    onChange={(e) => {
+                                      handleInputChange(index, e);
+                                    }}
+                                    type="file"
+                                    className="input_file"
+                                  />
+                                </label>
+                              </div>
+                          )}
+                        </Dropzone>
+                      )
+                    }
                   </div>
                 )}
 
@@ -349,3 +498,10 @@ export default function VerifyObject(): ReactElement {
     </div>
   );
 }
+function config(key: any, image_file_key: any, config: any, arg3: {
+  level: any; // defaults to `public`
+  download: boolean;
+}) {
+  throw new Error("Function not implemented.");
+}
+

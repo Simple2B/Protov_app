@@ -5,6 +5,7 @@ import { store } from "../../store";
 import "./VerifyOwner.css";
 import API2Response from "../../fake_api/API2_response_succeed.json";
 import API2ResponseFail from "../../fake_api/API2_response_fail.json";
+import { API } from "aws-amplify";
 
 export default function VerifyOwner(): ReactElement {
   const location: any = useLocation().state;
@@ -46,12 +47,17 @@ export default function VerifyOwner(): ReactElement {
 
   const verify = () => {
     const data = {
-      object_id: location.object_id,
+      object_id: location.data.object_id,
       owner_password: password,
     };
-    axiosInstance.post("/", data).then(function (response) {
-      const responseData = response.data;
-    });
+
+    // TODO: you need create logic of log in to get the owner password for verification owner
+
+    const verifyOwner = async() => {
+      const ownerData = await API.post('protovapi', '/transactionobject/verify_owner', {body: data});
+      console.log("! ownerData => ", ownerData);
+    };
+    verifyOwner()
 
     const fakeData = API2Response;
 
