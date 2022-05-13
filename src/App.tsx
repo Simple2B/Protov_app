@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./App.css";
 import { StylesProvider } from "@mui/styles";
 import { Route, Routes } from "react-router-dom";
@@ -13,69 +13,8 @@ import Sale from "./components/Transact/Sale";
 import Transact from "./components/Transact/Transact";
 import VerifyObject from "./components/VerifyObject/VerifyObject";
 import VerifyOwner from "./components/VerifyOwner/VerifyOwner";
-import { API } from 'aws-amplify';
 
 export default function App() {
-
-  const getAllObjects = async () => {
-    const data = await API.get('protovapi', '/awsobject', {})
-    console.log('GET: getAllObjects -> data', data)
-  };
-
-  const testIdGetObject = '2a4e8636-c4dc-4b35-8cd4-b287dceb464f';
-
-  const getObject = async () => {
-    const data = await API.get('protovapi', `/awsobject/${testIdGetObject}`, {})
-    console.log('GET: getObject -> data', data)
-  };
-
-  // const createData = async () => {
-  //   const data = await API.post('protovapi', '/awsobject', {
-  //     body: {
-  //       artist_surname: 'Picasso',
-  //       artist_firstname: 'Pablo',
-  //       artist_id: '',
-  //       object_image: '',
-  //       methods1: '',
-  //       methods2: '',
-  //       title: 'The Old Guitarist',
-  //       year: 1904,
-  //     }
-  //   })
-  //   console.log('POST: protovobject data', data)
-  // }
-
-  const testIdDeleteObject = '7IF79HS9J4U2U4SH0M3O0UA20VVV4KQNSO5AEMVJF66Q9ASUAAJG';
-
-  const deleteObject = async () => {
-    const data = await API.del('protovapi', `/awsobject/${testIdDeleteObject}`, {})
-    console.log('GET: deleteObject -> data', data)
-  };
-
-  const updateObject = async () => {
-    const data = await API.put('protovapi', `/awsobject/${testIdGetObject}`, {
-      body: {
-        artist_surname: 'Picasso update',
-        artist_firstname: 'Pablo update',
-        artist_id: '',
-        object_image: '',
-        methods1: '',
-        methods2: '',
-        title: 'The Old Guitarist update',
-        year: 1904,
-      }
-    })
-    console.log('GET: updateObject -> data', data)
-  };
-
-  useEffect(() => {
-    getObject();
-    getAllObjects();
-    // updateObject();
-    // createData();
-  }, [])
-
-  
   return (
     <div className="App">
       {/* <button onClick={deleteObject} style={{marginTop: '50px'}}>Test delete object</button> */}
