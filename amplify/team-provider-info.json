@@ -8,7 +8,8 @@
       "DeploymentBucketName": "amplify-protovapi-dev-182003-deployment",
       "UnauthRoleName": "amplify-protovapi-dev-182003-unauthRole",
       "StackName": "amplify-protovapi-dev-182003",
-      "StackId": "arn:aws:cloudformation:us-east-1:696820062963:stack/amplify-protovapi-dev-182003/82742610-cfab-11ec-9fbf-0a1b38e8d613"
+      "StackId": "arn:aws:cloudformation:us-east-1:696820062963:stack/amplify-protovapi-dev-182003/82742610-cfab-11ec-9fbf-0a1b38e8d613",
+      "AmplifyAppId": "d23gmxpwle8rig"
     },
     "categories": {
       "auth": {
@@ -18,7 +19,7 @@
       "function": {
         "protovapi": {
           "deploymentBucketName": "amplify-protovapi-dev-182003-deployment",
-          "s3Key": "amplify-builds/protovapi-3479577a636d69506d31-build.zip"
+          "s3Key": "amplify-builds/protovapi-307774644e4852355171-build.zip"
         },
         "transactionapi": {
           "deploymentBucketName": "amplify-protovapi-dev-182003-deployment",
