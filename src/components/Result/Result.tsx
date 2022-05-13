@@ -1,3 +1,4 @@
+import React, { ReactElement } from "react";
 import { Theme } from "@emotion/react";
 import {
   TableContainer,
@@ -8,11 +9,9 @@ import {
   TableBody,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router";
 import "./Result.css";
-import API6Response from "../../fake_api/API6_response.json";
-import { axiosInstance } from "../../axios/axiosInstance";
+import { API } from "aws-amplify";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -80,6 +79,15 @@ export default function Result(): ReactElement {
   const navigate = useNavigate();
   const location: any = useLocation().state;
 
+  const dataObjects = location.responseData.length > 0 ? location.responseData.map((item: { [x: string]: any; }) => 
+    ({
+        artist_surname: item['artist_surname'],
+        artist_firstname: item['artist_firstname'],
+        title: item['title'],
+        year: item['year'],
+        object_id: item['id_object']
+    })) : null
+
   const handleObjectId = (
     artist_surname: string,
     title: string,
@@ -87,30 +95,34 @@ export default function Result(): ReactElement {
     object_id: string
   ) => {
     const data = { artist_surname, title, year, object_id };
-    axiosInstance.post("/", object_id).then(function (response) {
-      // const responseData = response.data;
-    });
-    const fakeResponse = API6Response;
 
-    if (location.searchItem === "Provenance")
+    const getObjectTransaction = async () => {
+      const dataObject = await API.get('protovapi', `/transactionobject/${object_id}`, {})
+      console.log('Result => GET: getObjectTransaction -> !!! dataObject', dataObject.data);
       navigate("/provenance", {
         state: {
           data,
-          responseData: fakeResponse,
-          allData: location.responseData,
+          responseData: dataObject.data,
+          allData: dataObjects,
         },
       });
-    if (location.searchItem === "Verify owner")
+    };
+
+    if (location.searchItem === "Provenance") getObjectTransaction();
+    
+    if (location.searchItem === "Verify owner"){
+      console.log("Result: verify owner, dataObjects ", dataObjects)
       navigate("/verify-owner", {
-        state: { data, allData: location.responseData },
+        state: { data, allData: dataObjects },
       });
+    }
     if (location.searchItem === "Verify object")
       navigate("/verify-object", {
-        state: { data, allData: location.responseData },
+        state: { data, allData: dataObjects },
       });
     if (location.searchItem === "Transact")
       navigate("/transact", {
-        state: { data, allData: location.responseData },
+        state: { data, allData: dataObjects },
       });
   };
 
@@ -170,13 +182,13 @@ export default function Result(): ReactElement {
               </TableRow>
             </TableHead>
             <TableBody>
-              {location.responseData.map((row: any) => {
+              {dataObjects && dataObjects.map((row: any, index: number) => {
                 return (
                   <TableRow
                     hover
                     role="checkbox"
                     tabIndex={-1}
-                    key={row.object_id}
+                    key={index}
                     classes={{ hover: classes.tableRow }}
                     onClick={() =>
                       handleObjectId(
