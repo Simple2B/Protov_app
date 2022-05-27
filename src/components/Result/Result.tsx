@@ -85,19 +85,19 @@ export default function Result(): ReactElement {
         artist_firstname: item['artist_firstname'],
         title: item['title'],
         year: item['year'],
-        object_id: item['id_object']
+        id_object: item['id_object']
     })) : null
 
   const handleObjectId = (
     artist_surname: string,
     title: string,
     year: string,
-    object_id: string
+    id_object: string
   ) => {
-    const data = { artist_surname, title, year, object_id };
+    const data = { artist_surname, title, year, id_object };
 
     const getObjectTransaction = async () => {
-      const dataObject = await API.get('protovapi', `/transactionobject/${object_id}`, {})
+      const dataObject = await API.get('protovapi', `/transactionobject/${id_object}`, {})
       console.log('Result => GET: getObjectTransaction -> !!! dataObject', dataObject.data);
       navigate("/provenance", {
         state: {
@@ -195,7 +195,7 @@ export default function Result(): ReactElement {
                         row.artist_surname,
                         row.title,
                         row.year,
-                        row.object_id
+                        row.id_object
                       )
                     }
                   >
@@ -209,7 +209,7 @@ export default function Result(): ReactElement {
                       {row.year}
                     </TableCell>
                     <TableCell classes={{ root: classes.tableCell }}>
-                      {row.object_id}
+                      {row.id_object}
                     </TableCell>
                   </TableRow>
                 );
