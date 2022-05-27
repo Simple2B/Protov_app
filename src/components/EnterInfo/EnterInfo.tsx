@@ -9,9 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import React, { ReactElement, useState } from "react";
 import "./EnterInfo.css";
-import { axiosInstance } from "../../axios/axiosInstance";
 import { IAPI1RequestData } from "../../types/API1";
-import API1Response from "../../fake_api/API1_response.json";
 import { API } from "aws-amplify";
 import Loader from "../Loader/Loader";
 
@@ -139,7 +137,7 @@ export default function EnterInfo(): ReactElement {
       artist_firstname: name,
       title: title,
       year: year,
-      object_id: objectID ? objectID : "",
+      id_object: objectID ? objectID : "",
     };
 
     const getObject = async () => {
