@@ -4,6 +4,7 @@ export interface IAPI3Request {
   title: string;
   year: number;
   artist_id: string;
+  owner_id: string;
   object_image: string;
   methods: { method1: string; method2: string };
 }

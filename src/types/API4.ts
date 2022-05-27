@@ -1,5 +1,5 @@
 export interface IAPI4Request {
-  object_id: string;
+  id_object: string;
   methods: { method1: string; method2: string };
 }
 

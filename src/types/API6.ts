@@ -1,9 +1,9 @@
 export interface IAPI6Request {
-  object_id: string;
+  id_object: string;
 }
 
 export interface IAPI6Response {
-  [object_id: string]: {
+  [id_object: string]: {
     owner_id: string;
     date: string;
     action: string;

@@ -1,5 +1,5 @@
 export interface API5Request {
-  object_id: string;
+  id_object: string;
   object_image: string;
   methods: { method1: string; method2: string };
 }

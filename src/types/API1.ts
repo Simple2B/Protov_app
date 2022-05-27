@@ -3,7 +3,7 @@ export interface IAPI1RequestData {
   artist_firstname: string | undefined;
   title: string | undefined;
   year: number | string | undefined;
-  object_id: string | undefined;
+  id_object: string | undefined;
 }
 
 export interface IAPIResponseData {
@@ -11,6 +11,5 @@ export interface IAPIResponseData {
   artist_firstname: string;
   title: string;
   year: number;
-  object_id: string;
-}
-[];
+  id_object: string;
+}[];
