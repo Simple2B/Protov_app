@@ -107,7 +107,7 @@ export default function Provenance(): ReactElement {
         {location.data.artist_surname}, {location.data.title},{" "}
         {location.data.year}
       </div>
-      <div className="provenance__id">object ID: {location.data.object_id}</div>
+      <div className="provenance__id">object ID: {location.data.id_object}</div>
       <div className="provenance__table">
         <TableContainer sx={{ maxWidth: "100%" }}>
           <Table
