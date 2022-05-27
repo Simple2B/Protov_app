@@ -92,7 +92,7 @@ export default function VerifyObject(): ReactElement {
         artist_surname: location.data.artist_surname,
         title: location.data.title,
         year: location.data.year,
-        object_id: location.data.object_id,
+        id_object: location.data.id_object,
       };
       navigate("/transact", {
         state: { data: data, allData: location.allData },
@@ -142,7 +142,7 @@ export default function VerifyObject(): ReactElement {
 
   const handleVerify = async() => {
     const data = {
-      object_id: location.data.object_id,
+      id_object: location.data.id_object,
       methods: {
         method1: mutableRows.find((el) => el.method === InputMethod.STRING)
           ?.value,
@@ -151,7 +151,7 @@ export default function VerifyObject(): ReactElement {
       },
     };
 
-    const dataObject = await API.get('protovapi', `/protovobject/${location.data.object_id}`, {});
+    const dataObject = await API.get('protovapi', `/protovobject/${location.data.id_object}`, {});
     console.log('VerifyObject => GET: getVerifyObject -> !!! dataObject', dataObject.data[0]);
 
     let responseData = { "object_ver_success": false };
@@ -204,7 +204,7 @@ export default function VerifyObject(): ReactElement {
           artist_surname: location.data.artist_surname,
           title: location.data.title,
           year: location.data.year,
-          object_id: location.data.object_id,
+          id_object: location.data.id_object,
           methods: {
             method1: mutableRows.find((el) => el.method === InputMethod.STRING)
               ?.value,
@@ -221,7 +221,7 @@ export default function VerifyObject(): ReactElement {
           artist_surname: location.data.artist_surname,
           title: location.data.title,
           year: location.data.year,
-          object_id: location.data.object_id,
+          id_object: location.data.id_object,
           methods: {
             method1: mutableRows.find((el) => el.method === InputMethod.STRING)
               ?.value,
@@ -331,7 +331,7 @@ export default function VerifyObject(): ReactElement {
             {location.data.year}
           </div>
           <div className="verify_object-id">
-            object ID: {location.data.object_id}
+            object ID: {location.data.id_object}
           </div>
         </>
       )}
