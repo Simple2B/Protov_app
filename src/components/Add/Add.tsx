@@ -213,10 +213,10 @@ const Add = () =>  {
         artist_firstname: name,
         artist_surname: surname,
         object_image: file ? file[0].name : "",
-        image_file_key: fileKey,
+        image_file_key: file ? fileKey : "",
         methods1: methods1 !== undefined ? methods1 : "",
         methods2: fileMethod2 ? fileMethod2[0].name : "",
-        image_method2_key: fileMethod2Key,
+        image_method2_key: fileMethod2 ? fileMethod2Key : "",
         artist_id: "",
         title: title,
         year: year,
@@ -227,24 +227,13 @@ const Add = () =>  {
       console.log(" awsObject => ", awsObject);
       if (awsObject.message.add_object_success === 'true') {
         setLoad(false);
-        const todayArr = new Date().toISOString().split('T');
-        const date = todayArr[0].split("-");
-        const time = todayArr[1].split(":");
-        const dateToBack = `${date[1]}/${date[2]}/${date[0]} ${time[0]}:${time[1]}`;
-        const transactionData = {
-          id_object: awsObject.message.id_object.trim(),
-          action: "onboard",
-          date: dateToBack,
-          methods1: methods1 !== undefined ? methods1.trim() : "",
-          methods2: fileMethod2 ? fileMethod2[0].name.trim() : "",
-          owner_id: "",
-        };
         const data = {
           artist_firstname: awsObject.message.artist_firstname.trim(),
           artist_surname: awsObject.message.artist_surname.trim(),
           title: title.trim(),
           year: year.trim(),
-          artist_id: "",
+          artist_id: awsObject.message.artist_id,
+          owner_id: awsObject.message.owner_id,
           object_image: image,
           methods: {
             method1: methods1 !== undefined ? methods1 : "",
@@ -253,9 +242,6 @@ const Add = () =>  {
         };
 
         navigate("/add-status", { state: { data, responseData: awsObject } });
-
-        const transObject = await API.post('protovapi', '/transactionobject', {body: transactionData});
-        console.log("! transObject => ", transObject);
       }
     }
     createAwsObject();
