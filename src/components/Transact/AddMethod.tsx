@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useRef, useState } from "react";
 import { Theme } from "@emotion/react";
 import {
   Select,
@@ -11,6 +11,9 @@ import { useLocation, useNavigate } from "react-router";
 import { axiosInstance } from "../../axios/axiosInstance";
 import API4Response from "../../fake_api/API4_response.json";
 import { store } from "../../store";
+import Dropzone from "react-dropzone";
+import { API, Storage } from 'aws-amplify';
+import { v4 as uuid } from "uuid";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -134,28 +137,55 @@ export default function AddMethod(): ReactElement {
     setMutableRows(newArray);
   };
 
-  const handleSubmit = () => {
-    setHideButton(true);
-    const data = {
-      object_id: location.data.object_id,
-      methods: {
-        method1: mutableRows.find((el) => el.method === InputMethod.STRING)
-          ?.value,
-        method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
-          ?.value,
-      },
-    };
-    axiosInstance.post("/", data).then(function (response) {
-      const responseData = response.data;
-    });
+  const dropMethod2Ref: any = useRef();
 
-    const fakeData = API4Response;
+  const [fileMethod2, setFileMethod2] = useState<File[] | null>(null);
+  const [isOpenMethod2, setOpenMethod2] = useState<boolean>(false);
 
-    if (fakeData.add_method_success) {
-      setCheck("SUCCESS");
-    } else {
-      setCheck("FAIL");
-    }
+  const onDropMethod2 = (uploadedFile: any) => {
+    setFileMethod2(uploadedFile);
+    setOpenMethod2(true);
+  } 
+
+  const handleSubmit = async () => {
+      setHideButton(true);
+      const fileMethod2Key = fileMethod2 ? `${uuid()}_${fileMethod2[0].name}` : '';
+      if (fileMethod2) {
+        Storage.put(`${fileMethod2Key}`, fileMethod2[0], {
+          contentType: fileMethod2[0].type,
+        })
+        .then((res) => {
+          console.log("fileMethod2 key => ", res.key)
+        })
+        .catch((err) => {
+          console.log("err ", err)
+        })
+
+      } else {
+        console.log("uploadFile: ", "fileMethod2 needed")
+      }
+      const methods1 = mutableRows.find((el) => el.method === InputMethod.STRING)?.value;
+      const data = {
+        id_object: location.data.id_object,
+        method1: methods1 !== undefined ? methods1 : "",
+        method2: fileMethod2 ? fileMethod2[0].name : "",
+        image_method2_key: fileMethod2 ? fileMethod2Key : "",
+      };
+
+      const awsObject = await API.post('protovapi', '/protovobject/add_method', {body: data});
+      console.log("AddMethod awsObject => ", awsObject);
+
+    // axiosInstance.post("/", data).then(function (response) {
+    //   const responseData = response.data;
+    // });
+
+      // const fakeData = API4Response;
+
+      if (awsObject.message.add_method_success) {
+        setCheck("SUCCESS");
+      } else {
+        setCheck("FAIL");
+      }
   };
 
   return (
@@ -183,7 +213,7 @@ export default function AddMethod(): ReactElement {
         {location.data.artist_surname}, {location.data.title},{" "}
         {location.data.year}
       </div>
-      <div className="method__id">object ID: {location.data.object_id}</div>
+      <div className="method__id">object ID: {location.data.id_object}</div>
 
       {check ? (
         <div className={check === "SUCCESS" ? "check_success" : "check_error"}>
@@ -233,25 +263,51 @@ export default function AddMethod(): ReactElement {
                       type="text"
                     />
                   </>
-                ) : (
+                ) : 
+                
+                (
                   <div className="input_file-container">
-                    <label className="input_file-label">
-                      <img
-                        className="input_file-image"
-                        src="/images/upload.svg"
-                        alt="upload"
-                      />
-                      <input
-                        value={item.value}
-                        onChange={(e) => {
-                          handleInputChange(index, e);
-                        }}
-                        type="file"
-                        className="input_file"
-                      />
-                    </label>
-                  </div>
-                )}
+
+                      {(fileMethod2 && isOpenMethod2) && 
+                        (
+                          <div className="input_file-upload">
+                            <div onClick={() => {
+                                setFileMethod2(null);
+                                setOpenMethod2(false);
+                              }} className="arrow">x</div>
+                            <span className="file-name">{fileMethod2[0].name}</span>
+                          </div>
+                        ) 
+                      }
+                      {
+                        (fileMethod2 === null && !isOpenMethod2 ) &&
+                        (
+                          <Dropzone onDrop={onDropMethod2}>
+                            {({ getRootProps, getInputProps }) => (
+                              <div {...getRootProps({ className: 'drop-zone' })} ref={dropMethod2Ref}>
+                                <input {...getInputProps()} />
+                                  <label className="input_file-label">
+                                    <img
+                                      className="input_file-image"
+                                      src="/images/upload.svg"
+                                      alt="upload"
+                                    />
+                                    <input
+                                      value={item.value}
+                                      onChange={(e) => {
+                                        handleInputChange(index, e);
+                                      }}
+                                      type="file"
+                                      className="input_file"
+                                    />
+                                  </label>
+                                </div>
+                            )}
+                          </Dropzone>
+                        )
+                      }
+                  </div> )
+                }
 
                 <img
                   onClick={() => handleDeleteMethod(index)}
