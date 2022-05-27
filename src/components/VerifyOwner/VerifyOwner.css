@@ -1,66 +1,96 @@
+.verifyOwnerLoader {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+.verifyOwnerLoader::after {
+    content: "";
+    z-index: 10000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, .1);
+    width: 100vw;
+    height: 100vh;
+}
+
+.verifyOwnerLoader .lds-roller {
+    position: absolute;
+    top: 40%;
+    left: 45%;
+    z-index: 10001;
+    /* display: flex;
+  justify-content: center;
+  align-items: center; */
+    /* width: 100vw;
+  height: 100vh; */
+}
+
 .verify_owner-address {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .verify_owner-id {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .verify_owner-input {
-  width: 300px;
-  height: 50px;
-  border: 1px solid #086E7D;
-  border-radius: 6px;
-  padding-left: 20px;
-  font-family: "GT Walsheim Pro";
-  font-size: 16px;
-  margin-bottom: 20px;
+    width: 300px;
+    height: 50px;
+    border: 1px solid #086E7D;
+    border-radius: 6px;
+    padding-left: 20px;
+    font-family: "GT Walsheim Pro";
+    font-size: 16px;
+    margin-bottom: 20px;
 }
 
 .verify_owner-button {
-  width: 300px;
-  height: 55px;
-  background: #086E7D;
-  border-radius: 6px;
-  border: none;
-  font-family: "GT Walsheim Pro";
-  font-size: 16px;
-  color: #FFFFFF;
-  cursor: pointer;
-  transition: background 1s;
+    width: 300px;
+    height: 55px;
+    background: #086E7D;
+    border-radius: 6px;
+    border: none;
+    font-family: "GT Walsheim Pro";
+    font-size: 16px;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: background 1s;
 }
 
 .verify_owner-button:hover {
-  background: #06525d;
+    background: #06525d;
 }
 
 .verify_owner-button:disabled {
-  background: #677274;
-  cursor: not-allowed;
+    background: #677274;
+    cursor: not-allowed;
 }
 
 .verify_owner-search {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .success {
-  color: #05B102;
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 22px;
-  margin-bottom: 50px;
+    color: #05B102;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 22px;
+    margin-bottom: 50px;
 }
 
 .error {
-  color: #E01919;
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 22px;
-  margin-bottom: 50px;
+    color: #E01919;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 22px;
+    margin-bottom: 50px;
 }
 
 .input_error {
-  border: 1px solid #E01919;
+    border: 1px solid #E01919;
 }
