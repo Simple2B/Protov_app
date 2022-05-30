@@ -1,4 +1,5 @@
 export interface IAPI1RequestData {
+  search_item: string;
   artist_surname: string | undefined;
   artist_firstname: string | undefined;
   title: string | undefined;
@@ -12,4 +13,5 @@ export interface IAPIResponseData {
   title: string;
   year: number;
   id_object: string;
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 }[];
