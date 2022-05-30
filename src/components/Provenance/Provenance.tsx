@@ -13,37 +13,37 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./Provenance.css";
 
 const useStyle = makeStyles((theme: Theme) => ({
-  root: {
-    border: "1px solid #BAE4EA",
-    borderRadius: "6px",
-    fontFamily: "GT Walsheim Pro !important",
-  },
-  headerCellLeft: {
-    borderTopLeftRadius: "6px",
-    fontSize: "18px !important",
-    fontFamily: "GT Walsheim Pro !important",
-    borderBottom: "1px solid #BAE4EA !important",
-    borderRight: "1px solid #BAE4EA !important",
-  },
-  headerCellRight: {
-    borderTopRightRadius: "6px",
-    fontSize: "18px !important",
-    fontFamily: "GT Walsheim Pro !important",
-    borderBottom: "1px solid #BAE4EA !important",
-    borderRight: "1px solid #BAE4EA !important",
-  },
-  headerCell: {
-    fontSize: "18px !important",
-    fontFamily: "GT Walsheim Pro !important",
-    borderBottom: "1px solid #BAE4EA !important",
-    borderRight: "1px solid #BAE4EA !important",
-  },
-  tableCell: {
-    fontFamily: "GT Walsheim Pro !important",
-    fontSize: "16px !important",
-    borderBottom: "1px solid #BAE4EA !important",
-    borderRight: "1px solid #BAE4EA !important",
-  },
+    root: {
+      border: "1px solid #BAE4EA",
+      borderRadius: "6px",
+      fontFamily: "GT Walsheim Pro !important",
+    },
+    headerCellLeft: {
+      borderTopLeftRadius: "6px",
+      fontSize: "18px !important",
+      fontFamily: "GT Walsheim Pro !important",
+      borderBottom: "1px solid #BAE4EA !important",
+      borderRight: "1px solid #BAE4EA !important",
+    },
+    headerCellRight: {
+      borderTopRightRadius: "6px",
+      fontSize: "18px !important",
+      fontFamily: "GT Walsheim Pro !important",
+      borderBottom: "1px solid #BAE4EA !important",
+      borderRight: "1px solid #BAE4EA !important",
+    },
+    headerCell: {
+      fontSize: "18px !important",
+      fontFamily: "GT Walsheim Pro !important",
+      borderBottom: "1px solid #BAE4EA !important",
+      borderRight: "1px solid #BAE4EA !important",
+    },
+    tableCell: {
+      fontFamily: "GT Walsheim Pro !important",
+      fontSize: "16px !important",
+      borderBottom: "1px solid #BAE4EA !important",
+      borderRight: "1px solid #BAE4EA !important",
+    },
 }));
 
 interface Column {

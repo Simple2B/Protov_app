@@ -81,6 +81,7 @@ export default function Result(): ReactElement {
 
   const dataObjects = location.responseData.length > 0 ? location.responseData.map((item: { [x: string]: any; }) => 
     ({
+        search_item: item['search_item'],
         artist_surname: item['artist_surname'],
         artist_firstname: item['artist_firstname'],
         title: item['title'],
@@ -129,7 +130,7 @@ export default function Result(): ReactElement {
   const classes = useStyle();
 
   const handleBack = () => {
-    navigate("/enter-info");
+    navigate("/enter-info", {state: { search_item: dataObjects[0].search_item }});
   };
 
   const handleHome = () => {

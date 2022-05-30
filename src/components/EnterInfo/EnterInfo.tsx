@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import "./EnterInfo.css";
 import { IAPI1RequestData } from "../../types/API1";
 import { API } from "aws-amplify";
@@ -60,13 +60,47 @@ export default function EnterInfo(): ReactElement {
   const navigate = useNavigate();
   const { state } = useLocation();
   const [searchItem, setSearchItem] = useState<string | any>(state);
-  const [name, setName] = useState<string>();
-  const [surname, setSurname] = useState<string>();
-  const [title, setTitle] = useState<string>();
-  const [year, setYear] = useState<string>();
-  const [objectID, setObjectID] = useState<string>();
+  const [name, setName] = useState<string>("");
+  const [surname, setSurname] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
+  const [year, setYear] = useState<string>("");
+  const [objectID, setObjectID] = useState<string>("");
   const [checkData, setCheckData] = useState<boolean>(false);
   const [isLoad, setLoad] = useState(false);
+
+  const location: any = useLocation().state;
+
+  useEffect(()=> {
+    if (location.search_item !== undefined) setSearchItem(location.search_item)
+  }, [location])
+
+  useEffect(() => {
+
+    if(searchItem === "Verify owner") {
+      if(name.length > 0 && surname.length > 0 && objectID.length > 0){
+        setCheckData(true);
+      } else {
+        setCheckData(false);
+      }
+    }
+
+    if(searchItem === "Verify object") {
+      if((title.length > 0 && year.length > 0) || objectID.length > 0){
+        setCheckData(true);
+      } else {
+        setCheckData(false);
+      }
+    }
+
+    if(searchItem === "Transact" || searchItem === "Provenance") {
+      if((title.length > 0 && year.length > 0) || objectID.length > 0 || (name.length > 0 && surname.length > 0)){
+        setCheckData(true);
+      } else {
+        setCheckData(false);
+      }
+    }
+    
+  }, [name, surname, objectID, searchItem, title.length, year.length])
 
   const handleChangeSearchItem = (event: SelectChangeEvent) => {
     setSearchItem(event.target.value);
@@ -81,9 +115,9 @@ export default function EnterInfo(): ReactElement {
   };
 
   const handleName = (e: {
-    target: { value: React.SetStateAction<string | undefined> };
+    target: { value: string };
   }) => {
-    setName(e.target.value);
+    setName(e.target.value.trim().toLowerCase());
     setCheckData(true);
     if (e.target.value === "") {
       setCheckData(false);
@@ -91,9 +125,9 @@ export default function EnterInfo(): ReactElement {
   };
 
   const handleSurname = (e: {
-    target: { value: React.SetStateAction<string | undefined> };
+    target: { value: string };
   }) => {
-    setSurname(e.target.value);
+    setSurname(e.target.value.trim().toLowerCase());
     setCheckData(true);
     if (e.target.value === "") {
       setCheckData(false);
@@ -101,9 +135,9 @@ export default function EnterInfo(): ReactElement {
   };
 
   const handleTitle = (e: {
-    target: { value: React.SetStateAction<string | undefined> };
+    target: { value: string };
   }) => {
-    setTitle(e.target.value);
+    setTitle(e.target.value.trim().toLowerCase());
     setCheckData(true);
     if (e.target.value === "") {
       setCheckData(false);
@@ -122,9 +156,9 @@ export default function EnterInfo(): ReactElement {
   };
 
   const handleObjectID = (e: {
-    target: { value: React.SetStateAction<string | undefined> };
+    target: { value: string };
   }) => {
-    setObjectID(e.target.value);
+    setObjectID(e.target.value.trim());
     setCheckData(true);
     if (e.target.value === "") {
       setCheckData(false);
@@ -133,6 +167,7 @@ export default function EnterInfo(): ReactElement {
 
   const handleNext = () => {
     const data: IAPI1RequestData = {
+      search_item: searchItem,
       artist_surname: surname,
       artist_firstname: name,
       title: title,
@@ -140,9 +175,11 @@ export default function EnterInfo(): ReactElement {
       id_object: objectID ? objectID : "",
     };
 
-    const getObject = async () => {
+    console.log("data => ", data)
+
+    const getObjects = async () => {
       setLoad(true);
-      const dataObjects = await API.post('protovapi', `/protovobject/objects`, {body: data})
+      const dataObjects = await API.post('protovapi', `/protovobject/enter_info`, {body: data})
       console.log('EnterInfo => POST: getObject -> !!! dataObjects', dataObjects.data);
 
       
@@ -152,8 +189,14 @@ export default function EnterInfo(): ReactElement {
       // const dataTransaction = await API.get('protovapi', `/transactionobject/${objectID}`, {})
       // console.log('EnterInfo => GET: getObject -> !!! dataTransaction', dataTransaction);
     };
-    getObject();
+    getObjects();
   };
+
+  const handlerClick = (searchName: string) => {
+    setSearchItem(searchName)
+  };
+
+
 
   return (
     <div className={isLoad ? "infoLoader" : "info" }>
@@ -186,12 +229,12 @@ export default function EnterInfo(): ReactElement {
               },
             }}
           >
-            <MenuItem classes={{ root: classes.rootItem }} value="Provenance">
+            <MenuItem classes={{ root: classes.rootItem }} value="Provenance" onClick={() => handlerClick("Provenance")}>
               Provenance
             </MenuItem>
-            <MenuItem value="Verify owner">Verify owner</MenuItem>
-            <MenuItem value="Verify object">Verify object</MenuItem>
-            <MenuItem value="Transact">Transact</MenuItem>
+            <MenuItem value="Verify owner" onClick={() => handlerClick("Verify owner")}>Verify owner</MenuItem>
+            <MenuItem value="Verify object" onClick={() => handlerClick("Verify object")}>Verify object</MenuItem>
+            <MenuItem value="Transact" onClick={() => handlerClick("Transact")}>Transact</MenuItem>
           </Select>
         </FormControl>
 

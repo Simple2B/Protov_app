@@ -141,21 +141,24 @@ const Add = () =>  {
   };
 
   const handleName = (event: {
-    target: { value: React.SetStateAction<string> };
+    target: { value: string };
   }) => {
-    setName(event.target.value);
+    const artistName = event.target.value.trim().toLowerCase()
+    setName(artistName);
   };
 
   const handleSurname = (event: {
-    target: { value: React.SetStateAction<string> };
+    target: { value: string };
   }) => {
-    setSurname(event.target.value);
+    const surnameName = event.target.value.trim().toLowerCase()
+    setSurname(surnameName);
   };
 
   const handleTitle = (event: {
-    target: { value: React.SetStateAction<string> };
+    target: { value: string };
   }) => {
-    setTitle(event.target.value);
+    const objectTitle = event.target.value.trim().toLowerCase()
+    setTitle(objectTitle);
   };
 
   const handleYear = (event: {
@@ -251,12 +254,11 @@ const Add = () =>  {
     setOpenMethod2(false);
   }
 
-
   const onDrop = (uploadedFile: any) => {
       console.log(" uploadedFile ", uploadedFile);
       setFile(uploadedFile);
       setOpen(true);
-}
+  }
 
   const onDropMethod2 = (uploadedFile: any) => {
       setFileMethod2(uploadedFile);
