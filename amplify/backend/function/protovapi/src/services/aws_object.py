@@ -24,7 +24,7 @@ class AwsObjectService:
         print("AwsObjectService => create_object: objects ", objects)
         if len(objects['Items']) > 0:
             for obj in objects['Items']:
-                if obj['artist_firstname']['S'] == name.strip() and obj['artist_surname']['S'] == surname.strip():
+                if obj['artist_firstname']['S'] == name and obj['artist_surname']['S'] == surname:
                     artist_id = obj['artist_id']['S']
                 if obj['title']['S'] == title and obj['year']['S'] == year:
                     id_object = obj['id_object']['S']
@@ -56,3 +56,20 @@ class AwsObjectService:
             }
         except botocore.exceptions.ClientError as error:
             return jsonify(message={"add_object_success": 'false'})
+
+    @staticmethod
+    def get_object_info(object, search_item):
+        return {
+            'search_item': search_item,
+            'artist_firstname': object['artist_firstname']['S'],
+            'artist_id': object['artist_id']['S'],
+            'artist_surname': object['artist_surname']['S'],
+            'id_object': object['id_object']['S'],
+            'image_file_key': object['image_file_key']['S'],
+            'image_method2_key': object['image_method2_key']['S'],
+            'methods1': object['methods1']['S'],
+            'methods2': object['methods2']['S'],
+            'object_image': object['object_image']['S'],
+            'title': object['title']['S'],
+            'year': object['year']['S'],
+        }
