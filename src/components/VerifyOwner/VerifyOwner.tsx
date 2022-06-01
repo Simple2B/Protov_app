@@ -65,6 +65,7 @@ export default function VerifyOwner(): ReactElement {
       setLoad(false);
       if (ownerData.owner_ver_status) {
         const data = {
+          artist_id: location.data.artist_id,
           artist_surname: location.data.artist_surname,
           title: location.data.title,
           year: location.data.year,

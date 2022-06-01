@@ -145,7 +145,7 @@ export default function AddMethod(): ReactElement {
   const onDropMethod2 = (uploadedFile: any) => {
     setFileMethod2(uploadedFile);
     setOpenMethod2(true);
-  } 
+  };
 
   const handleSubmit = async () => {
       setHideButton(true);
@@ -165,7 +165,9 @@ export default function AddMethod(): ReactElement {
         console.log("uploadFile: ", "fileMethod2 needed")
       }
       const methods1 = mutableRows.find((el) => el.method === InputMethod.STRING)?.value;
+      
       const data = {
+        artist_id: location.data.artist_id,
         id_object: location.data.id_object,
         method1: methods1 !== undefined ? methods1 : "",
         method2: fileMethod2 ? fileMethod2[0].name : "",
@@ -187,6 +189,8 @@ export default function AddMethod(): ReactElement {
         setCheck("FAIL");
       }
   };
+
+  console.log("!!!!!!artist_id ", location.data.artist_id);
 
   return (
     <div className="method">

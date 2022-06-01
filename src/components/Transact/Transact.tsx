@@ -71,6 +71,7 @@ export default function Transact(): ReactElement {
 
   const handleVerifyOwner = () => {
     const data = {
+      artist_id: location.data.artist_id,
       artist_surname: location.data.artist_surname,
       title: location.data.title,
       year: location.data.year,
@@ -84,6 +85,7 @@ export default function Transact(): ReactElement {
 
   const handleVerifyObject = () => {
     const data = {
+      artist_id: location.data.artist_id,
       artist_surname: location.data.artist_surname,
       title: location.data.title,
       year: location.data.year,
@@ -99,6 +101,7 @@ export default function Transact(): ReactElement {
 
   const handleSales = () => {
     const data = {
+      artist_id: location.data.artist_id,
       artist_surname: location.data.artist_surname,
       title: location.data.title,
       year: location.data.year,
@@ -109,7 +112,10 @@ export default function Transact(): ReactElement {
   };
 
   const handleAddMethod = () => {
+    
     const data = {
+      artist_id: location.data.artist_id,
+      artist_firstname: location.data.artist_firstname,
       artist_surname: location.data.artist_surname,
       title: location.data.title,
       year: location.data.year,
@@ -119,6 +125,8 @@ export default function Transact(): ReactElement {
       state: { data: data, allData: location.allData },
     });
   };
+
+  console.log("Transact: handleAddMethod =>>> artist_id ", location.data.artist_id);
 
   return (
     <div className="transact">

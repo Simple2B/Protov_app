@@ -89,6 +89,7 @@ export default function VerifyObject(): ReactElement {
   const handleBack = () => {
     if (location.data.path === "/transact") {
       const data = {
+        artist_id: location.data.artist_id,
         artist_surname: location.data.artist_surname,
         title: location.data.title,
         year: location.data.year,
@@ -174,8 +175,8 @@ export default function VerifyObject(): ReactElement {
 
     if (fileMethod2 && dataObject.data[0].image_method2_key) {
         const fileDate: any =  await Storage.get(dataObject.data[0].image_method2_key, { download: true });
-        console.log("VerifyObject fileDate ", fileDate);
-        if(fileMethod2[0].name === dataObject.data[0].object_image 
+        console.log("VerifyObject fileDate ===>>> ", fileDate);
+        if(fileMethod2[0].name === dataObject.data[0].methods2
           && (fileMethod2[0].size === fileDate.Body.size) && (fileMethod2[0].type === fileDate.Body.type)) {
               console.log("VerifyObject: fileMethod2 ", true)
               setVerification("Verification Success!");
@@ -187,8 +188,8 @@ export default function VerifyObject(): ReactElement {
     };
 
     if ((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) !== undefined) {
-      if ((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) === dataObject.data[0].methods1) {
-        console.log("VerifyObject: methods1 ", true)
+      if (((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) === dataObject.data[0].methods1)) {
+        console.log("VerifyObject: methods1 ", true)   
         setVerification("Verification Success!");
         responseData = { "object_ver_success": true };
       } else {
@@ -201,6 +202,7 @@ export default function VerifyObject(): ReactElement {
     if (location.data.path === "/transact") {
       if (responseData.object_ver_success) {
         const data = {
+          artist_id: location.data.artist_id,
           artist_surname: location.data.artist_surname,
           title: location.data.title,
           year: location.data.year,
@@ -218,6 +220,7 @@ export default function VerifyObject(): ReactElement {
         });
       } else {
         const data = {
+          artist_id: location.data.artist_id,
           artist_surname: location.data.artist_surname,
           title: location.data.title,
           year: location.data.year,
@@ -288,9 +291,6 @@ export default function VerifyObject(): ReactElement {
         setOpenMethod2(false);
     }
   };
-
-  
-  
 
   const onDrop = (uploadedFile: any) => {
     console.log("VerifyObject: uploadedFile ", uploadedFile);
@@ -430,7 +430,8 @@ export default function VerifyObject(): ReactElement {
                 ) : (
                   <div className="input_file-container">
 
-                    {(fileMethod2 && isOpenMethod2) && 
+                    {
+                      (fileMethod2 && isOpenMethod2) && 
                       (
                         <div className="input_file-upload">
                           <div onClick={() => {
@@ -470,7 +471,6 @@ export default function VerifyObject(): ReactElement {
                     }
                   </div>
                 )}
-
                 <img
                   onClick={() => handleDeleteMethod(index)}
                   src="/images/cross.svg"
@@ -480,7 +480,6 @@ export default function VerifyObject(): ReactElement {
               </div>
             );
           })}
-
           <div className="buttons_block">
             <button
               disabled={mutableRows.length >= MAX_ROWS}
@@ -498,10 +497,3 @@ export default function VerifyObject(): ReactElement {
     </div>
   );
 }
-function config(key: any, image_file_key: any, config: any, arg3: {
-  level: any; // defaults to `public`
-  download: boolean;
-}) {
-  throw new Error("Function not implemented.");
-}
-

@@ -109,6 +109,30 @@
     background-color: rgba(8, 110, 125, 0.1);
 }
 
+.add_submit-objects {
+    width: 55%;
+    margin: 3% auto;
+}
+
+.add_submit-objectsTitle {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.add_submit-object {
+    width: 100%;
+    margin: 3% auto;
+}
+
+.add_submit-object img {
+    width: 100%;
+}
+
+.add_submit-objectLink {
+    display: flex;
+    align-items: flex-end;
+    color: rgba(0, 0, 0, 0.7);
+}
+
 @media (max-width: 699px) {
     .add__input:not(:last-child) {
         margin-right: 0;

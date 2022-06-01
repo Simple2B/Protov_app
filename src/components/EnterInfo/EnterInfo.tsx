@@ -65,6 +65,7 @@ export default function EnterInfo(): ReactElement {
   const [title, setTitle] = useState<string>("");
   const [year, setYear] = useState<string>("");
   const [objectID, setObjectID] = useState<string>("");
+  const [artistId, setArtistId] = useState<string>("");
   const [checkData, setCheckData] = useState<boolean>(false);
   const [isLoad, setLoad] = useState(false);
 
@@ -170,6 +171,7 @@ export default function EnterInfo(): ReactElement {
       search_item: searchItem,
       artist_surname: surname,
       artist_firstname: name,
+      artist_id: artistId,
       title: title,
       year: year,
       id_object: objectID ? objectID : "",
@@ -182,7 +184,6 @@ export default function EnterInfo(): ReactElement {
       const dataObjects = await API.post('protovapi', `/protovobject/enter_info`, {body: data})
       console.log('EnterInfo => POST: getObject -> !!! dataObjects', dataObjects.data);
 
-      
       navigate("/result", { state: { searchItem, responseData: dataObjects.data } });
 
       setLoad(false);
@@ -195,8 +196,6 @@ export default function EnterInfo(): ReactElement {
   const handlerClick = (searchName: string) => {
     setSearchItem(searchName)
   };
-
-
 
   return (
     <div className={isLoad ? "infoLoader" : "info" }>

@@ -2,6 +2,7 @@ export interface IAPI1RequestData {
   search_item: string;
   artist_surname: string | undefined;
   artist_firstname: string | undefined;
+  artist_id: string,
   title: string | undefined;
   year: number | string | undefined;
   id_object: string | undefined;

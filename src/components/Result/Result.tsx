@@ -81,6 +81,7 @@ export default function Result(): ReactElement {
 
   const dataObjects = location.responseData.length > 0 ? location.responseData.map((item: { [x: string]: any; }) => 
     ({
+        artist_id: item['artist_id'],
         search_item: item['search_item'],
         artist_surname: item['artist_surname'],
         artist_firstname: item['artist_firstname'],
@@ -88,14 +89,15 @@ export default function Result(): ReactElement {
         year: item['year'],
         id_object: item['id_object']
     })) : null
-
   const handleObjectId = (
+    artist_id: string,
+    artist_firstname: string,
     artist_surname: string,
     title: string,
     year: string,
     id_object: string
   ) => {
-    const data = { artist_surname, title, year, id_object };
+    const data = {artist_firstname, artist_surname, title, year, id_object, artist_id};
 
     const getObjectTransaction = async () => {
       const dataObject = await API.get('protovapi', `/transactionobject/${id_object}`, {})
@@ -122,6 +124,7 @@ export default function Result(): ReactElement {
         state: { data, allData: dataObjects },
       });
     if (location.searchItem === "Transact")
+      console.log("=>>> Result: dataObjects ", dataObjects);
       navigate("/transact", {
         state: { data, allData: dataObjects },
       });
@@ -193,6 +196,8 @@ export default function Result(): ReactElement {
                     classes={{ hover: classes.tableRow }}
                     onClick={() =>
                       handleObjectId(
+                        row.artist_id,
+                        row.artist_firstname,
                         row.artist_surname,
                         row.title,
                         row.year,
