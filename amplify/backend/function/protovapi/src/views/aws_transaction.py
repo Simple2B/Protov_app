@@ -8,6 +8,9 @@ from boto3.dynamodb.conditions import Key
 import logging
 
 from flask import Blueprint, jsonify, request
+from services.aws_object import AwsObjectService
+
+from services.aws_transaction import AwsTransactionService
 
 # Set up our logger
 logging.basicConfig(level=logging.INFO)
@@ -23,10 +26,7 @@ clientTransaction = boto3.client('dynamodb')
 
 @aws_transaction_blueprint.route('/transactionobject/<id_object>', methods=["GET"])
 def get_transaction(id_object):
-    data_objects = clientTransaction.scan(TableName=TRANSACTION_TABLE)
-    data = json.dumps(data_objects)
-    objects = json.loads(data)
-
+    objects = AwsTransactionService.get_transaction_objects()
     objects_data = []
 
     for obj in objects['Items']:
@@ -55,16 +55,16 @@ def sale():
     owner_id = request_json.get('owner_password')
 
     new_owner_id = request_json.get('new_owner_id')
-    print("new_owner_id ==>>>", new_owner_id)
+    print("sale: new_owner_id ==>>>", new_owner_id)
 
-    data_objects = clientTransaction.scan(TableName=OBJECT_PROTOV_TABLE)
-    data = json.dumps(data_objects)
-    objects = json.loads(data)
+    # data_objects = clientTransaction.scan(TableName=OBJECT_PROTOV_TABLE)
+    # data = json.dumps(data_objects)
+    objects = AwsObjectService.get_objects()
 
-    data_transaction_objects = clientTransaction.scan(
-        TableName=TRANSACTION_TABLE)
-    data_transaction = json.dumps(data_transaction_objects)
-    objects_transaction = json.loads(data_transaction)
+    # data_transaction_objects = clientTransaction.scan(
+    #     TableName=TRANSACTION_TABLE)
+    # data_transaction = json.dumps(data_transaction_objects)
+    objects_transaction = AwsTransactionService.get_transaction_objects()
 
     object = None
     for obj in objects['Items']:

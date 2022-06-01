@@ -1,11 +1,12 @@
-from email import message
 import os
 from uuid import uuid4
 import json
 import botocore
+import boto3
 from flask import jsonify
 
 PROTOV_TABLE = os.environ.get("STORAGE_DYNAMODB_NAME")
+client = boto3.client('dynamodb')
 
 
 class AwsObjectService:
@@ -49,10 +50,12 @@ class AwsObjectService:
                 "artist_id": str(artist_id),
                 "id_object": id_object,
                 "object": request_json.get('object_image'),
+                "object_file_key": request_json.get('image_file_key'),
                 "year": request_json.get('year'),
                 "title": request_json.get('title'),
                 "methods1": request_json.get('methods1'),
                 "methods2": request_json.get('methods2'),
+                "image_method2_key": request_json.get('image_method2_key'),
             }
         except botocore.exceptions.ClientError as error:
             return jsonify(message={"add_object_success": 'false'})
@@ -73,3 +76,10 @@ class AwsObjectService:
             'title': object['title']['S'],
             'year': object['year']['S'],
         }
+
+    @staticmethod
+    def get_objects():
+        data_objects = client.scan(TableName=PROTOV_TABLE)
+        data = json.dumps(data_objects)
+        objects = json.loads(data)
+        return objects
