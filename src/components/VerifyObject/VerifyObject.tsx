@@ -152,9 +152,9 @@ export default function VerifyObject(): ReactElement {
       title: location.data.title,
       year: location.data.year,
       // methods: {
-      //   method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+      //   methods1: mutableRows.find((el) => el.method === InputMethod.STRING)
       //     ?.value,
-      //   method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+      //   methods2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
       //     ?.value,
       // },
     };
@@ -218,9 +218,9 @@ export default function VerifyObject(): ReactElement {
             year: location.data.year,
             id_object: location.data.id_object,
             methods: {
-              method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+              methods1: mutableRows.find((el) => el.method === InputMethod.STRING)
                 ?.value,
-              method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+              methods2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
                 ?.value,
             },
           };
@@ -236,9 +236,9 @@ export default function VerifyObject(): ReactElement {
             year: location.data.year,
             id_object: location.data.id_object,
             methods: {
-              method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+              methods1: mutableRows.find((el) => el.method === InputMethod.STRING)
                 ?.value,
-              method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+              methods2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
                 ?.value,
             },
           };

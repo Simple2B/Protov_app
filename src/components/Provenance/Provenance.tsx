@@ -76,6 +76,7 @@ const columns: readonly Column[] = [
 export default function Provenance(): ReactElement {
   const classes = useStyle();
   const location: any = useLocation().state;
+  console.log("=>>>>>> Provenance: location ", location)
 
   const navigate = useNavigate();
   const handleBack = () => {
@@ -156,15 +157,9 @@ export default function Provenance(): ReactElement {
                       {row.action}
                     </TableCell>
                     <TableCell classes={{ root: classes.tableCell }}>
-                      {Object.keys(row.verification_methods).length === 1 ? (
-                        Object.keys(row.verification_methods)
-                      ) : (
-                        <>
-                          {Object.keys(row.verification_methods)[0]}
-                          {", "}
-                          {Object.keys(row.verification_methods)[1]}
-                        </>
-                      )}
+                      {location.data.methods1.length > 0 ? "method1" : ""}
+                      {location.data.methods1.length > 0 && location.data.methods2.length > 0 ? ", " : ""}
+                      {location.data.methods2 !== undefined && location.data.methods2.length > 0 ? "method2" : ""} 
                     </TableCell>
                   </TableRow>
                 );

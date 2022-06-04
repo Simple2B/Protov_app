@@ -239,8 +239,8 @@ const Add = () =>  {
           owner_id: awsObject.message.owner_id,
           object_image: image,
           methods: {
-            method1: methods1 !== undefined ? methods1 : "",
-            method2: fileMethod2 ? fileMethod2[0].name : "",
+            methods1: methods1 !== undefined ? methods1 : "",
+            methods2: fileMethod2 ? fileMethod2[0].name : "",
           },
         };
 
@@ -275,205 +275,201 @@ const Add = () =>  {
 
   return (
     <div className={isLoad ? "addContainer": ""}>
-      {
-        isLoad ? <Loader/>
-        : 
-        <div className="add">
-          <div className="header">
-            <div onClick={handleBack} className="header__back">
-              <img
-                src="/images/arrow_back.svg"
-                className="back_img"
-                alt="back"
-              ></img>
-            </div>
-            <div onClick={handleHome} className="header__main">
-              <img src="/images/home.svg" className="back_main" alt="main"></img>
-            </div>
+      <div className="add">
+        <div className="header">
+          <div onClick={handleBack} className="header__back">
+            <img
+              src="/images/arrow_back.svg"
+              className="back_img"
+              alt="back"
+            ></img>
           </div>
-
-          <h1 className="add__title">Add</h1>
-
-          <div className="add__inputs-container">
-            <div className="add__inputs-block">
-              <input
-                value={name}
-                onChange={handleName}
-                placeholder="Artist First Name"
-                type="text"
-                className="add__input"
-              />
-              <input
-                value={surname}
-                onChange={handleSurname}
-                placeholder="Artist Surname"
-                type="text"
-                className="add__input"
-              />
-            </div>
-            <div className="add__inputs-block">
-              <input
-                value={title}
-                onChange={handleTitle}
-                placeholder="Title"
-                type="text"
-                className="add__input"
-              />
-              <input
-                value={year}
-                onChange={handleYear}
-                placeholder="Year"
-                className="add__input"
-              />
-            </div>
-
-            <div className="uploading">
-              {
-                (file && isOpen) && 
-                (
-                  <div className="uploading-file">
-                    <div onClick={handleClose} className="arrow">x</div>
-                    <strong>Selected file: </strong> <span className="file-name">{file[0].name}</span>
-                  </div>
-                ) 
-              }
-              {
-                (file === null && !isOpen) &&
-                (
-                  <Dropzone onDrop={onDrop}>
-                    {({ getRootProps, getInputProps }) => (
-                      <div {...getRootProps({ className: 'drop-zone' })} ref={dropRef}>
-                        <input {...getInputProps()} />
-                        <label className="uploading-label">
-                          <img src="/images/upload.svg" alt="upload" />
-                          <input
-                            value={image}
-                            id='file-input'
-                            onChange={(e) => {
-                              console.log("onChange: => image ", image)
-                              // setImage(e.target)
-                            }} type="file"
-                            className="uploading-input"
-                            accept="downloadImages/*"
-                          ></input>
-                        </label>
-                        <div className="uploading-text">Upload photo of object</div>
-                      </div>
-                    )}
-                  </Dropzone>
-                )
-              }
-            </div>
-          </div>
-          {mutableRows.map((item, index) => {
-            return (
-              <div className="inputs_container" key={index}>
-                <FormControl classes={{ root: classes.root }}>
-                  <Select
-                    disabled={mutableRows.length > 1}
-                    value={item.method}
-                    onChange={(e) => {
-                      handleSelectChange(index, e);
-                    }}
-                    className={classes.select}
-                    classes={{
-                      select: classes.select,
-                      nativeInput: classes.nativeInput,
-                    }}
-                    inputProps={{
-                      classes: {
-                        icon: classes.icon,
-                      },
-                    }}
-                  >
-                    <MenuItem
-                      classes={{ root: classes.rootItem }}
-                      value={InputMethod.STRING}
-                    >
-                      method1
-                    </MenuItem>
-                    <MenuItem value={InputMethod.IMAGE}>method2</MenuItem>
-                  </Select>
-                </FormControl>
-
-                {item.method === InputMethod.STRING ? (
-                  <>
-                    <input
-                      className="input_text"
-                      value={item.value}
-                      onChange={(e) => {
-                        handleInputChange(index, e);
-                      }}
-                      type="text"
-                    />
-                  </>
-                ) : (
-                  <div className="input_file-container">
-
-                    {(fileMethod2 && isOpenMethod2) && 
-                      (
-                        <div className="input_file-upload">
-                          <div onClick={() => {
-                              setFileMethod2(null);
-                              setOpenMethod2(false);
-                            }} className="arrow">x</div>
-                          <span className="file-name">{fileMethod2[0].name}</span>
-                        </div>
-                      ) 
-                    }
-                    {
-                      (fileMethod2 === null && !isOpenMethod2 ) &&
-                      (
-                        <Dropzone onDrop={onDropMethod2}>
-                          {({ getRootProps, getInputProps }) => (
-                            <div {...getRootProps({ className: 'drop-zone' })} ref={dropMethod2Ref}>
-                              <input {...getInputProps()} />
-                                <label className="input_file-label">
-                                  <img
-                                    className="input_file-image"
-                                    src="/images/upload.svg"
-                                    alt="upload"
-                                  />
-                                  <input
-                                    value={item.value}
-                                    onChange={(e) => {
-                                      handleInputChange(index, e);
-                                    }}
-                                    type="file"
-                                    className="input_file"
-                                  />
-                                </label>
-                              </div>
-                          )}
-                        </Dropzone>
-                      )
-                    }
-                  </div>
-                )}
-                  <img
-                    onClick={() => handleDeleteMethod(index)}
-                    src="/images/cross.svg"
-                    className="cross_img"
-                    alt="cross"
-                  />
-              </div>
-            );
-          })}
-          <div className="add__buttons-container">
-            <button
-              disabled={mutableRows.length >= MAX_ROWS}
-              onClick={handleAddMethod}
-              className="add__method"
-            >
-              Add Method
-            </button>
-            <button onClick={uploadFile} className="add__submit">
-              Submit
-            </button>
+          <div onClick={handleHome} className="header__main">
+            <img src="/images/home.svg" className="back_main" alt="main"></img>
           </div>
         </div>
-      }
-      
+
+        <h1 className="add__title">Add</h1>
+
+        <div className="add__inputs-container">
+          <div className="add__inputs-block">
+            <input
+              value={name}
+              onChange={handleName}
+              placeholder="Artist First Name"
+              type="text"
+              className="add__input"
+            />
+            <input
+              value={surname}
+              onChange={handleSurname}
+              placeholder="Artist Surname"
+              type="text"
+              className="add__input"
+            />
+          </div>
+          <div className="add__inputs-block">
+            <input
+              value={title}
+              onChange={handleTitle}
+              placeholder="Title"
+              type="text"
+              className="add__input"
+            />
+            <input
+              value={year}
+              onChange={handleYear}
+              placeholder="Year"
+              className="add__input"
+            />
+          </div>
+
+          <div className="uploading">
+            {
+              (file && isOpen) && 
+              (
+                <div className="uploading-file">
+                  <div onClick={handleClose} className="arrow">x</div>
+                  <strong>Selected file: </strong> <span className="file-name">{file[0].name}</span>
+                </div>
+              ) 
+            }
+            {
+              (file === null && !isOpen) &&
+              (
+                <Dropzone onDrop={onDrop}>
+                  {({ getRootProps, getInputProps }) => (
+                    <div {...getRootProps({ className: 'drop-zone' })} ref={dropRef}>
+                      <input {...getInputProps()} />
+                      <label className="uploading-label">
+                        <img src="/images/upload.svg" alt="upload" />
+                        <input
+                          value={image}
+                          id='file-input'
+                          onChange={(e) => {
+                            console.log("onChange: => image ", image)
+                            // setImage(e.target)
+                          }} type="file"
+                          className="uploading-input"
+                          accept="downloadImages/*"
+                        ></input>
+                      </label>
+                      <div className="uploading-text">Upload photo of object</div>
+                    </div>
+                  )}
+                </Dropzone>
+              )
+            }
+          </div>
+        </div>
+        {mutableRows.map((item, index) => {
+          return (
+            <div className="inputs_container" key={index}>
+              <FormControl classes={{ root: classes.root }}>
+                <Select
+                  disabled={mutableRows.length > 1}
+                  value={item.method}
+                  onChange={(e) => {
+                    handleSelectChange(index, e);
+                  }}
+                  className={classes.select}
+                  classes={{
+                    select: classes.select,
+                    nativeInput: classes.nativeInput,
+                  }}
+                  inputProps={{
+                    classes: {
+                      icon: classes.icon,
+                    },
+                  }}
+                >
+                  <MenuItem
+                    classes={{ root: classes.rootItem }}
+                    value={InputMethod.STRING}
+                  >
+                    method1
+                  </MenuItem>
+                  <MenuItem value={InputMethod.IMAGE}>method2</MenuItem>
+                </Select>
+              </FormControl>
+
+              {item.method === InputMethod.STRING ? (
+                <>
+                  <input
+                    className="input_text"
+                    value={item.value}
+                    onChange={(e) => {
+                      handleInputChange(index, e);
+                    }}
+                    type="text"
+                  />
+                </>
+              ) : (
+                <div className="input_file-container">
+
+                  {(fileMethod2 && isOpenMethod2) && 
+                    (
+                      <div className="input_file-upload">
+                        <div onClick={() => {
+                            setFileMethod2(null);
+                            setOpenMethod2(false);
+                          }} className="arrow">x</div>
+                        <span className="file-name">{fileMethod2[0].name}</span>
+                      </div>
+                    ) 
+                  }
+                  {
+                    (fileMethod2 === null && !isOpenMethod2 ) &&
+                    (
+                      <Dropzone onDrop={onDropMethod2}>
+                        {({ getRootProps, getInputProps }) => (
+                          <div {...getRootProps({ className: 'drop-zone' })} ref={dropMethod2Ref}>
+                            <input {...getInputProps()} />
+                              <label className="input_file-label">
+                                <img
+                                  className="input_file-image"
+                                  src="/images/upload.svg"
+                                  alt="upload"
+                                />
+                                <input
+                                  value={item.value}
+                                  onChange={(e) => {
+                                    handleInputChange(index, e);
+                                  }}
+                                  type="file"
+                                  className="input_file"
+                                />
+                              </label>
+                            </div>
+                        )}
+                      </Dropzone>
+                    )
+                  }
+                </div>
+              )}
+                <img
+                  onClick={() => handleDeleteMethod(index)}
+                  src="/images/cross.svg"
+                  className="cross_img"
+                  alt="cross"
+                />
+            </div>
+          );
+        })}
+        <div className="add__buttons-container">
+          <button
+            disabled={mutableRows.length >= MAX_ROWS}
+            onClick={handleAddMethod}
+            className="add__method"
+          >
+            Add Method
+          </button>
+          <button onClick={uploadFile} className="add__submit">
+            Submit
+          </button>
+        </div>
+      </div>
+      {isLoad && <Loader/>}
     </div>
   );
 };

@@ -66,6 +66,8 @@ export default function EnterInfo(): ReactElement {
   const [year, setYear] = useState<string>("");
   const [objectID, setObjectID] = useState<string>("");
   const [artistId, setArtistId] = useState<string>("");
+  const [methods1, setMethod1] = useState<string>("");
+  const [methods2, setMethod2] = useState<string>("");
   const [checkData, setCheckData] = useState<boolean>(false);
   const [isLoad, setLoad] = useState(false);
 
@@ -172,6 +174,8 @@ export default function EnterInfo(): ReactElement {
       artist_surname: surname,
       artist_firstname: name,
       artist_id: artistId,
+      methods1: methods1,
+      methods2: methods2,
       title: title,
       year: year,
       id_object: objectID ? objectID : "",
@@ -187,8 +191,7 @@ export default function EnterInfo(): ReactElement {
       navigate("/result", { state: { searchItem, responseData: dataObjects.data } });
 
       setLoad(false);
-      // const dataTransaction = await API.get('protovapi', `/transactionobject/${objectID}`, {})
-      // console.log('EnterInfo => GET: getObject -> !!! dataTransaction', dataTransaction);
+    
     };
     getObjects();
   };

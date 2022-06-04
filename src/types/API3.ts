@@ -6,7 +6,7 @@ export interface IAPI3Request {
   artist_id: string;
   owner_id: string;
   object_image: string;
-  methods: { method1: string; method2: string };
+  methods: { methods1: string; methods2: string };
 }
 
 export interface IAPI3Response {

@@ -166,8 +166,8 @@ export default function AddMethod(): ReactElement {
       const data = {
         artist_id: location.data.artist_id,
         id_object: location.data.id_object,
-        method1: methods1 !== undefined ? methods1 : "",
-        method2: fileMethod2 ? fileMethod2[0].name : "",
+        methods1: methods1 !== undefined ? methods1 : "",
+        methods2: fileMethod2 ? fileMethod2[0].name : "",
         image_method2_key: fileMethod2 ? fileMethod2Key : "",
       };
 

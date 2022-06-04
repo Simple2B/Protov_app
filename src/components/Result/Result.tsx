@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { Theme } from "@emotion/react";
 import {
   TableContainer,
@@ -12,6 +12,8 @@ import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router";
 import "./Result.css";
 import { API } from "aws-amplify";
+import Loader from "../Loader/Loader";
+
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -78,8 +80,7 @@ const columns: readonly Column[] = [
 export default function Result(): ReactElement {
   const navigate = useNavigate();
   const location: any = useLocation().state;
-
-  console.log("Result: location =>", location)
+  const [isLoad, setLoad] = useState(false);
 
   const dataObjects = location.responseData.length > 0 ? location.responseData.map((item: { [x: string]: any; }) => 
     ({
@@ -87,22 +88,32 @@ export default function Result(): ReactElement {
         search_item: item['search_item'],
         artist_surname: item['artist_surname'],
         artist_firstname: item['artist_firstname'],
+        methods1: item['methods1'],
+        methods2: item['methods2'],
         title: item['title'],
         year: item['year'],
         id_object: item['id_object']
     })) : null
+
+  console.log("=>>>> Result: dataObjects ", dataObjects);
   const handleObjectId = (
     artist_id: string,
     artist_firstname: string,
     artist_surname: string,
+    methods1: string,
+    methods2: string,
     title: string,
     year: string,
     id_object: string
   ) => {
-    const data = {artist_firstname, artist_surname, title, year, id_object, artist_id};
+    
+    const data = {artist_firstname, artist_surname, title, year, id_object, artist_id, methods1, methods2};
+    console.log("!!! Result: data ", data);
     
     const getObjectTransaction = async () => {
-      const dataObject = await API.get('protovapi', `/transactionobject/${id_object}`, {})
+      setLoad(true);
+      const dataObject = await API.get('protovapi', `/transactionobject/${id_object}`, {});
+      setLoad(false);
       navigate("/provenance", {
         state: {
           data,
@@ -111,7 +122,7 @@ export default function Result(): ReactElement {
         },
       });
     };
-
+    
     if (location.searchItem === "Provenance") getObjectTransaction();
     
     if (location.searchItem === "Verify owner"){
@@ -142,7 +153,7 @@ export default function Result(): ReactElement {
   };
 
   return (
-    <div className="result">
+    <div className={isLoad ? "resultLoader" : "result"}>
       <div className="header">
         <div onClick={handleBack} className="header__back">
           <img
@@ -195,15 +206,20 @@ export default function Result(): ReactElement {
                     tabIndex={-1}
                     key={index}
                     classes={{ hover: classes.tableRow }}
-                    onClick={() =>
+                    onClick={() => {
+                      console.log("!  row.methods1",  row.methods1);
+                      console.log("!  row.methods2",  row.methods2);
                       handleObjectId(
                         row.artist_id,
                         row.artist_firstname,
                         row.artist_surname,
+                        row.methods1,
+                        row.methods2,
                         row.title,
                         row.year,
                         row.id_object
                       )
+                    }
                     }
                   >
                     <TableCell classes={{ root: classes.tableCell }}>
@@ -225,6 +241,7 @@ export default function Result(): ReactElement {
           </Table>
         </TableContainer>
       </div>
-    </div>
+      {isLoad && <Loader/>}  
+    </div>  
   );
 }
