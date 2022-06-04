@@ -79,6 +79,8 @@ export default function Result(): ReactElement {
   const navigate = useNavigate();
   const location: any = useLocation().state;
 
+  console.log("Result: location =>", location)
+
   const dataObjects = location.responseData.length > 0 ? location.responseData.map((item: { [x: string]: any; }) => 
     ({
         artist_id: item['artist_id'],
@@ -98,10 +100,9 @@ export default function Result(): ReactElement {
     id_object: string
   ) => {
     const data = {artist_firstname, artist_surname, title, year, id_object, artist_id};
-
+    
     const getObjectTransaction = async () => {
       const dataObject = await API.get('protovapi', `/transactionobject/${id_object}`, {})
-      console.log('Result => GET: getObjectTransaction -> !!! dataObject', dataObject.data);
       navigate("/provenance", {
         state: {
           data,
@@ -114,17 +115,17 @@ export default function Result(): ReactElement {
     if (location.searchItem === "Provenance") getObjectTransaction();
     
     if (location.searchItem === "Verify owner"){
-      console.log("Result: verify owner, dataObjects ", dataObjects)
       navigate("/verify-owner", {
         state: { data, allData: dataObjects },
       });
-    }
+    };
+    
     if (location.searchItem === "Verify object")
       navigate("/verify-object", {
         state: { data, allData: dataObjects },
       });
+
     if (location.searchItem === "Transact")
-      console.log("=>>> Result: dataObjects ", dataObjects);
       navigate("/transact", {
         state: { data, allData: dataObjects },
       });
@@ -133,7 +134,7 @@ export default function Result(): ReactElement {
   const classes = useStyle();
 
   const handleBack = () => {
-    navigate("/enter-info", {state: { search_item: dataObjects[0].search_item }});
+    navigate("/enter-info", {state: { search_item: dataObjects ? dataObjects[0].search_item : location.searchItem}});
   };
 
   const handleHome = () => {

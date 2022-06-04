@@ -9,6 +9,7 @@ import API2ResponseFail from "../../fake_api/API2_response_fail.json";
 import API7Response from "../../fake_api/API7_resposne.json";
 import { store } from "../../store";
 import { API } from "aws-amplify";
+import Loader from "../Loader/Loader";
 
 export default function Sale(): ReactElement {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function Sale(): ReactElement {
   const [isValidation, setValidation] = useState(false);
 
   const [passwordError, setPasswordErr] = useState<string>("");
+  const [isLoad, setLoad] = useState(false);
 
   const handleBack = () => {
     navigate("/transact", {
@@ -42,9 +44,11 @@ export default function Sale(): ReactElement {
   const handleNewPassword = (e: {
     target: { value: string };
   }) => {
-    const newOwnerPassword = e.target.value;
+    setNewPassword(e.target.value);
 
-    if (newOwnerPassword !== undefined) {
+    const newOwnerPassword = e.target.value
+
+    // if (newOwnerPassword !== undefined) {
       // const uppercaseRegExp   = /(?=.*?[A-Z])/;
       // const lowercaseRegExp   = /(?=.*?[a-z])/;
       // const digitsRegExp      = /(?=.*?[0-9])/;
@@ -57,6 +61,9 @@ export default function Sale(): ReactElement {
       const specialCharPassword = specialCharRegExp.test(newOwnerPassword);
       const minLengthPassword = minLengthRegExp.test(newOwnerPassword);
       let errMsg ="";
+      if (newOwnerPassword !== undefined) {
+        errMsg="Password is empty";
+      }
       if (passwordLength===0){
               errMsg="Password is empty";
       // } else if (!uppercasePassword){
@@ -80,7 +87,7 @@ export default function Sale(): ReactElement {
       } else {
         setPasswordErr(errMsg);
       }
-    }
+    // }
     // setPasswordErr("");
   };
 
@@ -88,6 +95,7 @@ export default function Sale(): ReactElement {
     if (passwordError.length > 0 ) {
       return
     }
+    setLoad(true);
     setHideButton(true);
     const data = {
       id_object: location.data.id_object,
@@ -122,10 +130,11 @@ export default function Sale(): ReactElement {
       }
     }
     setPasswordErr("");
+    setLoad(false);
   };
 
   return (
-    <div className="sale">
+    <div className={isLoad ? "saleContainer": "sale"}>
       <div className="header">
         {hideButton ? (
           <div></div>
@@ -179,11 +188,12 @@ export default function Sale(): ReactElement {
             
           </div>
 
-          <button onClick={handleSubmit} className="sale__button">
+          <button onClick={handleSubmit} className={newPassword === undefined ? "sale__button sale__button-disabled" : "sale__button"} disabled={newPassword === undefined}>
             Submit
           </button>
         </>
       )}
+      {isLoad && <Loader/>}
     </div>
   );
 }

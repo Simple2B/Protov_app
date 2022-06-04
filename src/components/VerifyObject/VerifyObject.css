@@ -1,3 +1,40 @@
+.verifyObjectLoader {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+.verifyObjectLoader::after {
+    content: "";
+    z-index: 10000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, .1);
+    width: 100vw;
+    height: 100vh;
+}
+
+.verifyObjectLoader .lds-roller {
+    position: absolute;
+    top: 40%;
+    left: 45%;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    /* width: 100vw;
+    height: 100vh; */
+}
+
+.uploading {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .uploading-label {
     cursor: pointer;
 }
@@ -101,7 +138,7 @@
     display: none;
     position: absolute;
     top: 0;
-    right: 70px;
+    right: 0;
     cursor: pointer;
 }
 
@@ -114,7 +151,7 @@
 }
 
 .uploading-file {
-    width: 340px;
+    min-width: 340px;
     height: 50px;
     display: flex;
     justify-content: center;
@@ -126,7 +163,7 @@
 .uploading-file .arrow {
     position: absolute;
     top: 0;
-    right: 50px;
+    right: 0;
     cursor: pointer;
 }
 
@@ -143,7 +180,7 @@
 }
 
 .verify_object-id {
-    margin-bottom: 50px;
+    /* margin-bottom: 50px; */
 }
 
 @media (max-width: 699px) {

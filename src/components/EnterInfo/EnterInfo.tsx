@@ -77,29 +77,29 @@ export default function EnterInfo(): ReactElement {
 
   useEffect(() => {
 
-    if(searchItem === "Verify owner") {
-      if(name.length > 0 && surname.length > 0 && objectID.length > 0){
-        setCheckData(true);
-      } else {
-        setCheckData(false);
-      }
-    }
+    // if(searchItem === "Verify owner") {
+    //   if(name.length > 0 && surname.length > 0 && objectID.length > 0){
+    //     setCheckData(true);
+    //   } else {
+    //     setCheckData(false);
+    //   }
+    // }
 
-    if(searchItem === "Verify object") {
-      if((title.length > 0 && year.length > 0) || objectID.length > 0){
-        setCheckData(true);
-      } else {
-        setCheckData(false);
-      }
-    }
+    // if(searchItem === "Verify object") {
+    //   if((title.length > 0 && year.length > 0) || objectID.length > 0){
+    //     setCheckData(true);
+    //   } else {
+    //     setCheckData(false);
+    //   }
+    // }
 
-    if(searchItem === "Transact" || searchItem === "Provenance") {
-      if((title.length > 0 && year.length > 0) || objectID.length > 0 || (name.length > 0 && surname.length > 0)){
-        setCheckData(true);
-      } else {
-        setCheckData(false);
-      }
-    }
+    // if(searchItem === "Transact" || searchItem === "Provenance") {
+    //   if((title.length > 0 && year.length > 0) || objectID.length > 0 || (name.length > 0 && surname.length > 0)){
+    //     setCheckData(true);
+    //   } else {
+    //     setCheckData(false);
+    //   }
+    // }
     
   }, [name, surname, objectID, searchItem, title.length, year.length])
 
@@ -177,7 +177,7 @@ export default function EnterInfo(): ReactElement {
       id_object: objectID ? objectID : "",
     };
 
-    console.log("data => ", data)
+    console.log("EnterInfo: data => ", data)
 
     const getObjects = async () => {
       setLoad(true);

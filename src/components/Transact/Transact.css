@@ -62,6 +62,36 @@
     font-size: 22px;
 }
 
+.saleContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+.saleContainer::after {
+    content: "";
+    z-index: 10000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, .1);
+    width: 100vw;
+    height: 100vh;
+}
+
+.saleContainer .lds-roller {
+    position: absolute;
+    top: 35%;
+    left: 45%;
+    z-index: 10001;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    /* width: 100vw;
+    height: 100vh; */
+}
+
 .sale__info {
     margin-bottom: 20px;
 }
@@ -121,8 +151,16 @@
     transition: background 1s;
 }
 
+.sale__button-disabled {
+    background-color: rgba(0, 0, 0, .4);
+}
+
 .sale__button:hover {
     background: #06525d;
+}
+
+.sale__button-disabled:hover {
+    background-color: rgba(0, 0, 0, .4);
 }
 
 .check_success {

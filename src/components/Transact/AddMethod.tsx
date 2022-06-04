@@ -8,8 +8,6 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router";
-import { axiosInstance } from "../../axios/axiosInstance";
-import API4Response from "../../fake_api/API4_response.json";
 import { store } from "../../store";
 import Dropzone from "react-dropzone";
 import { API, Storage } from 'aws-amplify';
@@ -25,7 +23,6 @@ const useStyle = makeStyles((theme: Theme) => ({
     },
     border: "none !important",
     width: "340px",
-    // height: "50px",
     padding: 0,
     alignItems: "start",
     fontFamily: "GT Walsheim Pro",
@@ -176,13 +173,10 @@ export default function AddMethod(): ReactElement {
 
       const awsObject = await API.post('protovapi', '/protovobject/add_method', {body: data});
       console.log("AddMethod awsObject => ", awsObject);
-
-    // axiosInstance.post("/", data).then(function (response) {
-    //   const responseData = response.data;
-    // });
-
+      // axiosInstance.post("/", data).then(function (response) {
+      //   const responseData = response.data;
+      // });
       // const fakeData = API4Response;
-
       if (awsObject.message.add_method_success) {
         setCheck("SUCCESS");
       } else {

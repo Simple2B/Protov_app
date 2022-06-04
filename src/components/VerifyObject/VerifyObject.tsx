@@ -15,6 +15,7 @@ import API5ResponseFail from "../../fake_api/API5_response_fail.json";
 import Dropzone from "react-dropzone";
 import { API, Storage } from 'aws-amplify';
 import { Readable } from "stream";
+import Loader from "../Loader/Loader";
 
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -75,6 +76,7 @@ export default function VerifyObject(): ReactElement {
   const navigate = useNavigate();
   const [verification, setVerification] = useState<string | null>();
   const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
+  const [isLoad, setLoad] = useState(false);
 
   const [image, setImage] = useState();
   const [file, setFile] = useState<File[] | null>(null); // state for storing actual image
@@ -142,108 +144,118 @@ export default function VerifyObject(): ReactElement {
   // }
 
   const handleVerify = async() => {
+    setLoad(true);
     const data = {
       id_object: location.data.id_object,
-      methods: {
-        method1: mutableRows.find((el) => el.method === InputMethod.STRING)
-          ?.value,
-        method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
-          ?.value,
-      },
+      artist_surname: location.data.artist_surname,
+      artist_firstname: location.data.artist_firstname,
+      title: location.data.title,
+      year: location.data.year,
+      // methods: {
+      //   method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+      //     ?.value,
+      //   method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+      //     ?.value,
+      // },
     };
 
-    const dataObject = await API.get('protovapi', `/protovobject/${location.data.id_object}`, {});
+    const dataObject = await API.post('protovapi', '/protovobject/object', {body: data});
     console.log('VerifyObject => GET: getVerifyObject -> !!! dataObject', dataObject.data[0]);
 
     let responseData = { "object_ver_success": false };
 
-    if (file && dataObject.data[0].image_file_key) {
-      const fileDate: any =  await Storage.get(dataObject.data[0].image_file_key, { download: true });
-      console.log("VerifyObject fileDate  size", fileDate.Body.size);
-      console.log("VerifyObject fileDate  type", fileDate.Body.type);
-      
-      if(file[0].name === dataObject.data[0].object_image 
-        && (file[0].size === fileDate.Body.size) && (file[0].type === fileDate.Body.type)) {
-            console.log("VerifyObject: file ", true)
-            setVerification("Verification Success!");
-            responseData = { "object_ver_success": true };
-      } else {
-        setVerification("Verification Fail!");
-        responseData = { "object_ver_success": false };
-      }
-    };
+    if (dataObject.data.length > 0) {
 
-    if (fileMethod2 && dataObject.data[0].image_method2_key) {
-        const fileDate: any =  await Storage.get(dataObject.data[0].image_method2_key, { download: true });
-        console.log("VerifyObject fileDate ===>>> ", fileDate);
-        if(fileMethod2[0].name === dataObject.data[0].methods2
-          && (fileMethod2[0].size === fileDate.Body.size) && (fileMethod2[0].type === fileDate.Body.type)) {
-              console.log("VerifyObject: fileMethod2 ", true)
+      if (file && dataObject.data[0].image_file_key) {
+        const fileDate: any =  await Storage.get(dataObject.data[0].image_file_key, { download: true });
+        console.log("VerifyObject fileDate  size", fileDate.Body.size);
+        console.log("VerifyObject fileDate  type", fileDate.Body.type);
+        
+        if(file[0].name === dataObject.data[0].object_image 
+          && (file[0].size === fileDate.Body.size) && (file[0].type === fileDate.Body.type)) {
+              console.log("VerifyObject: file ", true)
               setVerification("Verification Success!");
               responseData = { "object_ver_success": true };
         } else {
           setVerification("Verification Fail!");
           responseData = { "object_ver_success": false };
         }
-    };
+      };
 
-    if ((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) !== undefined) {
-      if (((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) === dataObject.data[0].methods1)) {
-        console.log("VerifyObject: methods1 ", true)   
-        setVerification("Verification Success!");
-        responseData = { "object_ver_success": true };
+      if (fileMethod2 && dataObject.data[0].image_method2_key) {
+          const fileDate: any =  await Storage.get(dataObject.data[0].image_method2_key, { download: true });
+          console.log("VerifyObject fileDate ===>>> ", fileDate);
+          if(fileMethod2[0].name === dataObject.data[0].methods2
+            && (fileMethod2[0].size === fileDate.Body.size) && (fileMethod2[0].type === fileDate.Body.type)) {
+                console.log("VerifyObject: fileMethod2 ", true)
+                setVerification("Verification Success!");
+                responseData = { "object_ver_success": true };
+          } else {
+            setVerification("Verification Fail!");
+            responseData = { "object_ver_success": false };
+          }
+      };
+
+      if ((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) !== undefined) {
+        if (((mutableRows.find((el) => el.method === InputMethod.STRING)?.value) === dataObject.data[0].methods1)
+        || (mutableRows.find((el) => el.method === InputMethod.STRING)?.value) === location.data.id_object) {
+          console.log("VerifyObject: methods1 ", true)   
+          setVerification("Verification Success!");
+          responseData = { "object_ver_success": true };
+        } else {
+          setVerification("Verification Fail!");
+          responseData = { "object_ver_success": false };
+        }
+      }
+      
+
+      if (location.data.path === "/transact") {
+        if (responseData.object_ver_success) {
+          const data = {
+            artist_id: location.data.artist_id,
+            artist_surname: location.data.artist_surname,
+            title: location.data.title,
+            year: location.data.year,
+            id_object: location.data.id_object,
+            methods: {
+              method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+                ?.value,
+              method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+                ?.value,
+            },
+          };
+          store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "SUCCESS" });
+          navigate("/transact", {
+            state: { data: data, allData: location.allData },
+          });
+        } else {
+          const data = {
+            artist_id: location.data.artist_id,
+            artist_surname: location.data.artist_surname,
+            title: location.data.title,
+            year: location.data.year,
+            id_object: location.data.id_object,
+            methods: {
+              method1: mutableRows.find((el) => el.method === InputMethod.STRING)
+                ?.value,
+              method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
+                ?.value,
+            },
+          };
+          store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "FAIL" });
+          navigate("/transact", {
+            state: { data: data, allData: location.allData },
+          });
+        }
       } else {
-        setVerification("Verification Fail!");
-        responseData = { "object_ver_success": false };
+        if (responseData.object_ver_success) {
+          setVerification("Verification Success!");
+        } else {
+          setVerification("Verification Fail!");
+        }
       }
     }
-    
-
-    if (location.data.path === "/transact") {
-      if (responseData.object_ver_success) {
-        const data = {
-          artist_id: location.data.artist_id,
-          artist_surname: location.data.artist_surname,
-          title: location.data.title,
-          year: location.data.year,
-          id_object: location.data.id_object,
-          methods: {
-            method1: mutableRows.find((el) => el.method === InputMethod.STRING)
-              ?.value,
-            method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
-              ?.value,
-          },
-        };
-        store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "SUCCESS" });
-        navigate("/transact", {
-          state: { data: data, allData: location.allData },
-        });
-      } else {
-        const data = {
-          artist_id: location.data.artist_id,
-          artist_surname: location.data.artist_surname,
-          title: location.data.title,
-          year: location.data.year,
-          id_object: location.data.id_object,
-          methods: {
-            method1: mutableRows.find((el) => el.method === InputMethod.STRING)
-              ?.value,
-            method2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
-              ?.value,
-          },
-        };
-        store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "FAIL" });
-        navigate("/transact", {
-          state: { data: data, allData: location.allData },
-        });
-      }
-    } else {
-      if (responseData.object_ver_success) {
-        setVerification("Verification Success!");
-      } else {
-        setVerification("Verification Fail!");
-      }
-    }
+    setLoad(false);
   };
 
   const handleSearch = () => {
@@ -310,7 +322,7 @@ export default function VerifyObject(): ReactElement {
   };
 
   return (
-    <div className="verify_object">
+    <div className={isLoad ? "verifyObjectLoader" : "verify_object" }>
       <div className="header">
         <div onClick={handleBack} className="header__back">
           <img
@@ -494,6 +506,7 @@ export default function VerifyObject(): ReactElement {
           </div>
         </>
       )}
+      {isLoad && <Loader/>}
     </div>
   );
 }

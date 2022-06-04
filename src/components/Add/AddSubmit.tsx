@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import "./Add.css";
 import { Storage } from 'aws-amplify';
 
+const typeImages = ["jpeg", "jpg", "png", "svg", "gif", "ico"];
+
 export default function AddSubmit(): ReactElement {
   const [status, setStatus] = useState<string>();
   const [check, setCheck] = useState<boolean>(false);
@@ -52,7 +54,7 @@ export default function AddSubmit(): ReactElement {
     }
   }, [imageMethod2Key, objectFileKey]);
 
-  const typeImages = ["jpeg", "jpg", "png", "svg", "gif", "ico"];
+  
   return (
     <div className="add_submit">
       <div className="header">
@@ -68,6 +70,42 @@ export default function AddSubmit(): ReactElement {
       </div>
       <div className="add_submit-id"><strong>owner password:</strong> {location.data.owner_id}</div>
       <div className="add_submit-id"><strong>object:</strong> {location.responseData.message.object}</div>
+
+      { 
+        (objectFileUrl.length > 0) && (
+          <div className="add_submit-objects">
+            {/* <div className="add_submit-objectsTitle">Uploaded {(objectFileUrl.length > 0 && imageMethod2Url.length > 0)? 'objects:' : 'object:'}</div> */}
+            {
+             location.responseData.message.object.length > 0 && typeImages.includes(location.responseData.message.object.split('.')[1]) ? (
+                <div className="add_submit-object">
+                  {/* <span className="add_submit-objectLink">1). Image of object</span> */}
+                  <img src={objectFileUrl} alt={objectFileUrl} />
+                </div>
+             ) : location.responseData.message.object.length > 0 && (
+                <div className="add_submit-objectLink">
+                  1). <a href={objectFileUrl} target="_blank" rel="noreferrer">File of object</a>
+                </div>
+             )
+            }
+            
+
+            {/* { location.responseData.message.methods2.length > 0 && typeImages.includes(location.responseData.message.methods2.split('.')[1]) ?
+              (
+                <div className="add_submit-object">
+                  <span className="add_submit-objectLink">2). Image of object from method2</span>
+                  <img src={imageMethod2Url} alt={imageMethod2Url} />
+                </div>
+              ) : location.responseData.message.methods2.length > 0 &&
+              (
+                <div className="add_submit-objectLink">
+                  2). <a href={imageMethod2Url} target="_blank" rel="noreferrer"> File of object from method2</a>
+                </div>
+              )
+            } */}
+          </div>
+        )
+      }
+
       <div className="add_submit-id"><strong>object ID:</strong> {location.responseData.message.id_object}</div>
 
       <h2 className="verify_methods-title">Verification methods:</h2>
@@ -87,40 +125,6 @@ export default function AddSubmit(): ReactElement {
         {status}
       </div>
 
-      { 
-        (objectFileUrl.length > 0 || imageMethod2Url.length > 0) && (
-          <div className="add_submit-objects">
-            <div className="add_submit-objectsTitle">Uploaded {(objectFileUrl.length > 0 && imageMethod2Url.length > 0)? 'objects:' : 'object:'}</div>
-            {
-             location.responseData.message.object.length > 0 && typeImages.includes(location.responseData.message.object.split('.')[1]) ? (
-                <div className="add_submit-object">
-                  <span className="add_submit-objectLink">1). Image of object</span>
-                  <img src={objectFileUrl} alt={objectFileUrl} />
-                </div>
-             ) : location.responseData.message.object.length > 0 && (
-                <div className="add_submit-objectLink">
-                  1). <a href={objectFileUrl} target="_blank" rel="noreferrer">File of object</a>
-                </div>
-             )
-            }
-            
-
-            { location.responseData.message.methods2.length > 0 && typeImages.includes(location.responseData.message.methods2.split('.')[1]) ?
-              (
-                <div className="add_submit-object">
-                  <span className="add_submit-objectLink">2). Image of object from method2</span>
-                  <img src={imageMethod2Url} alt={imageMethod2Url} />
-                </div>
-              ) : location.responseData.message.methods2.length > 0 &&
-              (
-                <div className="add_submit-objectLink">
-                  2). <a href={imageMethod2Url} target="_blank" rel="noreferrer"> File of object from method2</a>
-                </div>
-              )
-            }
-          </div>
-        )
-      }
     </div>
   );
 }
