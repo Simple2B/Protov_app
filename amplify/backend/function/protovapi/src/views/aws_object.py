@@ -74,49 +74,53 @@ def verify_objects():
     # search_items = ['Verify owner', 'Transact', 'Provenance', 'Verify object']
 
     for obj in objects['Items']:
-        is_artist_verify = obj['artist_firstname']['S'] == name and obj['artist_surname']['S'] == surname
-        is_object_verify = obj['title']['S'] == title and obj['year']['S'] == year
+        is_artist_verify = obj['artist_firstname']['S'] == name and obj['artist_surname']['S'] == surname and len(
+            name) > 0 and len(surname) > 0
+        is_object_verify = obj['title']['S'] == title and obj['year']['S'] == year and len(
+            title) > 0 and len(year) > 0
+        is_object_id = obj['id_object']['S'] == id_object
+
+        is_full_info_object = is_artist_verify and is_object_verify and is_object_id
         if search_item == 'Verify owner':
-            if is_artist_verify and obj['id_object']['S'] == id_object:
+            if is_artist_verify and is_object_id:
                 objects_data.append(obj)
         if search_item == 'Transact':
-            if is_artist_verify or obj['id_object']['S'] == id_object or is_object_verify:
+            if is_artist_verify or is_object_id or is_object_verify:
                 objects_data.append(obj)
         if search_item == 'Provenance':
-            if is_artist_verify and obj['id_object']['S'] == id_object or is_artist_verify or obj['id_object']['S'] == id_object:
+            if is_artist_verify and is_object_id or is_artist_verify or obj['id_object']['S'] == id_object:
                 objects_data.append(obj)
         if search_item == 'Verify object':
-            if is_object_verify or obj['id_object']['S'] == id_object:
+            if is_full_info_object or is_artist_verify or is_object_verify or is_object_id:
                 objects_data.append(obj)
 
     if len(objects_data) > 0:
-        # seen = set()
-        # unique_objects_data = [
-        #     obj for obj in objects_data if obj['id_object']['S'] not in seen and not seen.add(obj['id_object']['S'])]
-
-        # print("unique_objects_data ", unique_objects_data)
-
         object_services = AwsObjectService()
-
-        # if search_item == 'Provenance':
-        #     objects = unique_objects_data
-
         objects_data = [object_services.get_object_info(
             obj, search_item) for obj in objects_data]
     return jsonify(data=objects_data)
 
 
-@aws_object_blueprint.route(BASE_ROUTE + 'protovobject/<id_object>', methods=["GET"])
-def get_object(id_object):
+@aws_object_blueprint.route(BASE_ROUTE + 'protovobject/object', methods=["POST"])
+def get_object():
+    request_json = request.get_json()
+    print("get_object: request_json => ", request_json)
+    id_object = request_json.get('id_object')
+    print("get_object: id_object => ", id_object)
+
+    artist_surname = request_json.get('artist_surname')
+    artist_firstname = request_json.get('artist_firstname')
+    # title = request_json.get('title')
+    # year = request_json.get('year')
+
     objects = AwsObjectService.get_objects()
-    print("verify_object: id_object => ", id_object)
-    print("verify_object: objects['Items'] => ", objects['Items'])
+
     objects_data = []
     for obj in objects['Items']:
-        print("verify_object: obj => ", obj)
-        if obj['id_object']['S'] == id_object:
+        is_verify_artist = obj['artist_firstname']['S'] == artist_firstname and obj['artist_surname']['S'] == artist_surname
+        if obj['id_object']['S'] == id_object and is_verify_artist or obj['id_object']['S'] == id_object:
             objects_data.append(obj)
-        print("verify_object: objects_data => ", objects_data)
+        print("get_object: objects_data => ", objects_data)
     if len(objects_data) > 0:
         objects_data = [{
             'artist_firstname': obj['artist_firstname']['S'],

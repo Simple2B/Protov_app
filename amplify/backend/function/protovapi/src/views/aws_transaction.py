@@ -51,19 +51,9 @@ def get_transaction(id_object):
 def sale():
     request_json = request.get_json()
     id_object = request_json.get('id_object')
-
     owner_id = request_json.get('owner_password')
-
     new_owner_id = request_json.get('new_owner_id')
-    print("sale: new_owner_id ==>>>", new_owner_id)
-
-    # data_objects = clientTransaction.scan(TableName=OBJECT_PROTOV_TABLE)
-    # data = json.dumps(data_objects)
     objects = AwsObjectService.get_objects()
-
-    # data_transaction_objects = clientTransaction.scan(
-    #     TableName=TRANSACTION_TABLE)
-    # data_transaction = json.dumps(data_transaction_objects)
     objects_transaction = AwsTransactionService.get_transaction_objects()
 
     object = None
@@ -76,7 +66,7 @@ def sale():
         if obj['owner_id']['S'] == owner_id and obj['id_object']['S'] == id_object:
             verify_object = obj
 
-    if object['id_object']['S'] == verify_object['id_object']['S']:
+    if object and verify_object and object['id_object']['S'] == verify_object['id_object']['S']:
         today = datetime.date.today().strftime("%m/%d/%Y")
         print("new_owner_id ", new_owner_id)
         update_password = clientTransaction.update_item(
@@ -125,5 +115,6 @@ def sale():
             "title": object['title']['S'],
             "year": object['year']['S'],
             "id_object": id_object,
+            "owner_id": owner_id,
             "owner_ver_status": False
         }
