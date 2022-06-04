@@ -88,7 +88,7 @@ def verify_objects():
             if is_artist_verify or is_object_id or is_object_verify:
                 objects_data.append(obj)
         if search_item == 'Provenance':
-            if is_artist_verify and is_object_id or is_artist_verify or obj['id_object']['S'] == id_object:
+            if (is_artist_verify and is_object_id) or (is_artist_verify and is_object_verify) or is_artist_verify or obj['id_object']['S'] == id_object:
                 objects_data.append(obj)
         if search_item == 'Verify object':
             if is_full_info_object or is_artist_verify or is_object_verify or is_object_id:
@@ -190,8 +190,8 @@ def add_method():
     request_json = request.get_json()
     artist_id = request_json.get("artist_id")
     id_object = request_json.get("id_object")
-    method1 = request_json.get("method1")
-    method2 = request_json.get("method2")
+    methods1 = request_json.get("methods1")
+    methods2 = request_json.get("methods2")
     image_method2_key = request_json.get("image_method2_key")
 
     objects = AwsObjectService.get_objects()
@@ -213,8 +213,8 @@ def add_method():
             "artist_surname": {'S': object['artist_surname']['S']},
             "artist_firstname": {'S': object['artist_firstname']['S']},
             "artist_id": {'S': object['artist_id']['S']},
-            "methods1": {'S': method1},
-            "methods2": {'S': method2},
+            "methods1": {'S': methods1},
+            "methods2": {'S': methods2},
             "image_method2_key": {'S': image_method2_key},
             "object_image": {'S': object['object_image']['S']},
             "image_file_key": {'S': object['image_file_key']['S']},
@@ -226,10 +226,10 @@ def add_method():
         action = transaction_object['action']['S']
         print("add => id_transaction",
               transaction_object['id_transaction']['S'])
-        print("add => methods1", method1)
-        print("add => methods2", method2)
+        print("add => methods1", methods1)
+        print("add => methods2", methods2)
 
-        if len(method1) > 0 or len(method2) > 0:
+        if len(methods1) > 0 or len(methods2) > 0:
             action = 'onboard'
 
         print("add => action", action)
@@ -239,8 +239,8 @@ def add_method():
             "id_object": {'S': id_object},
             "action": {'S': action},
             "date": {'S': today},
-            "methods1": {'S': method1},
-            "methods2": {'S': method2},
+            "methods1": {'S': methods1},
+            "methods2": {'S': methods2},
             "owner_id": {'S': transaction_object['owner_id']['S']},
         })
 

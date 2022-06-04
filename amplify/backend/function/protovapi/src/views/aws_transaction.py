@@ -40,8 +40,8 @@ def get_transaction(id_object):
             'date': obj['date']['S'],
             'action': obj['action']['S'],
             'verification_methods': {
-                'method1': obj['methods1']['S'],
-                'method2': obj['methods2']['S'],
+                'methods1': obj['methods1']['S'],
+                'methods2': obj['methods2']['S'],
             }
         } for obj in objects_data]
     return jsonify(data=objects_data)
