@@ -1,0 +1,10 @@
+{
+    "resourceName": "dynamodbtransaction",
+    "tableName": "transactiontable",
+    "partitionKey": {
+        "fieldName": "id_transaction",
+        "fieldType": "string"
+    },
+    "gsi": [],
+    "triggerFunctions": []
+}

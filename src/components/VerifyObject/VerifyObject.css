@@ -1,107 +1,195 @@
+.verifyObjectLoader {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+.verifyObjectLoader::after {
+    content: "";
+    z-index: 10000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, .1);
+    width: 100vw;
+    height: 100vh;
+}
+
+.verifyObjectLoader .lds-roller {
+    position: absolute;
+    top: 40%;
+    left: 45%;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    /* width: 100vw;
+    height: 100vh; */
+}
+
+.uploading {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .uploading-label {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .uploading-input {
-  display: none;
+    display: none;
 }
 
 .buttons_block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .add_method {
-  border: 1px solid #086E7D;
-  box-sizing: border-box;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 300px;
-  height: 55px;
-  background-color: #fff;
-  font-family: "GT Walsheim Pro";
-  font-size: 16px;
-  line-height: 18px;
-  text-align: center;
-  color: #086E7D;
-  margin-bottom: 20px;
-  margin-top: 30px;
-  transition: background 1s;
+    border: 1px solid #086E7D;
+    box-sizing: border-box;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 300px;
+    height: 55px;
+    background-color: #fff;
+    font-family: "GT Walsheim Pro";
+    font-size: 16px;
+    line-height: 18px;
+    text-align: center;
+    color: #086E7D;
+    margin-bottom: 20px;
+    margin-top: 30px;
+    transition: background 1s;
 }
 
 .add_method:hover {
-  background-color: #0a6d7c11;
+    background-color: #0a6d7c11;
 }
 
 .verify {
-  background: #086E7D;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 300px;
-  height: 55px;
-  font-family: "GT Walsheim Pro";
-  font-size: 16px;
-  line-height: 18px;
-  text-align: center;
-  color: #fff;
-  transition: background 1s;
-  border: none;
+    background: #086E7D;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 300px;
+    height: 55px;
+    font-family: "GT Walsheim Pro";
+    font-size: 16px;
+    line-height: 18px;
+    text-align: center;
+    color: #fff;
+    transition: background 1s;
+    border: none;
 }
 
 .verify:hover {
-  background: #06525d;
+    background: #06525d;
 }
 
 .input_text {
-  width: 340px;
-  height: 50px;
-  border: 1px solid #BAE4EA;
-  border-radius: 6px;
-  font-family: "GT Walsheim Pro";
-  font-size: 18px;
-  padding-left: 20px;
-  margin-left: 20px;
+    width: 340px;
+    height: 50px;
+    border: 1px solid #BAE4EA;
+    border-radius: 6px;
+    font-family: "GT Walsheim Pro";
+    font-size: 18px;
+    padding-left: 20px;
+    margin-left: 20px;
 }
 
 .input_file {
-  display: none;
+    display: none;
 }
 
 .input_file-label {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .input_file-image {
-  width: 40px;
+    width: 40px;
 }
 
 .input_file-container {
-  display: inline-block;
-  width: 340px;
-  margin-left: 20px;
+    display: inline-block;
+    width: 340px;
+    margin-left: 20px;
+}
+
+.input_file-container .file-name {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.input_file-container .input_file-upload {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.input_file-container .input_file-upload .arrow {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+
+.input_file-container .input_file-upload:hover .arrow {
+    display: block;
 }
 
 .uploading-text {
-  margin-bottom: 40px;
+    margin-bottom: 40px;
+}
+
+.uploading-file {
+    min-width: 340px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 10px auto;
+}
+
+.uploading-file .arrow {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+
+.uploading-file .arrow:hover {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.uploading-file .file-name {
+    margin-left: 7px;
 }
 
 .verify_object-info {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .verify_object-id {
-  margin-bottom: 50px;
+    /* margin-bottom: 50px; */
 }
 
 @media (max-width: 699px) {
-  .input_text {
-    margin-left: 0;
-  }
-
-  .cross_img {
-    display: block;
-    width: 30px;
-    margin: 10px auto;
-  }
+    .input_text {
+        margin-left: 0;
+    }
+    .cross_img {
+        display: block;
+        width: 30px;
+        margin: 10px auto;
+    }
 }

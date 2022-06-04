@@ -13,37 +13,37 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./Provenance.css";
 
 const useStyle = makeStyles((theme: Theme) => ({
-  root: {
-    border: "1px solid #BAE4EA",
-    borderRadius: "6px",
-    fontFamily: "GT Walsheim Pro !important",
-  },
-  headerCellLeft: {
-    borderTopLeftRadius: "6px",
-    fontSize: "18px !important",
-    fontFamily: "GT Walsheim Pro !important",
-    borderBottom: "1px solid #BAE4EA !important",
-    borderRight: "1px solid #BAE4EA !important",
-  },
-  headerCellRight: {
-    borderTopRightRadius: "6px",
-    fontSize: "18px !important",
-    fontFamily: "GT Walsheim Pro !important",
-    borderBottom: "1px solid #BAE4EA !important",
-    borderRight: "1px solid #BAE4EA !important",
-  },
-  headerCell: {
-    fontSize: "18px !important",
-    fontFamily: "GT Walsheim Pro !important",
-    borderBottom: "1px solid #BAE4EA !important",
-    borderRight: "1px solid #BAE4EA !important",
-  },
-  tableCell: {
-    fontFamily: "GT Walsheim Pro !important",
-    fontSize: "16px !important",
-    borderBottom: "1px solid #BAE4EA !important",
-    borderRight: "1px solid #BAE4EA !important",
-  },
+    root: {
+      border: "1px solid #BAE4EA",
+      borderRadius: "6px",
+      fontFamily: "GT Walsheim Pro !important",
+    },
+    headerCellLeft: {
+      borderTopLeftRadius: "6px",
+      fontSize: "18px !important",
+      fontFamily: "GT Walsheim Pro !important",
+      borderBottom: "1px solid #BAE4EA !important",
+      borderRight: "1px solid #BAE4EA !important",
+    },
+    headerCellRight: {
+      borderTopRightRadius: "6px",
+      fontSize: "18px !important",
+      fontFamily: "GT Walsheim Pro !important",
+      borderBottom: "1px solid #BAE4EA !important",
+      borderRight: "1px solid #BAE4EA !important",
+    },
+    headerCell: {
+      fontSize: "18px !important",
+      fontFamily: "GT Walsheim Pro !important",
+      borderBottom: "1px solid #BAE4EA !important",
+      borderRight: "1px solid #BAE4EA !important",
+    },
+    tableCell: {
+      fontFamily: "GT Walsheim Pro !important",
+      fontSize: "16px !important",
+      borderBottom: "1px solid #BAE4EA !important",
+      borderRight: "1px solid #BAE4EA !important",
+    },
 }));
 
 interface Column {
@@ -76,6 +76,7 @@ const columns: readonly Column[] = [
 export default function Provenance(): ReactElement {
   const classes = useStyle();
   const location: any = useLocation().state;
+  console.log("=>>>>>> Provenance: location ", location)
 
   const navigate = useNavigate();
   const handleBack = () => {
@@ -107,7 +108,7 @@ export default function Provenance(): ReactElement {
         {location.data.artist_surname}, {location.data.title},{" "}
         {location.data.year}
       </div>
-      <div className="provenance__id">object ID: {location.data.object_id}</div>
+      <div className="provenance__id">object ID: {location.data.id_object}</div>
       <div className="provenance__table">
         <TableContainer sx={{ maxWidth: "100%" }}>
           <Table
@@ -156,15 +157,9 @@ export default function Provenance(): ReactElement {
                       {row.action}
                     </TableCell>
                     <TableCell classes={{ root: classes.tableCell }}>
-                      {Object.keys(row.verification_methods).length === 1 ? (
-                        Object.keys(row.verification_methods)
-                      ) : (
-                        <>
-                          {Object.keys(row.verification_methods)[0]}
-                          {", "}
-                          {Object.keys(row.verification_methods)[1]}
-                        </>
-                      )}
+                      {location.data.methods1.length > 0 ? "method1" : ""}
+                      {location.data.methods1.length > 0 && location.data.methods2.length > 0 ? ", " : ""}
+                      {location.data.methods2 !== undefined && location.data.methods2.length > 0 ? "method2" : ""} 
                     </TableCell>
                   </TableRow>
                 );

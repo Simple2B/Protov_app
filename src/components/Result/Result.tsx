@@ -1,3 +1,4 @@
+import React, { ReactElement, useState } from "react";
 import { Theme } from "@emotion/react";
 import {
   TableContainer,
@@ -8,11 +9,11 @@ import {
   TableBody,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { ReactElement } from "react";
 import { useLocation, useNavigate } from "react-router";
 import "./Result.css";
-import API6Response from "../../fake_api/API6_response.json";
-import { axiosInstance } from "../../axios/axiosInstance";
+import { API } from "aws-amplify";
+import Loader from "../Loader/Loader";
+
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -79,45 +80,72 @@ const columns: readonly Column[] = [
 export default function Result(): ReactElement {
   const navigate = useNavigate();
   const location: any = useLocation().state;
+  const [isLoad, setLoad] = useState(false);
 
+  const dataObjects = location.responseData.length > 0 ? location.responseData.map((item: { [x: string]: any; }) => 
+    ({
+        artist_id: item['artist_id'],
+        search_item: item['search_item'],
+        artist_surname: item['artist_surname'],
+        artist_firstname: item['artist_firstname'],
+        methods1: item['methods1'],
+        methods2: item['methods2'],
+        title: item['title'],
+        year: item['year'],
+        id_object: item['id_object']
+    })) : null
+
+  console.log("=>>>> Result: dataObjects ", dataObjects);
   const handleObjectId = (
+    artist_id: string,
+    artist_firstname: string,
     artist_surname: string,
+    methods1: string,
+    methods2: string,
     title: string,
     year: string,
-    object_id: string
+    id_object: string
   ) => {
-    const data = { artist_surname, title, year, object_id };
-    axiosInstance.post("/", object_id).then(function (response) {
-      // const responseData = response.data;
-    });
-    const fakeResponse = API6Response;
-
-    if (location.searchItem === "Provenance")
+    
+    const data = {artist_firstname, artist_surname, title, year, id_object, artist_id, methods1, methods2};
+    console.log("!!! Result: data ", data);
+    
+    const getObjectTransaction = async () => {
+      setLoad(true);
+      const dataObject = await API.get('protovapi', `/transactionobject/${id_object}`, {});
+      setLoad(false);
       navigate("/provenance", {
         state: {
           data,
-          responseData: fakeResponse,
-          allData: location.responseData,
+          responseData: dataObject.data,
+          allData: dataObjects,
         },
       });
-    if (location.searchItem === "Verify owner")
+    };
+    
+    if (location.searchItem === "Provenance") getObjectTransaction();
+    
+    if (location.searchItem === "Verify owner"){
       navigate("/verify-owner", {
-        state: { data, allData: location.responseData },
+        state: { data, allData: dataObjects },
       });
+    };
+    
     if (location.searchItem === "Verify object")
       navigate("/verify-object", {
-        state: { data, allData: location.responseData },
+        state: { data, allData: dataObjects },
       });
+
     if (location.searchItem === "Transact")
       navigate("/transact", {
-        state: { data, allData: location.responseData },
+        state: { data, allData: dataObjects },
       });
   };
 
   const classes = useStyle();
 
   const handleBack = () => {
-    navigate("/enter-info");
+    navigate("/enter-info", {state: { search_item: dataObjects ? dataObjects[0].search_item : location.searchItem}});
   };
 
   const handleHome = () => {
@@ -125,7 +153,7 @@ export default function Result(): ReactElement {
   };
 
   return (
-    <div className="result">
+    <div className={isLoad ? "resultLoader" : "result"}>
       <div className="header">
         <div onClick={handleBack} className="header__back">
           <img
@@ -170,21 +198,28 @@ export default function Result(): ReactElement {
               </TableRow>
             </TableHead>
             <TableBody>
-              {location.responseData.map((row: any) => {
+              {dataObjects && dataObjects.map((row: any, index: number) => {
                 return (
                   <TableRow
                     hover
                     role="checkbox"
                     tabIndex={-1}
-                    key={row.object_id}
+                    key={index}
                     classes={{ hover: classes.tableRow }}
-                    onClick={() =>
+                    onClick={() => {
+                      console.log("!  row.methods1",  row.methods1);
+                      console.log("!  row.methods2",  row.methods2);
                       handleObjectId(
+                        row.artist_id,
+                        row.artist_firstname,
                         row.artist_surname,
+                        row.methods1,
+                        row.methods2,
                         row.title,
                         row.year,
-                        row.object_id
+                        row.id_object
                       )
+                    }
                     }
                   >
                     <TableCell classes={{ root: classes.tableCell }}>
@@ -197,7 +232,7 @@ export default function Result(): ReactElement {
                       {row.year}
                     </TableCell>
                     <TableCell classes={{ root: classes.tableCell }}>
-                      {row.object_id}
+                      {row.id_object}
                     </TableCell>
                   </TableRow>
                 );
@@ -206,6 +241,7 @@ export default function Result(): ReactElement {
           </Table>
         </TableContainer>
       </div>
-    </div>
+      {isLoad && <Loader/>}  
+    </div>  
   );
 }

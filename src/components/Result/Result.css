@@ -1,3 +1,33 @@
+.resultLoader {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+.resultLoader::after {
+    content: "";
+    z-index: 10000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, .3);
+    width: 100vw;
+    height: 100vh;
+}
+
+.resultLoader .lds-roller {
+    position: absolute;
+    top: 40%;
+    left: 45%;
+    z-index: 10013;
+    /* display: flex;
+  justify-content: center;
+  align-items: center; */
+    /* width: 100vw;
+  height: 100vh; */
+}
+
 .result__title {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }

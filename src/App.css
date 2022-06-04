@@ -1,31 +1,28 @@
 @font-face {
-  font-family: "GT Walsheim Pro";
-  src: url("./fonts/GTWalsheimPro-Regular.woff") format("woff"),
-    url("./fonts/GTWalsheimPro-Medium.woff") format("woff"),
-    url("./fonts/GTWalsheimPro-Bold.woff") format("woff"),
-    url("./fonts/GTWalsheimPro-Black.woff") format("woff");
+    font-family: "GT Walsheim Pro";
+    src: url("./fonts/GTWalsheimPro-Regular.woff") format("woff"), url("./fonts/GTWalsheimPro-Medium.woff") format("woff"), url("./fonts/GTWalsheimPro-Bold.woff") format("woff"), url("./fonts/GTWalsheimPro-Black.woff") format("woff");
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: "GT Walsheim Pro";
+    font-family: "GT Walsheim Pro";
 }
 
 .App {
-  text-align: center;
-  padding-bottom: 20px;
+    text-align: center;
+    padding-bottom: 20px;
 }
 
 h1,
 h2,
 h3,
 button {
-  text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 input {
-  text-transform: lowercase;
+    text-transform: lowercase;
 }

@@ -5,11 +5,14 @@ import { store } from "../../store";
 import "./VerifyOwner.css";
 import API2Response from "../../fake_api/API2_response_succeed.json";
 import API2ResponseFail from "../../fake_api/API2_response_fail.json";
+import { API } from "aws-amplify";
+import Loader from "../Loader/Loader";
 
 export default function VerifyOwner(): ReactElement {
   const location: any = useLocation().state;
   const [password, setPassword] = useState<string>();
   const [verification, setVerification] = useState<string | null>();
+  const [isLoad, setLoad] = useState(false);
 
   const navigate = useNavigate();
   const handleBack = () => {
@@ -18,7 +21,7 @@ export default function VerifyOwner(): ReactElement {
         artist_surname: location.data.artist_surname,
         title: location.data.title,
         year: location.data.year,
-        object_id: location.data.object_id,
+        id_object: location.data.id_object,
       };
       navigate("/transact", {
         state: { data: data, allData: location.allData },
@@ -44,27 +47,29 @@ export default function VerifyOwner(): ReactElement {
     setVerification(null);
   };
 
-  const verify = () => {
+  const verify = async () => {
+    setLoad(true);
     const data = {
-      object_id: location.object_id,
+      id_object: location.data.id_object,
       owner_password: password,
     };
-    axiosInstance.post("/", data).then(function (response) {
-      const responseData = response.data;
-    });
 
-    const fakeData = API2Response;
+    const ownerData = await API.post('protovapi', '/transactionobject/verify_owner', {body: data});
+    console.log("VerifyOwner ownerData => ", ownerData);
 
     // to test fail response change var fakeData on fakeDataFail
-    const fakeDataFail = API2ResponseFail;
+    // const fakeData = API2Response;
+    // const fakeDataFail = API2ResponseFail;
 
     if (location.data.path === "/transact") {
-      if (fakeData.owner_ver_status) {
+      setLoad(false);
+      if (ownerData.owner_ver_status) {
         const data = {
+          artist_id: location.data.artist_id,
           artist_surname: location.data.artist_surname,
           title: location.data.title,
           year: location.data.year,
-          object_id: location.data.object_id,
+          id_object: location.data.id_object,
         };
         store.dispatch({ type: "ADD_OWNER_STATUS", payload: "SUCCESS" });
         navigate("/transact", {
@@ -75,7 +80,7 @@ export default function VerifyOwner(): ReactElement {
           artist_surname: location.data.artist_surname,
           title: location.data.title,
           year: location.data.year,
-          object_id: location.data.object_id,
+          id_object: location.data.id_object,
         };
         store.dispatch({ type: "ADD_OWNER_STATUS", payload: "FAIL" });
         navigate("/transact", {
@@ -83,16 +88,18 @@ export default function VerifyOwner(): ReactElement {
         });
       }
     } else {
-      if (fakeData.owner_ver_status) {
+      if (ownerData.owner_ver_status) {
+        setLoad(false);
         setVerification("Verification Success!");
       } else {
+        setLoad(false);
         setVerification("Verification Fail!");
       }
     }
   };
 
   return (
-    <div className="verify_owner">
+    <div className={isLoad ? "verifyOwnerLoader" : "verify_owner" }>
       <div className="header">
         <div onClick={handleBack} className="header__back">
           <img
@@ -113,7 +120,7 @@ export default function VerifyOwner(): ReactElement {
       </div>
 
       <div className="verify_owner-id">
-        object ID: {location.data.object_id}
+        object ID: {location.data.id_object}
       </div>
 
       {verification ? (
@@ -144,6 +151,7 @@ export default function VerifyOwner(): ReactElement {
           </button>
         </div>
       )}
+      {isLoad && <Loader/>}
     </div>
   );
 }

@@ -1,0 +1,27 @@
+{
+    "permissions": {
+        "storage": {
+            "dynamodb": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ],
+            "s3": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        },
+        "auth": {
+            "protovapi4ba777c4": [
+                "create",
+                "read",
+                "update",
+                "delete"
+            ]
+        }
+    },
+    "lambdaLayers": []
+}

@@ -1,7 +1,7 @@
 export interface IAPI7Request {
-  object_id: string;
+  id_object: string;
   new_owner_id: string;
-  methods: { method1: string; method2: string };
+  methods: { methods1: string; methods2: string };
 }
 
 export interface IAPI7Response {

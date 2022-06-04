@@ -1,7 +1,7 @@
-import { StylesProvider } from "@mui/styles";
 import React from "react";
-import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import { StylesProvider } from "@mui/styles";
+import { Route, Routes } from "react-router-dom";
 import Add from "./components/Add/Add";
 import AddSubmit from "./components/Add/AddSubmit";
 import EnterInfo from "./components/EnterInfo/EnterInfo";
@@ -14,9 +14,10 @@ import Transact from "./components/Transact/Transact";
 import VerifyObject from "./components/VerifyObject/VerifyObject";
 import VerifyOwner from "./components/VerifyOwner/VerifyOwner";
 
-function App() {
+export default function App() {
   return (
     <div className="App">
+      {/* <button onClick={deleteObject} style={{marginTop: '50px'}}>Test delete object</button> */}
       <StylesProvider injectFirst>
         <Routes>
           <Route path="/" element={<MainScreen />} />
@@ -35,5 +36,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
