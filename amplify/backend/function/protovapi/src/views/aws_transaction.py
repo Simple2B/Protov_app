@@ -8,7 +8,7 @@ from boto3.dynamodb.conditions import Key
 import logging
 
 from flask import Blueprint, jsonify, request
-from services.aws_object import AwsObjectService
+from services.aws_object import AwsObjectService, get_objects
 
 from services.aws_transaction import AwsTransactionService
 
@@ -53,7 +53,7 @@ def sale():
     id_object = request_json.get('id_object')
     owner_id = request_json.get('owner_password')
     new_owner_id = request_json.get('new_owner_id')
-    objects = AwsObjectService.get_objects()
+    objects = get_objects()
     objects_transaction = AwsTransactionService.get_transaction_objects()
 
     object = None
@@ -67,8 +67,12 @@ def sale():
             verify_object = obj
 
     if object and verify_object and object['id_object']['S'] == verify_object['id_object']['S']:
-        today = datetime.date.today().strftime("%m/%d/%Y")
+        today = datetime.date.today().strftime("%m/%d/%Y, %H:%M:%S")
         print("new_owner_id ", new_owner_id)
+
+        action = "transfer"
+        transfer_transaction = str(uuid4())
+
         update_password = clientTransaction.update_item(
             TableName=TRANSACTION_TABLE,
             Key={'id_transaction': {
@@ -91,7 +95,7 @@ def sale():
             ExpressionAttributeValues={
                 ":id_object": {'S': verify_object['id_object']['S']},
                 ":action": {'S': verify_object['action']['S']},
-                ":date": {'S': today},
+                ":date": {'S': verify_object['date']['S']},
                 ":methods1": {'S': verify_object['methods1']['S']},
                 ":methods2": {'S': verify_object['methods2']['S']},
                 ":owner_id": {'S': new_owner_id},
@@ -99,6 +103,17 @@ def sale():
         )
 
         print("update_password ", update_password)
+
+        clientTransaction.put_item(TableName=TRANSACTION_TABLE, Item={
+            "id_transaction": {'S': transfer_transaction},
+            "id_object": {'S': verify_object['id_object']['S']},
+            "action": {'S': action},
+            "date": {'S': today},
+            "methods1": {'S': verify_object['methods1']['S']},
+            "methods2": {'S': verify_object['methods2']['S']},
+            "owner_id": {'S': new_owner_id},
+        })
+        print("update_password: transfer_transaction ", transfer_transaction)
 
         return {
             "artist_surname": object['artist_surname']['S'],

@@ -1,7 +1,8 @@
 import os
+import re
 from uuid import uuid4
 import datetime
-from services.aws_object import AwsObjectService
+from services.aws_object import AwsObjectService, get_objects
 from services.aws_transaction import AwsTransactionService
 from flask import Blueprint, jsonify, request
 import json
@@ -67,34 +68,62 @@ def verify_objects():
     title = request_json.get('title')
     year = request_json.get('year')
 
-    objects = AwsObjectService.get_objects()
+    objects = get_objects()
 
     objects_data = []
 
-    # search_items = ['Verify owner', 'Transact', 'Provenance', 'Verify object']
-
     for obj in objects['Items']:
-        is_artist_verify = obj['artist_firstname']['S'] == name and obj['artist_surname']['S'] == surname and len(
-            name) > 0 and len(surname) > 0
-        is_object_verify = obj['title']['S'] == title and obj['year']['S'] == year and len(
-            title) > 0 and len(year) > 0
-        is_object_id = obj['id_object']['S'] == id_object
 
-        is_full_info_object = is_artist_verify and is_object_verify and is_object_id
-        if search_item == 'Verify owner':
-            if is_artist_verify and is_object_id:
-                objects_data.append(obj)
-        if search_item == 'Transact':
-            if is_artist_verify or is_object_id or is_object_verify:
-                objects_data.append(obj)
-        if search_item == 'Provenance':
-            if (is_artist_verify and is_object_id) or (is_artist_verify and is_object_verify) or is_artist_verify or obj['id_object']['S'] == id_object:
-                objects_data.append(obj)
-        if search_item == 'Verify object':
-            if is_full_info_object or is_artist_verify or is_object_verify or is_object_id:
-                objects_data.append(obj)
+        is_artist_firstname = obj['artist_firstname']['S'] == name
+        is_artist_surname = obj['artist_surname']['S'] == surname
+        is_title = obj['title']['S'] == title
+        is_year = obj['year']['S'] == year
+        is_id_object = obj['id_object']['S'] == id_object
+
+        is_not_artist_firstname = len(name) == 0
+        is_not_artist_surname = len(surname) == 0
+        is_not_title = len(title) == 0
+        is_not_year = len(year) == 0
+        is_not_id_object = len(id_object) == 0
+
+        is_full_info = is_artist_firstname and is_artist_surname and is_title and is_year and is_id_object
+
+        info_without_artist_firstname = is_not_artist_firstname and is_artist_surname and is_title and is_year and is_id_object
+        info_without_artist_surname = is_artist_firstname and is_not_artist_surname and is_title and is_year and is_id_object
+        info_without_title = is_artist_firstname and is_artist_surname and is_not_title and is_year and is_id_object
+        info_without_year = is_artist_firstname and is_artist_surname and is_title and is_not_year and is_id_object
+        info_without_id_object = is_artist_firstname and is_artist_surname and is_title and is_year and is_not_id_object
+
+        info_with_artist_firstname = is_artist_firstname and is_not_artist_surname and is_not_title and is_not_year and is_not_id_object
+        info_with_artist_surname = is_not_artist_firstname and is_artist_surname and is_not_title and is_not_year and is_not_id_object
+        info_with_title = is_not_artist_firstname and is_not_artist_surname and is_title and is_not_year and is_not_id_object
+        info_with_year = is_not_artist_firstname and is_not_artist_surname and is_not_title and is_year and is_not_id_object
+        info_with_id_object = is_not_artist_firstname and is_not_artist_surname and is_not_title and is_not_year and is_id_object
+
+        is_artist = is_artist_firstname and is_artist_surname and is_not_title and is_not_year and is_not_id_object
+        is_object = is_title and is_year and is_not_artist_firstname and is_not_artist_surname and is_not_id_object
+
+        is_artist_with_id = is_artist_firstname and is_artist_surname and is_id_object and is_not_title and is_not_year
+        is_object_with_id = is_title and is_year and is_id_object and is_not_artist_firstname and is_not_artist_surname
+
+        if info_without_artist_firstname or info_without_artist_surname or info_without_title or info_without_year or info_without_id_object:
+            objects_data.append(obj)
+        if info_with_artist_firstname or info_with_artist_surname or info_with_title or info_with_year or info_with_id_object:
+            objects_data.append(obj)
+        if is_artist or is_artist_with_id:
+            objects_data.append(obj)
+        if is_object or is_object_with_id:
+            objects_data.append(obj)
+
+        if is_full_info:
+            objects_data.append(obj)
 
     if len(objects_data) > 0:
+        # seen = set()
+        # unique_objects_data = [
+        #     obj for obj in objects_data if obj['id_object']['S'] not in seen and not seen.add(obj['id_object']['S'])]
+
+        # print("unique_objects_data ", unique_objects_data)
         object_services = AwsObjectService()
         objects_data = [object_services.get_object_info(
             obj, search_item) for obj in objects_data]
@@ -113,7 +142,7 @@ def get_object():
     # title = request_json.get('title')
     # year = request_json.get('year')
 
-    objects = AwsObjectService.get_objects()
+    objects = get_objects()
 
     objects_data = []
     for obj in objects['Items']:
@@ -144,7 +173,7 @@ def verify_owner():
     id_object = request_json.get('id_object')
     password = request_json.get('owner_password')
 
-    objects = AwsObjectService.get_objects()
+    objects = get_objects()
     objects_transaction = AwsTransactionService.get_transaction_objects()
 
     object = None
@@ -194,12 +223,12 @@ def add_method():
     methods2 = request_json.get("methods2")
     image_method2_key = request_json.get("image_method2_key")
 
-    objects = AwsObjectService.get_objects()
+    objects = get_objects()
     transaction_objects = AwsTransactionService.get_transaction_objects()
 
     object = None
     for obj in objects['Items']:
-        if obj['id_object']['S'] == id_object and obj['artist_id']['S'] == artist_id:
+        if obj['id_object']['S'] == id_object:
             object = obj
 
     transaction_object = None
@@ -222,7 +251,7 @@ def add_method():
             "title": {'S': object['title']['S']},
         })
 
-        today = datetime.date.today().strftime("%m/%d/%Y")
+        today = datetime.date.today().strftime("%m/%d/%Y, %H:%M:%S")
         action = transaction_object['action']['S']
         print("add => id_transaction",
               transaction_object['id_transaction']['S'])
@@ -230,12 +259,12 @@ def add_method():
         print("add => methods2", methods2)
 
         if len(methods1) > 0 or len(methods2) > 0:
-            action = 'onboard'
+            action = 'add method'
 
         print("add => action", action)
-
+        id_transaction = str(uuid4())
         client.put_item(TableName=PROTOV_TRANSACTION_TABLE, Item={
-            "id_transaction": {'S': transaction_object['id_transaction']['S']},
+            "id_transaction": {'S': id_transaction},
             "id_object": {'S': id_object},
             "action": {'S': action},
             "date": {'S': today},

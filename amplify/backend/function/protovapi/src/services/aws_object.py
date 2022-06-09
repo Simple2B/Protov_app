@@ -19,16 +19,16 @@ class AwsObjectService:
         id_object = str(uuid4())
         artist_id = uuid4().hex
 
-        data_objects = client.scan(TableName=PROTOV_TABLE)
-        data = json.dumps(data_objects)
-        objects = json.loads(data)
+        objects = get_objects()
+
         print("AwsObjectService => create_object: objects ", objects)
+
         if len(objects['Items']) > 0:
             for obj in objects['Items']:
                 if obj['artist_firstname']['S'] == name and obj['artist_surname']['S'] == surname:
                     artist_id = obj['artist_id']['S']
-                if obj['title']['S'] == title and obj['year']['S'] == year:
-                    id_object = obj['id_object']['S']
+                # if obj['title']['S'] == title and obj['year']['S'] == year and obj['artist_surname']['S'] == surname:
+                #     id_object = obj['id_object']['S']
         try:
             client.put_item(TableName=PROTOV_TABLE, Item={
                 "id_object": {'S': id_object},
@@ -77,9 +77,9 @@ class AwsObjectService:
             'year': object['year']['S'],
         }
 
-    @staticmethod
-    def get_objects():
-        data_objects = client.scan(TableName=PROTOV_TABLE)
-        data = json.dumps(data_objects)
-        objects = json.loads(data)
-        return objects
+
+def get_objects():
+    data_objects = client.scan(TableName=PROTOV_TABLE)
+    data = json.dumps(data_objects)
+    objects = json.loads(data)
+    return objects
