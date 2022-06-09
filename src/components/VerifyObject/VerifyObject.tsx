@@ -160,7 +160,7 @@ export default function VerifyObject(): ReactElement {
     };
 
     const dataObject = await API.post('protovapi', '/protovobject/object', {body: data});
-    console.log('VerifyObject => GET: getVerifyObject -> !!! dataObject', dataObject.data[0]);
+    console.log('VerifyObject => GET: getVerifyObject -> !!! dataObject', dataObject.data);
 
     let responseData = { "object_ver_success": false };
 
@@ -171,8 +171,8 @@ export default function VerifyObject(): ReactElement {
         console.log("VerifyObject fileDate  size", fileDate.Body.size);
         console.log("VerifyObject fileDate  type", fileDate.Body.type);
         
-        if(file[0].name === dataObject.data[0].object_image 
-          && (file[0].size === fileDate.Body.size) && (file[0].type === fileDate.Body.type)) {
+        if((file[0].name === dataObject.data[0].object_image 
+          && (file[0].size === fileDate.Body.size) && (file[0].type === fileDate.Body.type)) || (dataObject.data[0].image_file_key.length === "" && !file)) {
               console.log("VerifyObject: file ", true)
               setVerification("Verification Success!");
               responseData = { "object_ver_success": true };
@@ -185,8 +185,8 @@ export default function VerifyObject(): ReactElement {
       if (fileMethod2 && dataObject.data[0].image_method2_key) {
           const fileDate: any =  await Storage.get(dataObject.data[0].image_method2_key, { download: true });
           console.log("VerifyObject fileDate ===>>> ", fileDate);
-          if(fileMethod2[0].name === dataObject.data[0].methods2
-            && (fileMethod2[0].size === fileDate.Body.size) && (fileMethod2[0].type === fileDate.Body.type)) {
+          if((fileMethod2[0].name === dataObject.data[0].methods2
+            && (fileMethod2[0].size === fileDate.Body.size) && (fileMethod2[0].type === fileDate.Body.type)) || (dataObject.data[0].image_method2_key.length === 0 && !fileMethod2)) {
                 console.log("VerifyObject: fileMethod2 ", true)
                 setVerification("Verification Success!");
                 responseData = { "object_ver_success": true };
@@ -270,6 +270,9 @@ export default function VerifyObject(): ReactElement {
       prev.map((row, idx) => {
         if (idx === index) {
           row.method = event.target.value as InputMethod;
+          if (InputMethod.IMAGE) {
+            
+          }
         }
         return row;
       })
