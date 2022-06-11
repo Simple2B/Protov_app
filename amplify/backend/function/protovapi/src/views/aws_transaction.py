@@ -37,6 +37,7 @@ def get_transaction(id_object):
     if len(objects_data) > 0:
         objects_data = [{
             'owner_id': obj['owner_id']['S'],
+            'new_owner_id': obj['new_owner_id']['S'],
             'date': obj['date']['S'],
             'action': obj['action']['S'],
             'verification_methods': {
@@ -60,14 +61,19 @@ def sale():
     for obj in objects['Items']:
         if obj['id_object']['S'] == id_object:
             object = obj
-
+# cdbf60fa33164c5a8dfbe59f651a91c9
     verify_object = None
     for obj in objects_transaction['Items']:
+        n_owner_id = obj['new_owner_id']['S']
+        print("sale: n_owner_id ", n_owner_id)
+        if n_owner_id != "":
+            if n_owner_id == owner_id and obj['id_object']['S'] == id_object:
+                verify_object = obj
         if obj['owner_id']['S'] == owner_id and obj['id_object']['S'] == id_object:
             verify_object = obj
 
     if object and verify_object and object['id_object']['S'] == verify_object['id_object']['S']:
-        today = datetime.date.today().strftime("%m/%d/%Y, %H:%M:%S")
+        today = datetime.datetime.today().strftime("%m/%d/%Y, %H:%M:%S")
         print("new_owner_id ", new_owner_id)
 
         action = "transfer"
@@ -83,7 +89,8 @@ def sale():
             "#date = :date," +
             "#methods1 = :methods1, " +
             "#methods2 = :methods2, " +
-            "#owner_id = :owner_id",
+            "#owner_id = :owner_id, " +
+            "#new_owner_id = :new_owner_id",
             ExpressionAttributeNames={
                 "#id_object": "id_object",
                 "#action": "action",
@@ -91,6 +98,7 @@ def sale():
                 "#methods1": "methods1",
                 "#methods2": "methods2",
                 "#owner_id": "owner_id",
+                "#new_owner_id": "new_owner_id",
             },
             ExpressionAttributeValues={
                 ":id_object": {'S': verify_object['id_object']['S']},
@@ -98,7 +106,9 @@ def sale():
                 ":date": {'S': verify_object['date']['S']},
                 ":methods1": {'S': verify_object['methods1']['S']},
                 ":methods2": {'S': verify_object['methods2']['S']},
-                ":owner_id": {'S': new_owner_id},
+                ":owner_id": {'S': verify_object['owner_id']['S']},
+                ":new_owner_id": {'S': new_owner_id},
+
             }
         )
 
@@ -111,7 +121,8 @@ def sale():
             "date": {'S': today},
             "methods1": {'S': verify_object['methods1']['S']},
             "methods2": {'S': verify_object['methods2']['S']},
-            "owner_id": {'S': new_owner_id},
+            "owner_id": {'S': verify_object['owner_id']['S']},
+            "new_owner_id": {'S': new_owner_id},
         })
         print("update_password: transfer_transaction ", transfer_transaction)
 

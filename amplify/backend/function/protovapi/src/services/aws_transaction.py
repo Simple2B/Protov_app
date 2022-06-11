@@ -13,7 +13,7 @@ clientTransaction = boto3.client('dynamodb')
 class AwsTransactionService:
     def create_transaction(client, request_json, owner_id, id_object):
         id_transaction = str(uuid4())
-        today = datetime.date.today().strftime("%m/%d/%Y, %H:%M:%S")
+        today = datetime.datetime.today().strftime("%m/%d/%Y, %H:%M:%S")
         print("create_transaction: today", today)
 
         action = 'onboard'
@@ -24,7 +24,7 @@ class AwsTransactionService:
         print("create_transaction: is_transaction", is_transaction)
 
         if is_transaction:
-            action = 'onboard/add method'
+            action = 'onboard/added'
 
         print("create_transaction: action", action)
 
@@ -37,6 +37,7 @@ class AwsTransactionService:
                 "methods1": {'S': request_json.get('methods1')},
                 "methods2": {'S': request_json.get('methods2')},
                 "owner_id": {'S': owner_id},
+                "new_owner_id": {'S': ""},
             })
             return jsonify(message="create_transaction: object created")
 

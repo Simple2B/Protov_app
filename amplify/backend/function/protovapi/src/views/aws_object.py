@@ -40,6 +40,7 @@ def create_object():
         "artist_id": artist_id,
         "id_object": id_object,
         "owner_id": owner_id,
+        "new_owner_id": "",
         "object": response['object'],
         "object_file_key": response['object_file_key'],
         "year": response['year'],
@@ -183,6 +184,11 @@ def verify_owner():
 
     verify_object = None
     for obj in objects_transaction['Items']:
+        n_owner_id = obj['new_owner_id']['S']
+        print("verify_owner: n_owner_id ", n_owner_id)
+        if n_owner_id != "":
+            if n_owner_id == password:
+                verify_object = obj
         if obj['owner_id']['S'] == password:
             verify_object = obj
 
@@ -251,7 +257,7 @@ def add_method():
             "title": {'S': object['title']['S']},
         })
 
-        today = datetime.date.today().strftime("%m/%d/%Y, %H:%M:%S")
+        today = datetime.datetime.today().strftime("%m/%d/%Y, %H:%M:%S")
         action = transaction_object['action']['S']
         print("add => id_transaction",
               transaction_object['id_transaction']['S'])
@@ -259,7 +265,7 @@ def add_method():
         print("add => methods2", methods2)
 
         if len(methods1) > 0 or len(methods2) > 0:
-            action = 'add method'
+            action = 'added'
 
         print("add => action", action)
         id_transaction = str(uuid4())
@@ -271,6 +277,7 @@ def add_method():
             "methods1": {'S': methods1},
             "methods2": {'S': methods2},
             "owner_id": {'S': transaction_object['owner_id']['S']},
+            "new_owner_id": {'S': transaction_object['new_owner_id']['S']},
         })
 
         return jsonify(message={"add_method_success": True})
