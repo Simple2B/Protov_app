@@ -270,9 +270,9 @@ export default function VerifyObject(): ReactElement {
       prev.map((row, idx) => {
         if (idx === index) {
           row.method = event.target.value as InputMethod;
-          if (InputMethod.IMAGE) {
-            
-          }
+        }
+        if (row.method === 1) {
+          return {method: 1, value: ''}
         }
         return row;
       })
@@ -289,6 +289,9 @@ export default function VerifyObject(): ReactElement {
       prev.map((row, idx) => {
         if (idx === index) {
           row.value = event.target.value;
+        }
+        if (row.method === 1) {
+          return {method: 1, value: ''}
         }
         return row;
       })

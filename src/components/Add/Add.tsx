@@ -115,9 +115,19 @@ const Add = () =>  {
     event: SelectChangeEvent<InputMethod>
   ) => {
     setMutableRows((prev) =>
+      
       prev.map((row, idx) => {
+
+        console.log("handleSelectChange: prev => ", prev);
+        console.log("handleSelectChange: row => ", row);
+        console.log("handleSelectChange: idx => ", idx);
+
         if (idx === index) {
           row.method = event.target.value as InputMethod;
+        }
+        if (row.method === 1) {
+            console.log("handleSelectChange: row.method === 1", {method: 1, value: ''});
+            return {method: 1, value: ''}
         }
         return row;
       })
@@ -134,6 +144,10 @@ const Add = () =>  {
       prev.map((row, idx) => {
         if (idx === index) {
           row.value = event.target.value;
+        }
+        if (row.method === 1) {
+          console.log("handleInputChange: row.method === 1", {method: 1, value: ''});
+          return {method: 1, value: ''}
         }
         return row;
       })
@@ -237,6 +251,7 @@ const Add = () =>  {
           year: year.trim(),
           artist_id: awsObject.message.artist_id,
           owner_id: awsObject.message.owner_id,
+          new_owner_id: awsObject.message.new_owner_id,
           object_image: image,
           methods: {
             methods1: methods1 !== undefined ? methods1 : "",
@@ -433,9 +448,9 @@ const Add = () =>  {
                                 />
                                 <input
                                   value={item.value}
-                                  onChange={(e) => {
-                                    handleInputChange(index, e);
-                                  }}
+                                  // onChange={(e) => {
+                                  //   handleInputChange(index, e);
+                                  // }}
                                   type="file"
                                   className="input_file"
                                 />

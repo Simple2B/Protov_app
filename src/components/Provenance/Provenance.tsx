@@ -148,7 +148,7 @@ export default function Provenance(): ReactElement {
                     key={index}
                   >
                     <TableCell classes={{ root: classes.tableCell }}>
-                      {row.owner_id}
+                      {row.new_owner_id.length > 0 ? row.new_owner_id : row.owner_id}
                     </TableCell>
                     <TableCell classes={{ root: classes.tableCell }}>
                       {row.date}
