@@ -16,7 +16,7 @@ class AwsTransactionService:
         today = datetime.datetime.today().strftime("%m/%d/%Y, %H:%M:%S")
         print("create_transaction: today", today)
 
-        action = 'onboard'
+        action = 'add method'
 
         is_transaction = len(request_json.get('methods1')) > 0 or len(
             request_json.get('methods2'))

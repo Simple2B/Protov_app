@@ -45,6 +45,8 @@ def get_transaction(id_object):
                 'methods2': obj['methods2']['S'],
             }
         } for obj in objects_data]
+        objects_data = sorted(
+            objects_data, key=lambda row: row['date'])
     return jsonify(data=objects_data)
 
 
@@ -61,14 +63,13 @@ def sale():
     for obj in objects['Items']:
         if obj['id_object']['S'] == id_object:
             object = obj
-# cdbf60fa33164c5a8dfbe59f651a91c9
+
     verify_object = None
     for obj in objects_transaction['Items']:
         n_owner_id = obj['new_owner_id']['S']
         print("sale: n_owner_id ", n_owner_id)
-        if n_owner_id != "":
-            if n_owner_id == owner_id and obj['id_object']['S'] == id_object:
-                verify_object = obj
+        if n_owner_id == owner_id and obj['id_object']['S'] == id_object:
+            verify_object = obj
         if obj['owner_id']['S'] == owner_id and obj['id_object']['S'] == id_object:
             verify_object = obj
 
@@ -79,40 +80,40 @@ def sale():
         action = "transfer"
         transfer_transaction = str(uuid4())
 
-        update_password = clientTransaction.update_item(
-            TableName=TRANSACTION_TABLE,
-            Key={'id_transaction': {
-                'S': verify_object['id_transaction']['S']}},
-            UpdateExpression='SET ' +
-            "#id_object = :id_object, " +
-            "#action = :action, " +
-            "#date = :date," +
-            "#methods1 = :methods1, " +
-            "#methods2 = :methods2, " +
-            "#owner_id = :owner_id, " +
-            "#new_owner_id = :new_owner_id",
-            ExpressionAttributeNames={
-                "#id_object": "id_object",
-                "#action": "action",
-                "#date": "date",
-                "#methods1": "methods1",
-                "#methods2": "methods2",
-                "#owner_id": "owner_id",
-                "#new_owner_id": "new_owner_id",
-            },
-            ExpressionAttributeValues={
-                ":id_object": {'S': verify_object['id_object']['S']},
-                ":action": {'S': verify_object['action']['S']},
-                ":date": {'S': verify_object['date']['S']},
-                ":methods1": {'S': verify_object['methods1']['S']},
-                ":methods2": {'S': verify_object['methods2']['S']},
-                ":owner_id": {'S': verify_object['owner_id']['S']},
-                ":new_owner_id": {'S': new_owner_id},
+        # update_password = clientTransaction.update_item(
+        #     TableName=TRANSACTION_TABLE,
+        #     Key={'id_transaction': {
+        #         'S': verify_object['id_transaction']['S']}},
+        #     UpdateExpression='SET ' +
+        #     "#id_object = :id_object, " +
+        #     "#action = :action, " +
+        #     "#date = :date," +
+        #     "#methods1 = :methods1, " +
+        #     "#methods2 = :methods2, " +
+        #     "#owner_id = :owner_id, " +
+        #     "#new_owner_id = :new_owner_id",
+        #     ExpressionAttributeNames={
+        #         "#id_object": "id_object",
+        #         "#action": "action",
+        #         "#date": "date",
+        #         "#methods1": "methods1",
+        #         "#methods2": "methods2",
+        #         "#owner_id": "owner_id",
+        #         "#new_owner_id": "new_owner_id",
+        #     },
+        #     ExpressionAttributeValues={
+        #         ":id_object": {'S': verify_object['id_object']['S']},
+        #         ":action": {'S': verify_object['action']['S']},
+        #         ":date": {'S': verify_object['date']['S']},
+        #         ":methods1": {'S': verify_object['methods1']['S']},
+        #         ":methods2": {'S': verify_object['methods2']['S']},
+        #         ":owner_id": {'S': verify_object['owner_id']['S']},
+        #         ":new_owner_id": {'S': new_owner_id},
 
-            }
-        )
+        #     }
+        # )
 
-        print("update_password ", update_password)
+        # print("update_password ", update_password)
 
         clientTransaction.put_item(TableName=TRANSACTION_TABLE, Item={
             "id_transaction": {'S': transfer_transaction},
