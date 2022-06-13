@@ -24,7 +24,7 @@ class AwsTransactionService:
         print("create_transaction: is_transaction", is_transaction)
 
         if is_transaction:
-            action = 'onboard/added'
+            action = 'onboard'
 
         print("create_transaction: action", action)
 
