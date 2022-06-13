@@ -19,7 +19,7 @@
       "function": {
         "protovapi": {
           "deploymentBucketName": "amplify-protovapi-dev-182003-deployment",
-          "s3Key": "amplify-builds/protovapi-4963537066686a557471-build.zip"
+          "s3Key": "amplify-builds/protovapi-75365338787a61706456-build.zip"
         },
         "transactionapi": {
           "deploymentBucketName": "amplify-protovapi-dev-182003-deployment",
