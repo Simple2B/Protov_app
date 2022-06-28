@@ -12,6 +12,7 @@ import { store } from "../../store";
 import Dropzone from "react-dropzone";
 import { API, Storage } from 'aws-amplify';
 import { v4 as uuid } from "uuid";
+import Loader from "../Loader/Loader";
 
 const useStyle = makeStyles((theme: Theme) => ({
   root: {
@@ -145,6 +146,8 @@ export default function AddMethod(): ReactElement {
   const [fileMethod2, setFileMethod2] = useState<File[] | null>(null);
   const [isOpenMethod2, setOpenMethod2] = useState<boolean>(false);
 
+  const [isLoad, setLoad] = useState(false);
+
   const onDropMethod2 = (uploadedFile: any) => {
     setFileMethod2(uploadedFile);
     setOpenMethod2(true);
@@ -152,6 +155,7 @@ export default function AddMethod(): ReactElement {
 
   const handleSubmit = async () => {
       setHideButton(true);
+      setLoad(true);
       const fileMethod2Key = fileMethod2 ? `${uuid()}_${fileMethod2[0].name}` : '';
       if (fileMethod2) {
         Storage.put(`${fileMethod2Key}`, fileMethod2[0], {
@@ -167,18 +171,19 @@ export default function AddMethod(): ReactElement {
       } else {
         console.log("uploadFile: ", "fileMethod2 needed")
       }
-      const methods1 = mutableRows.find((el) => el.method === InputMethod.STRING)?.value;
       
       const data = {
         artist_id: location.data.artist_id,
         id_object: location.data.id_object,
-        methods1: methods1 !== undefined ? methods1 : "",
+        methods1: mutableRows.length > 0 ? mutableRows.filter((i) => i.method === 0) : "",
         methods2: fileMethod2 ? fileMethod2[0].name : "",
         image_method2_key: fileMethod2 ? fileMethod2Key : "",
       };
 
+      console.log("AddMethod data => ", data);
+
       const awsObject = await API.post('protovapi', '/protovobject/add_method', {body: data});
-      console.log("AddMethod awsObject => ", awsObject);
+      setLoad(false);
       // axiosInstance.post("/", data).then(function (response) {
       //   const responseData = response.data;
       // });
@@ -189,11 +194,13 @@ export default function AddMethod(): ReactElement {
         setCheck("FAIL");
       }
   };
-
+  // b55d5d4deda14bdb97e4d4bf1cfa0ea5
   console.log("!!!!!!artist_id ", location.data.artist_id);
 
+  const isDisabled = mutableRows.length === 0 || !fileMethod2;
+
   return (
-    <div className="method">
+    <div className={isLoad ? "addMethodContainer": "method"}>
       <div className="header">
         {hideButton ? (
           <div></div>
@@ -323,7 +330,9 @@ export default function AddMethod(): ReactElement {
             );
           })}
           <div className="method__buttons_set">
-            <button onClick={handleSubmit} className="method__button">
+            <button onClick={handleSubmit} className="method__button"
+              // disabled={isDisabled}
+              >
               Submit
             </button>
             <button
@@ -336,6 +345,7 @@ export default function AddMethod(): ReactElement {
           </div>
         </>
       )}
+      {isLoad && <Loader/>}
     </div>
   );
 }
