@@ -72,8 +72,10 @@ const Add = () =>  {
   const [name, setName] = useState<string>("");
   const [surname, setSurname] = useState<string>("");
   const [title, setTitle] = useState<string>("");
-  const [image, setImage] = useState();
   const [year, setYear] = useState<string>("");
+
+  const [image, setImage] = useState();
+  
   const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]); 
 
   const [file, setFile] = useState<File[] | null>(null); // state for storing actual image
