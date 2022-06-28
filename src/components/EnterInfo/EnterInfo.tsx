@@ -178,7 +178,7 @@ export default function EnterInfo(): ReactElement {
       methods2: methods2,
       title: title,
       year: year,
-      id_object: objectID ? objectID : "",
+      id_object: objectID,
     };
 
     console.log("EnterInfo: data => ", data)
