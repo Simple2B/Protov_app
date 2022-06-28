@@ -56,6 +56,9 @@ def sale():
     id_object = request_json.get('id_object')
     owner_id = request_json.get('owner_password')
     new_owner_id = request_json.get('new_owner_id')
+    methods1 = request_json.get('methods1')
+    methods2 = request_json.get('methods2')
+
     objects = get_objects()
     objects_transaction = AwsTransactionService.get_transaction_objects()
 
@@ -80,48 +83,13 @@ def sale():
         action = "transfer"
         transfer_transaction = str(uuid4())
 
-        # update_password = clientTransaction.update_item(
-        #     TableName=TRANSACTION_TABLE,
-        #     Key={'id_transaction': {
-        #         'S': verify_object['id_transaction']['S']}},
-        #     UpdateExpression='SET ' +
-        #     "#id_object = :id_object, " +
-        #     "#action = :action, " +
-        #     "#date = :date," +
-        #     "#methods1 = :methods1, " +
-        #     "#methods2 = :methods2, " +
-        #     "#owner_id = :owner_id, " +
-        #     "#new_owner_id = :new_owner_id",
-        #     ExpressionAttributeNames={
-        #         "#id_object": "id_object",
-        #         "#action": "action",
-        #         "#date": "date",
-        #         "#methods1": "methods1",
-        #         "#methods2": "methods2",
-        #         "#owner_id": "owner_id",
-        #         "#new_owner_id": "new_owner_id",
-        #     },
-        #     ExpressionAttributeValues={
-        #         ":id_object": {'S': verify_object['id_object']['S']},
-        #         ":action": {'S': verify_object['action']['S']},
-        #         ":date": {'S': verify_object['date']['S']},
-        #         ":methods1": {'S': verify_object['methods1']['S']},
-        #         ":methods2": {'S': verify_object['methods2']['S']},
-        #         ":owner_id": {'S': verify_object['owner_id']['S']},
-        #         ":new_owner_id": {'S': new_owner_id},
-
-        #     }
-        # )
-
-        # print("update_password ", update_password)
-
         clientTransaction.put_item(TableName=TRANSACTION_TABLE, Item={
             "id_transaction": {'S': transfer_transaction},
             "id_object": {'S': verify_object['id_object']['S']},
             "action": {'S': action},
             "date": {'S': today},
-            "methods1": {'S': verify_object['methods1']['S']},
-            "methods2": {'S': verify_object['methods2']['S']},
+            "methods1": {'S': methods1 if methods1 else ""},
+            "methods2": {'S': methods2 if methods2 else ""},
             "owner_id": {'S': verify_object['owner_id']['S']},
             "new_owner_id": {'S': new_owner_id},
         })

@@ -64,10 +64,14 @@ def verify_objects():
 
     search_item = request_json.get('search_item')
     id_object = request_json.get('id_object')
+    print("verify_objects: id_object =>>>> ", id_object)
     surname = request_json.get('artist_surname')
     name = request_json.get('artist_firstname')
     title = request_json.get('title')
     year = request_json.get('year')
+
+    send_data = [name, surname, title, year, id_object]
+    length_send_data = len([value for value in send_data if value])
 
     objects = get_objects()
 
@@ -75,56 +79,16 @@ def verify_objects():
 
     for obj in objects['Items']:
 
-        is_artist_firstname = obj['artist_firstname']['S'] == name
-        is_artist_surname = obj['artist_surname']['S'] == surname
-        is_title = obj['title']['S'] == title
-        is_year = obj['year']['S'] == year
-        is_id_object = obj['id_object']['S'] == id_object
+        verify_data = [obj['artist_firstname']['S'], obj['artist_surname']
+                       ['S'], obj['title']['S'], obj['year']['S'], obj['id_object']['S']]
 
-        is_not_artist_firstname = len(name) == 0
-        is_not_artist_surname = len(surname) == 0
-        is_not_title = len(title) == 0
-        is_not_year = len(year) == 0
-        is_not_id_object = len(id_object) == 0
+        var_objects = [i for i, j in zip(send_data, verify_data) if i == j]
+        length_var_objects = len([value for value in var_objects if value])
 
-        is_full_info = is_artist_firstname and is_artist_surname and is_title and is_year and is_id_object
-
-        info_without_artist_firstname = is_not_artist_firstname and is_artist_surname and is_title and is_year and is_id_object
-        info_without_artist_surname = is_artist_firstname and is_not_artist_surname and is_title and is_year and is_id_object
-        info_without_title = is_artist_firstname and is_artist_surname and is_not_title and is_year and is_id_object
-        info_without_year = is_artist_firstname and is_artist_surname and is_title and is_not_year and is_id_object
-        info_without_id_object = is_artist_firstname and is_artist_surname and is_title and is_year and is_not_id_object
-
-        info_with_artist_firstname = is_artist_firstname and is_not_artist_surname and is_not_title and is_not_year and is_not_id_object
-        info_with_artist_surname = is_not_artist_firstname and is_artist_surname and is_not_title and is_not_year and is_not_id_object
-        info_with_title = is_not_artist_firstname and is_not_artist_surname and is_title and is_not_year and is_not_id_object
-        info_with_year = is_not_artist_firstname and is_not_artist_surname and is_not_title and is_year and is_not_id_object
-        info_with_id_object = is_not_artist_firstname and is_not_artist_surname and is_not_title and is_not_year and is_id_object
-
-        is_artist = is_artist_firstname and is_artist_surname and is_not_title and is_not_year and is_not_id_object
-        is_object = is_title and is_year and is_not_artist_firstname and is_not_artist_surname and is_not_id_object
-
-        is_artist_with_id = is_artist_firstname and is_artist_surname and is_id_object and is_not_title and is_not_year
-        is_object_with_id = is_title and is_year and is_id_object and is_not_artist_firstname and is_not_artist_surname
-
-        if info_without_artist_firstname or info_without_artist_surname or info_without_title or info_without_year or info_without_id_object:
-            objects_data.append(obj)
-        if info_with_artist_firstname or info_with_artist_surname or info_with_title or info_with_year or info_with_id_object:
-            objects_data.append(obj)
-        if is_artist or is_artist_with_id:
-            objects_data.append(obj)
-        if is_object or is_object_with_id:
-            objects_data.append(obj)
-
-        if is_full_info:
+        if length_var_objects == length_send_data:
             objects_data.append(obj)
 
     if len(objects_data) > 0:
-        # seen = set()
-        # unique_objects_data = [
-        #     obj for obj in objects_data if obj['id_object']['S'] not in seen and not seen.add(obj['id_object']['S'])]
-
-        # print("unique_objects_data ", unique_objects_data)
         object_services = AwsObjectService()
         objects_data = [object_services.get_object_info(
             obj, search_item) for obj in objects_data]
@@ -202,6 +166,8 @@ def verify_owner():
             verify_objects.append(obj)
 
     def verify_object_info(object, verify_object_pass: str, enter_password: str):
+        print("verify_object_info => verify_object_pass ", verify_object_pass)
+        print("verify_object_info => enter_password ", enter_password)
         if verify_object_pass.strip() == enter_password.strip():
             return {
                 "artist_surname": object['artist_surname']['S'],
@@ -220,15 +186,18 @@ def verify_owner():
                 "id_object": id_object,
                 "owner_ver_status": False
             }
-
     if len(verify_objects) > 1:
         sorted_verify_objects = sorted(
             verify_objects, key=lambda row: row['date'])
         print("==>>> verify_owner: sorted_verify_objects ", sorted_verify_objects)
         print("==>>> verify_owner: verify_object ", sorted_verify_objects[-1])
         verify_object = sorted_verify_objects[-1]
-
-        return verify_object_info(object, verify_object['new_owner_id'], password)
+        print("verify_object_info => verify_object ", verify_object)
+        print("verify_object_info => password ", password)
+        id = verify_object['new_owner_id']
+        if len(id) == 0:
+            id = verify_object['owner_id']
+        return verify_object_info(object, id, password)
     elif len(verify_objects) == 1:
         return verify_object_info(object, verify_objects[0]['owner_id'], password)
 
@@ -286,8 +255,8 @@ def add_method():
             "artist_surname": {'S': object['artist_surname']['S']},
             "artist_firstname": {'S': object['artist_firstname']['S']},
             "artist_id": {'S': object['artist_id']['S']},
-            "methods1": {'S': methods1 if len(methods1) > 0 else object['methods1']['S']},
-            "methods2": {'S': methods2 if len(methods2) > 0 else object['methods2']['S']},
+            "methods1": {'S': methods1 if methods1 else object['methods1']['S']},
+            "methods2": {'S': methods2 if methods2 else object['methods2']['S']},
             "image_method2_key": {'S': image_method2_key if len(methods2) > 0 else object['image_method2_key']['S']},
             "object_image": {'S': object['object_image']['S']},
             "image_file_key": {'S': object['image_file_key']['S']},
@@ -312,8 +281,8 @@ def add_method():
             "id_object": {'S': id_object},
             "action": {'S': action},
             "date": {'S': today},
-            "methods1": {'S': methods1},
-            "methods2": {'S': methods2},
+            "methods1": {'S': methods1 if methods1 else ""},
+            "methods2": {'S': methods2 if methods2 else ""},
             "owner_id": {'S': transaction_object['owner_id']},
             "new_owner_id": {'S': transaction_object['new_owner_id']},
         })
