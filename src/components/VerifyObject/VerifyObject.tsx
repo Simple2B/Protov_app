@@ -72,10 +72,15 @@ const MAX_ROWS = 2;
 
 export default function VerifyObject(): ReactElement {
   const location: any = useLocation().state;
+  console.log("location ", location);
+  
   const classes = useStyle();
   const navigate = useNavigate();
   const [verification, setVerification] = useState<string | null>();
   const [mutableRows, setMutableRows] = useState<IMutableRow[]>([]);
+
+  console.log("mutableRows ", mutableRows);
+  
   const [isLoad, setLoad] = useState(false);
 
   const [image, setImage] = useState();
@@ -90,13 +95,18 @@ export default function VerifyObject(): ReactElement {
 
   const handleBack = () => {
     if (location.data.path === "/transact") {
+      const methods1 = mutableRows.find((el) => el.method === InputMethod.STRING)?.value;
       const data = {
         artist_id: location.data.artist_id,
         artist_surname: location.data.artist_surname,
         title: location.data.title,
         year: location.data.year,
         id_object: location.data.id_object,
+        methods1: methods1? methods1 : "",
+        methods2: fileMethod2 ? fileMethod2[0].name : "",
       };
+      console.log(" data to transact =>>> ", data);
+      
       navigate("/transact", {
         state: { data: data, allData: location.allData },
       });
@@ -145,18 +155,16 @@ export default function VerifyObject(): ReactElement {
 
   const handleVerify = async() => {
     setLoad(true);
+    const methods1 = mutableRows.find((el) => el.method === InputMethod.STRING)?.value;
+
     const data = {
       id_object: location.data.id_object,
       artist_surname: location.data.artist_surname,
       artist_firstname: location.data.artist_firstname,
       title: location.data.title,
       year: location.data.year,
-      // methods: {
-      //   methods1: mutableRows.find((el) => el.method === InputMethod.STRING)
-      //     ?.value,
-      //   methods2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
-      //     ?.value,
-      // },
+      methods1: methods1 ? methods1 : "",
+      methods2: fileMethod2 ? fileMethod2[0].name : "",
     };
 
     const dataObject = await API.post('protovapi', '/protovobject/object', {body: data});
@@ -218,10 +226,8 @@ export default function VerifyObject(): ReactElement {
             year: location.data.year,
             id_object: location.data.id_object,
             methods: {
-              methods1: mutableRows.find((el) => el.method === InputMethod.STRING)
-                ?.value,
-              methods2: mutableRows.find((el) => el.method === InputMethod.IMAGE)
-                ?.value,
+              methods1: methods1 ? methods1 : "",
+              methods2: fileMethod2 ? fileMethod2[0].name : "",
             },
           };
           store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "SUCCESS" });
