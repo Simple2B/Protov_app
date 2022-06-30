@@ -13,6 +13,9 @@ export default function AddSubmit(): ReactElement {
   const [imageMethod2Key, setImageMethod2Key] = useState<string>("");
 
   const [objectFileUrl, setObjectFileUrl] = useState<string>("");
+  
+  console.log("ADD: objectFileUrl ", objectFileUrl);
+  
   const [imageMethod2Url, setImageMethod2Url] = useState<string>("");
   const location: any = useLocation().state;
   const navigate = useNavigate();
