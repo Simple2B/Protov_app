@@ -1,12 +1,5 @@
-import { AxiosResponse } from "axios";
 import React, { ReactElement, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { axiosInstance } from "../../axios/axiosInstance";
-import { IAPI2Response } from "../../types/API2";
-import { IAPI7Response } from "../../types/API7";
-import API2Response from "../../fake_api/API2_response_succeed.json";
-import API2ResponseFail from "../../fake_api/API2_response_fail.json";
-import API7Response from "../../fake_api/API7_resposne.json";
 import { store } from "../../store";
 import { API } from "aws-amplify";
 import Loader from "../Loader/Loader";
@@ -18,7 +11,7 @@ export default function Sale(): ReactElement {
   const [newPassword, setNewPassword] = useState<string>();
   const [check, setCheck] = useState<string>();
   const [hideButton, setHideButton] = useState<boolean>(false);
-  const [isValidation, setValidation] = useState(false);
+  // const [isValidation, setValidation] = useState(false);
 
   const [passwordError, setPasswordErr] = useState<string>("");
   const [isLoad, setLoad] = useState(false);

@@ -28,12 +28,10 @@ clientTransaction = boto3.client('dynamodb')
 def get_transaction(id_object):
     objects = AwsTransactionService.get_transaction_objects()
     objects_data = []
-
     for obj in objects['Items']:
         print("get_transaction: obj => ", obj)
         if obj['id_object']['S'] == id_object:
             objects_data.append(obj)
-    print("get_transaction: objects_data => ", objects_data)
     if len(objects_data) > 0:
         objects_data = [{
             'owner_id': obj['owner_id']['S'],

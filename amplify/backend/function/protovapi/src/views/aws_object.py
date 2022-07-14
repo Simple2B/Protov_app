@@ -24,12 +24,11 @@ client = boto3.client('dynamodb')
 def create_object():
     request_json = request.get_json()
     response = AwsObjectService.create_aws_object(client, request_json)
-    print("create_object: AwsObjectService response =>> ", response)
+
     artist_id = response["artist_id"]
     id_object = response["id_object"]
     owner_id = uuid4().hex
-    print("create_object: owner_id => ", artist_id)
-    print("create_object: id_object => ", id_object)
+
     transaction = AwsTransactionService.create_transaction(
         client, request_json, owner_id, id_object)
     print("create_object: transaction => ", transaction)
@@ -64,30 +63,27 @@ def verify_objects():
 
     search_item = request_json.get('search_item')
     id_object = request_json.get('id_object')
-    print("verify_objects: id_object =>>>> ", id_object)
     surname = request_json.get('artist_surname')
     name = request_json.get('artist_firstname')
     title = request_json.get('title')
     year = request_json.get('year')
 
+    # the values are received from the front end
     send_data = [name, surname, title, year, id_object]
+    # number of values
     length_send_data = len([value for value in send_data if value])
-
+    # objects from the database
     objects = get_objects()
 
     objects_data = []
-
+    # search logic
     for obj in objects['Items']:
-
         verify_data = [obj['artist_firstname']['S'], obj['artist_surname']
                        ['S'], obj['title']['S'], obj['year']['S'], obj['id_object']['S']]
-
         var_objects = [i for i, j in zip(send_data, verify_data) if i == j]
         length_var_objects = len([value for value in var_objects if value])
-
         if length_var_objects == length_send_data:
             objects_data.append(obj)
-
     if len(objects_data) > 0:
         object_services = AwsObjectService()
         objects_data = [object_services.get_object_info(
@@ -98,17 +94,12 @@ def verify_objects():
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/object', methods=["POST"])
 def get_object():
     request_json = request.get_json()
-    print("get_object: request_json => ", request_json)
     id_object = request_json.get('id_object')
-    print("get_object: id_object => ", id_object)
-
     artist_surname = request_json.get('artist_surname')
     artist_firstname = request_json.get('artist_firstname')
     # title = request_json.get('title')
     # year = request_json.get('year')
-
     objects = get_objects()
-
     objects_data = []
     for obj in objects['Items']:
         is_verify_artist = obj['artist_firstname']['S'] == artist_firstname and obj['artist_surname']['S'] == artist_surname
@@ -137,10 +128,8 @@ def verify_owner():
     request_json = request.get_json()
     id_object = request_json.get('id_object')
     password = request_json.get('owner_password')
-
     objects = get_objects()
     objects_transaction = AwsTransactionService.get_transaction_objects()
-
     modify_objects_transaction = []
     if len(objects_transaction) > 0:
         for obj in objects_transaction['Items']:
@@ -148,13 +137,6 @@ def verify_owner():
                 obj[key] = value["S"]
 
             modify_objects_transaction.append(obj)
-
-    print("verify_owner: modify_objects_transaction =>>>",
-          modify_objects_transaction)
-
-    # print("verify_owner: sorted_objects_transaction =>>>",
-    #       sorted_objects_transaction)
-
     object = None
     for obj in objects['Items']:
         if obj['id_object']['S'] == id_object:
@@ -189,11 +171,7 @@ def verify_owner():
     if len(verify_objects) > 1:
         sorted_verify_objects = sorted(
             verify_objects, key=lambda row: row['date'])
-        print("==>>> verify_owner: sorted_verify_objects ", sorted_verify_objects)
-        print("==>>> verify_owner: verify_object ", sorted_verify_objects[-1])
         verify_object = sorted_verify_objects[-1]
-        print("verify_object_info => verify_object ", verify_object)
-        print("verify_object_info => password ", password)
         id = verify_object['new_owner_id']
         if len(id) == 0:
             id = verify_object['owner_id']

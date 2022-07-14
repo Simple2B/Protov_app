@@ -119,11 +119,6 @@ const Add = () =>  {
     setMutableRows((prev) =>
       
       prev.map((row, idx) => {
-
-        console.log("handleSelectChange: prev => ", prev);
-        console.log("handleSelectChange: row => ", row);
-        console.log("handleSelectChange: idx => ", idx);
-
         if (idx === index) {
           row.method = event.target.value as InputMethod;
         }
