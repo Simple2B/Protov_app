@@ -139,16 +139,16 @@ export default function Provenance(): ReactElement {
               </TableRow>
             </TableHead>
             <TableBody>
-              {Object.values(location.responseData).map((row: any) => {
+              {Object.values(location.responseData).map((row: any, index) => {
                 return (
                   <TableRow
                     hover
                     role="checkbox"
                     tabIndex={-1}
-                    key={row.owner_id}
+                    key={index}
                   >
                     <TableCell classes={{ root: classes.tableCell }}>
-                      {row.owner_id}
+                      {row.new_owner_id.length > 0 ? row.new_owner_id : row.owner_id}
                     </TableCell>
                     <TableCell classes={{ root: classes.tableCell }}>
                       {row.date}
@@ -157,9 +157,10 @@ export default function Provenance(): ReactElement {
                       {row.action}
                     </TableCell>
                     <TableCell classes={{ root: classes.tableCell }}>
-                      {location.data.methods1.length > 0 ? "method1" : ""}
-                      {location.data.methods1.length > 0 && location.data.methods2.length > 0 ? ", " : ""}
-                      {location.data.methods2 !== undefined && location.data.methods2.length > 0 ? "method2" : ""} 
+                      {row.action === 'add method' && "method1, method2"}
+                      {row.verification_methods.methods1.length > 0 ? "method1" : ""}
+                      {row.verification_methods.methods1.length > 0 && row.verification_methods.methods2.length > 0 ? ", " : ""}
+                      {row.verification_methods.methods2 !== undefined && row.verification_methods.methods2.length > 0 ? "method2" : ""} 
                     </TableCell>
                   </TableRow>
                 );

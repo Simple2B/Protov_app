@@ -82,6 +82,8 @@ export default function Result(): ReactElement {
   const location: any = useLocation().state;
   const [isLoad, setLoad] = useState(false);
 
+  console.log("Result: location.responseData", location)
+
   const dataObjects = location.responseData.length > 0 ? location.responseData.map((item: { [x: string]: any; }) => 
     ({
         artist_id: item['artist_id'],
@@ -113,6 +115,7 @@ export default function Result(): ReactElement {
     const getObjectTransaction = async () => {
       setLoad(true);
       const dataObject = await API.get('protovapi', `/transactionobject/${id_object}`, {});
+      console.log("=> getObjectTransaction: dataObject =>", dataObject)
       setLoad(false);
       navigate("/provenance", {
         state: {
@@ -208,7 +211,7 @@ export default function Result(): ReactElement {
                     classes={{ hover: classes.tableRow }}
                     onClick={() => {
                       console.log("!  row.methods1",  row.methods1);
-                      console.log("!  row.methods2",  row.methods2);
+                      console.log("=>>>>  row",  row);
                       handleObjectId(
                         row.artist_id,
                         row.artist_firstname,

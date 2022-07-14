@@ -61,7 +61,11 @@ export default function Transact(): ReactElement {
     navigate("/result", {
       state: { searchItem: "Transact", responseData: location.allData },
     });
+    
+    
   };
+  const d = location.allData
+  console.log("d!" , d);
 
   const handleHome = () => {
     store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
@@ -108,8 +112,12 @@ export default function Transact(): ReactElement {
       id_object: location.data.id_object,
       methods: location.data.methods,
     };
+    console.log("======!!!!!!!!!! handleSales => data !!!!!!!!!!!!=====", data);
+    
     navigate("/sale", { state: { data: data, allData: location.allData } });
   };
+
+  console.log(" handleSales => location.allData", location.allData);
 
   const handleAddMethod = () => {
     
@@ -120,6 +128,7 @@ export default function Transact(): ReactElement {
       title: location.data.title,
       year: location.data.year,
       id_object: location.data.id_object,
+      methods: location.data.methods
     };
     navigate("/add-method", {
       state: { data: data, allData: location.allData },

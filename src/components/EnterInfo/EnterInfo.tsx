@@ -178,7 +178,7 @@ export default function EnterInfo(): ReactElement {
       methods2: methods2,
       title: title,
       year: year,
-      id_object: objectID ? objectID : "",
+      id_object: objectID,
     };
 
     console.log("EnterInfo: data => ", data)
@@ -186,7 +186,6 @@ export default function EnterInfo(): ReactElement {
     const getObjects = async () => {
       setLoad(true);
       const dataObjects = await API.post('protovapi', `/protovobject/enter_info`, {body: data})
-      console.log('EnterInfo => POST: getObject -> !!! dataObjects', dataObjects.data);
 
       navigate("/result", { state: { searchItem, responseData: dataObjects.data } });
 

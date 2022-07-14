@@ -1,12 +1,5 @@
-import { AxiosResponse } from "axios";
 import React, { ReactElement, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { axiosInstance } from "../../axios/axiosInstance";
-import { IAPI2Response } from "../../types/API2";
-import { IAPI7Response } from "../../types/API7";
-import API2Response from "../../fake_api/API2_response_succeed.json";
-import API2ResponseFail from "../../fake_api/API2_response_fail.json";
-import API7Response from "../../fake_api/API7_resposne.json";
 import { store } from "../../store";
 import { API } from "aws-amplify";
 import Loader from "../Loader/Loader";
@@ -18,7 +11,7 @@ export default function Sale(): ReactElement {
   const [newPassword, setNewPassword] = useState<string>();
   const [check, setCheck] = useState<string>();
   const [hideButton, setHideButton] = useState<boolean>(false);
-  const [isValidation, setValidation] = useState(false);
+  // const [isValidation, setValidation] = useState(false);
 
   const [passwordError, setPasswordErr] = useState<string>("");
   const [isLoad, setLoad] = useState(false);
@@ -101,7 +94,8 @@ export default function Sale(): ReactElement {
       id_object: location.data.id_object,
       owner_password: currentPassword,
       new_owner_id: newPassword,
-
+      methods1: location.data.methods.methods1,
+      methods2: location.data.methods.methods2,
     };
 
     console.log("Sale: data => ", data)
@@ -110,25 +104,15 @@ export default function Sale(): ReactElement {
     console.log("VerifyOwner ownerData => ", ownerData);
 
     //FAKE RESPONSE
-    const response = API2Response;
+    // const response = API2Response;
 
     // to test fail response change var response on responseFail
-    const responseFail = API2ResponseFail;
-
-    if (response.owner_ver_status) {
-      //REAL RESPONSE
-      // const saleConfirmation: AxiosResponse<IAPI7Response> =
-      //   await axiosInstance.post("/", data2);
-
-      //FARE RESPONSE
-      const saleConfirmation = API7Response;
-
-      if (!response.owner_ver_status || !saleConfirmation.sale_success) {
+    // const responseFail = API2ResponseFail;
+    if (!ownerData.owner_ver_status) {
         setCheck("FAIL");
-      } else {
+      }  else {
         setCheck("SUCCESS");
       }
-    }
     setPasswordErr("");
     setLoad(false);
   };

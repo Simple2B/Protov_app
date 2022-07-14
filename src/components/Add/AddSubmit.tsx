@@ -13,6 +13,9 @@ export default function AddSubmit(): ReactElement {
   const [imageMethod2Key, setImageMethod2Key] = useState<string>("");
 
   const [objectFileUrl, setObjectFileUrl] = useState<string>("");
+  
+  console.log("ADD: objectFileUrl ", objectFileUrl);
+  
   const [imageMethod2Url, setImageMethod2Url] = useState<string>("");
   const location: any = useLocation().state;
   const navigate = useNavigate();
@@ -68,7 +71,7 @@ export default function AddSubmit(): ReactElement {
         {location.data.artist_firstname} {location.data.artist_surname},{" "}
         {location.data.title}, {location.data.year}
       </div>
-      <div className="add_submit-id"><strong>owner password:</strong> {location.data.owner_id}</div>
+      <div className="add_submit-id"><strong>owner password:</strong> {location.data.owner_id} {" "} {location.data.new_owner_id}</div>
       <div className="add_submit-id"><strong>object:</strong> {location.responseData.message.object}</div>
 
       { 

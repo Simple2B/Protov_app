@@ -8,7 +8,7 @@ from boto3.dynamodb.conditions import Key
 import logging
 
 from flask import Blueprint, jsonify, request
-from services.aws_object import AwsObjectService
+from services.aws_object import AwsObjectService, get_objects
 
 from services.aws_transaction import AwsTransactionService
 
@@ -28,15 +28,14 @@ clientTransaction = boto3.client('dynamodb')
 def get_transaction(id_object):
     objects = AwsTransactionService.get_transaction_objects()
     objects_data = []
-
     for obj in objects['Items']:
         print("get_transaction: obj => ", obj)
         if obj['id_object']['S'] == id_object:
             objects_data.append(obj)
-    print("get_transaction: objects_data => ", objects_data)
     if len(objects_data) > 0:
         objects_data = [{
             'owner_id': obj['owner_id']['S'],
+            'new_owner_id': obj['new_owner_id']['S'],
             'date': obj['date']['S'],
             'action': obj['action']['S'],
             'verification_methods': {
@@ -44,6 +43,8 @@ def get_transaction(id_object):
                 'methods2': obj['methods2']['S'],
             }
         } for obj in objects_data]
+        objects_data = sorted(
+            objects_data, key=lambda row: row['date'])
     return jsonify(data=objects_data)
 
 
@@ -53,7 +54,10 @@ def sale():
     id_object = request_json.get('id_object')
     owner_id = request_json.get('owner_password')
     new_owner_id = request_json.get('new_owner_id')
-    objects = AwsObjectService.get_objects()
+    methods1 = request_json.get('methods1')
+    methods2 = request_json.get('methods2')
+
+    objects = get_objects()
     objects_transaction = AwsTransactionService.get_transaction_objects()
 
     object = None
@@ -63,42 +67,31 @@ def sale():
 
     verify_object = None
     for obj in objects_transaction['Items']:
+        n_owner_id = obj['new_owner_id']['S']
+        print("sale: n_owner_id ", n_owner_id)
+        if n_owner_id == owner_id and obj['id_object']['S'] == id_object:
+            verify_object = obj
         if obj['owner_id']['S'] == owner_id and obj['id_object']['S'] == id_object:
             verify_object = obj
 
     if object and verify_object and object['id_object']['S'] == verify_object['id_object']['S']:
-        today = datetime.date.today().strftime("%m/%d/%Y")
+        today = datetime.datetime.today().strftime("%m/%d/%Y, %H:%M:%S")
         print("new_owner_id ", new_owner_id)
-        update_password = clientTransaction.update_item(
-            TableName=TRANSACTION_TABLE,
-            Key={'id_transaction': {
-                'S': verify_object['id_transaction']['S']}},
-            UpdateExpression='SET ' +
-            "#id_object = :id_object, " +
-            "#action = :action, " +
-            "#date = :date," +
-            "#methods1 = :methods1, " +
-            "#methods2 = :methods2, " +
-            "#owner_id = :owner_id",
-            ExpressionAttributeNames={
-                "#id_object": "id_object",
-                "#action": "action",
-                "#date": "date",
-                "#methods1": "methods1",
-                "#methods2": "methods2",
-                "#owner_id": "owner_id",
-            },
-            ExpressionAttributeValues={
-                ":id_object": {'S': verify_object['id_object']['S']},
-                ":action": {'S': verify_object['action']['S']},
-                ":date": {'S': today},
-                ":methods1": {'S': verify_object['methods1']['S']},
-                ":methods2": {'S': verify_object['methods2']['S']},
-                ":owner_id": {'S': new_owner_id},
-            }
-        )
 
-        print("update_password ", update_password)
+        action = "transfer"
+        transfer_transaction = str(uuid4())
+
+        clientTransaction.put_item(TableName=TRANSACTION_TABLE, Item={
+            "id_transaction": {'S': transfer_transaction},
+            "id_object": {'S': verify_object['id_object']['S']},
+            "action": {'S': action},
+            "date": {'S': today},
+            "methods1": {'S': methods1 if methods1 else ""},
+            "methods2": {'S': methods2 if methods2 else ""},
+            "owner_id": {'S': verify_object['owner_id']['S']},
+            "new_owner_id": {'S': new_owner_id},
+        })
+        print("update_password: transfer_transaction ", transfer_transaction)
 
         return {
             "artist_surname": object['artist_surname']['S'],

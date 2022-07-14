@@ -1,7 +1,8 @@
 import os
+import re
 from uuid import uuid4
 import datetime
-from services.aws_object import AwsObjectService
+from services.aws_object import AwsObjectService, get_objects
 from services.aws_transaction import AwsTransactionService
 from flask import Blueprint, jsonify, request
 import json
@@ -23,12 +24,11 @@ client = boto3.client('dynamodb')
 def create_object():
     request_json = request.get_json()
     response = AwsObjectService.create_aws_object(client, request_json)
-    print("create_object: AwsObjectService response =>> ", response)
+
     artist_id = response["artist_id"]
     id_object = response["id_object"]
     owner_id = uuid4().hex
-    print("create_object: owner_id => ", artist_id)
-    print("create_object: id_object => ", id_object)
+
     transaction = AwsTransactionService.create_transaction(
         client, request_json, owner_id, id_object)
     print("create_object: transaction => ", transaction)
@@ -39,6 +39,7 @@ def create_object():
         "artist_id": artist_id,
         "id_object": id_object,
         "owner_id": owner_id,
+        "new_owner_id": "",
         "object": response['object'],
         "object_file_key": response['object_file_key'],
         "year": response['year'],
@@ -67,33 +68,22 @@ def verify_objects():
     title = request_json.get('title')
     year = request_json.get('year')
 
-    objects = AwsObjectService.get_objects()
+    # the values are received from the front end
+    send_data = [name, surname, title, year, id_object]
+    # number of values
+    length_send_data = len([value for value in send_data if value])
+    # objects from the database
+    objects = get_objects()
 
     objects_data = []
-
-    # search_items = ['Verify owner', 'Transact', 'Provenance', 'Verify object']
-
+    # search logic
     for obj in objects['Items']:
-        is_artist_verify = obj['artist_firstname']['S'] == name and obj['artist_surname']['S'] == surname and len(
-            name) > 0 and len(surname) > 0
-        is_object_verify = obj['title']['S'] == title and obj['year']['S'] == year and len(
-            title) > 0 and len(year) > 0
-        is_object_id = obj['id_object']['S'] == id_object
-
-        is_full_info_object = is_artist_verify and is_object_verify and is_object_id
-        if search_item == 'Verify owner':
-            if is_artist_verify and is_object_id:
-                objects_data.append(obj)
-        if search_item == 'Transact':
-            if is_artist_verify or is_object_id or is_object_verify:
-                objects_data.append(obj)
-        if search_item == 'Provenance':
-            if (is_artist_verify and is_object_id) or (is_artist_verify and is_object_verify) or is_artist_verify or obj['id_object']['S'] == id_object:
-                objects_data.append(obj)
-        if search_item == 'Verify object':
-            if is_full_info_object or is_artist_verify or is_object_verify or is_object_id:
-                objects_data.append(obj)
-
+        verify_data = [obj['artist_firstname']['S'], obj['artist_surname']
+                       ['S'], obj['title']['S'], obj['year']['S'], obj['id_object']['S']]
+        var_objects = [i for i, j in zip(send_data, verify_data) if i == j]
+        length_var_objects = len([value for value in var_objects if value])
+        if length_var_objects == length_send_data:
+            objects_data.append(obj)
     if len(objects_data) > 0:
         object_services = AwsObjectService()
         objects_data = [object_services.get_object_info(
@@ -104,17 +94,12 @@ def verify_objects():
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/object', methods=["POST"])
 def get_object():
     request_json = request.get_json()
-    print("get_object: request_json => ", request_json)
     id_object = request_json.get('id_object')
-    print("get_object: id_object => ", id_object)
-
     artist_surname = request_json.get('artist_surname')
     artist_firstname = request_json.get('artist_firstname')
     # title = request_json.get('title')
     # year = request_json.get('year')
-
-    objects = AwsObjectService.get_objects()
-
+    objects = get_objects()
     objects_data = []
     for obj in objects['Items']:
         is_verify_artist = obj['artist_firstname']['S'] == artist_firstname and obj['artist_surname']['S'] == artist_surname
@@ -143,38 +128,56 @@ def verify_owner():
     request_json = request.get_json()
     id_object = request_json.get('id_object')
     password = request_json.get('owner_password')
-
-    objects = AwsObjectService.get_objects()
+    objects = get_objects()
     objects_transaction = AwsTransactionService.get_transaction_objects()
+    modify_objects_transaction = []
+    if len(objects_transaction) > 0:
+        for obj in objects_transaction['Items']:
+            for key, value in obj.items():
+                obj[key] = value["S"]
 
+            modify_objects_transaction.append(obj)
     object = None
     for obj in objects['Items']:
         if obj['id_object']['S'] == id_object:
             object = obj
 
-    verify_object = None
-    for obj in objects_transaction['Items']:
-        if obj['owner_id']['S'] == password:
-            verify_object = obj
+    verify_objects = []
+    for obj in modify_objects_transaction:
+        if obj['id_object'] == id_object:
+            verify_objects.append(obj)
 
-    if object and verify_object and object['id_object']['S'] == verify_object['id_object']['S']:
-        return {
-            "artist_surname": object['artist_surname']['S'],
-            "artist_firstname": object['artist_firstname']['S'],
-            "title": object['title']['S'],
-            "year": object['year']['S'],
-            "id_object": object['id_object']['S'],
-            "owner_ver_status": True
-        }
-    else:
-        return {
-            "artist_surname": object['artist_surname']['S'],
-            "artist_firstname": object['artist_firstname']['S'],
-            "title": object['title']['S'],
-            "year": object['year']['S'],
-            "id_object": id_object,
-            "owner_ver_status": False
-        }
+    def verify_object_info(object, verify_object_pass: str, enter_password: str):
+        print("verify_object_info => verify_object_pass ", verify_object_pass)
+        print("verify_object_info => enter_password ", enter_password)
+        if verify_object_pass.strip() == enter_password.strip():
+            return {
+                "artist_surname": object['artist_surname']['S'],
+                "artist_firstname": object['artist_firstname']['S'],
+                "title": object['title']['S'],
+                "year": object['year']['S'],
+                "id_object": object['id_object']['S'],
+                "owner_ver_status": True
+            }
+        else:
+            return {
+                "artist_surname": object['artist_surname']['S'],
+                "artist_firstname": object['artist_firstname']['S'],
+                "title": object['title']['S'],
+                "year": object['year']['S'],
+                "id_object": id_object,
+                "owner_ver_status": False
+            }
+    if len(verify_objects) > 1:
+        sorted_verify_objects = sorted(
+            verify_objects, key=lambda row: row['date'])
+        verify_object = sorted_verify_objects[-1]
+        id = verify_object['new_owner_id']
+        if len(id) == 0:
+            id = verify_object['owner_id']
+        return verify_object_info(object, id, password)
+    elif len(verify_objects) == 1:
+        return verify_object_info(object, verify_objects[0]['owner_id'], password)
 
 
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/<id_object>', methods=['DELETE'])
@@ -194,18 +197,35 @@ def add_method():
     methods2 = request_json.get("methods2")
     image_method2_key = request_json.get("image_method2_key")
 
-    objects = AwsObjectService.get_objects()
+    objects = get_objects()
     transaction_objects = AwsTransactionService.get_transaction_objects()
+
+    modify_objects_transaction = []
+    if len(transaction_objects) > 0:
+        for obj in transaction_objects['Items']:
+            for key, value in obj.items():
+                obj[key] = value["S"]
+
+            modify_objects_transaction.append(obj)
+
+    print("verify_owner: modify_objects_transaction =>>>",
+          modify_objects_transaction)
 
     object = None
     for obj in objects['Items']:
-        if obj['id_object']['S'] == id_object and obj['artist_id']['S'] == artist_id:
+        if obj['id_object']['S'] == id_object:
             object = obj
 
+    transaction_objects = []
+    for obj in modify_objects_transaction:
+        if obj['id_object'] == id_object:
+            transaction_objects.append(obj)
+
     transaction_object = None
-    for obj in transaction_objects['Items']:
-        if obj['id_object']['S'] == id_object:
-            transaction_object = obj
+    if len(transaction_objects) > 0:
+        sorted_verify_objects = sorted(
+            transaction_objects, key=lambda row: row['date'])
+        transaction_object = sorted_verify_objects[-1]
 
     if object and transaction_object:
         client.put_item(TableName=PROTOV_TABLE, Item={
@@ -213,35 +233,36 @@ def add_method():
             "artist_surname": {'S': object['artist_surname']['S']},
             "artist_firstname": {'S': object['artist_firstname']['S']},
             "artist_id": {'S': object['artist_id']['S']},
-            "methods1": {'S': methods1},
-            "methods2": {'S': methods2},
-            "image_method2_key": {'S': image_method2_key},
+            "methods1": {'S': methods1 if methods1 else object['methods1']['S']},
+            "methods2": {'S': methods2 if methods2 else object['methods2']['S']},
+            "image_method2_key": {'S': image_method2_key if len(methods2) > 0 else object['image_method2_key']['S']},
             "object_image": {'S': object['object_image']['S']},
             "image_file_key": {'S': object['image_file_key']['S']},
             "year": {'S': object['year']['S']},
             "title": {'S': object['title']['S']},
         })
 
-        today = datetime.date.today().strftime("%m/%d/%Y")
-        action = transaction_object['action']['S']
+        today = datetime.datetime.today().strftime("%m/%d/%Y, %H:%M:%S")
+        action = transaction_object['action']
         print("add => id_transaction",
-              transaction_object['id_transaction']['S'])
+              transaction_object['id_transaction'])
         print("add => methods1", methods1)
         print("add => methods2", methods2)
 
         if len(methods1) > 0 or len(methods2) > 0:
-            action = 'onboard'
+            action = 'added'
 
         print("add => action", action)
-
+        id_transaction = str(uuid4())
         client.put_item(TableName=PROTOV_TRANSACTION_TABLE, Item={
-            "id_transaction": {'S': transaction_object['id_transaction']['S']},
+            "id_transaction": {'S': id_transaction},
             "id_object": {'S': id_object},
             "action": {'S': action},
             "date": {'S': today},
-            "methods1": {'S': methods1},
-            "methods2": {'S': methods2},
-            "owner_id": {'S': transaction_object['owner_id']['S']},
+            "methods1": {'S': methods1 if methods1 else ""},
+            "methods2": {'S': methods2 if methods2 else ""},
+            "owner_id": {'S': transaction_object['owner_id']},
+            "new_owner_id": {'S': transaction_object['new_owner_id']},
         })
 
         return jsonify(message={"add_method_success": True})

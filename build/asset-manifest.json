@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/static/css/main.10a1e3cb.css",
-    "main.js": "/static/js/main.6e8f0bff.js",
+    "main.css": "/static/css/main.5cbaf931.css",
+    "main.js": "/static/js/main.dccee6e3.js",
     "static/js/787.28106a51.chunk.js": "/static/js/787.28106a51.chunk.js",
     "static/media/GTWalsheimPro-Black.woff": "/static/media/GTWalsheimPro-Black.d1a05b37fac1e43eae61.woff",
     "static/media/GTWalsheimPro-Bold.woff": "/static/media/GTWalsheimPro-Bold.6ead5fc9d23b21a10d0a.woff",
     "static/media/GTWalsheimPro-Regular.woff": "/static/media/GTWalsheimPro-Regular.1668df1c1c97770e0490.woff",
     "static/media/GTWalsheimPro-Medium.woff": "/static/media/GTWalsheimPro-Medium.56bd75a22ae9d40f0b48.woff",
     "index.html": "/index.html",
-    "main.10a1e3cb.css.map": "/static/css/main.10a1e3cb.css.map",
-    "main.6e8f0bff.js.map": "/static/js/main.6e8f0bff.js.map",
+    "main.5cbaf931.css.map": "/static/css/main.5cbaf931.css.map",
+    "main.dccee6e3.js.map": "/static/js/main.dccee6e3.js.map",
     "787.28106a51.chunk.js.map": "/static/js/787.28106a51.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.10a1e3cb.css",
-    "static/js/main.6e8f0bff.js"
+    "static/css/main.5cbaf931.css",
+    "static/js/main.dccee6e3.js"
   ]
 }

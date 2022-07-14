@@ -1,13 +1,10 @@
 import React, { ReactElement, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../axios/axiosInstance";
 import { store } from "../../store";
 import "./VerifyOwner.css";
-import API2Response from "../../fake_api/API2_response_succeed.json";
-import API2ResponseFail from "../../fake_api/API2_response_fail.json";
 import { API } from "aws-amplify";
 import Loader from "../Loader/Loader";
-
+// cbbd92d20aa44f7699db738f6ee5fc5b
 export default function VerifyOwner(): ReactElement {
   const location: any = useLocation().state;
   const [password, setPassword] = useState<string>();
@@ -56,10 +53,6 @@ export default function VerifyOwner(): ReactElement {
 
     const ownerData = await API.post('protovapi', '/transactionobject/verify_owner', {body: data});
     console.log("VerifyOwner ownerData => ", ownerData);
-
-    // to test fail response change var fakeData on fakeDataFail
-    // const fakeData = API2Response;
-    // const fakeDataFail = API2ResponseFail;
 
     if (location.data.path === "/transact") {
       setLoad(false);

@@ -149,9 +149,11 @@
 
 .add_submit-objectLink {
     display: flex;
-    align-items: flex-end;
+    justify-content: center;
+    align-items: center;
     color: rgba(0, 0, 0, 0.7);
 }
+
 
 @media (max-width: 699px) {
     .add__input:not(:last-child) {
