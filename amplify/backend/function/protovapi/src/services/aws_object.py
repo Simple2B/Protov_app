@@ -16,20 +16,20 @@ class AwsObjectService:
         title = request_json.get('title')
         year = request_json.get('year')
 
+        # generate identifiers for the object and the artist
         id_object = str(uuid4())
         artist_id = uuid4().hex
 
+        # looking for all objects that have already been saved
         objects = get_objects()
 
-        print("AwsObjectService => create_object: objects ", objects)
-
+        # if such an artist already exists, then we assign the identifier of the existing artist
         if len(objects['Items']) > 0:
             for obj in objects['Items']:
                 if obj['artist_firstname']['S'] == name and obj['artist_surname']['S'] == surname:
                     artist_id = obj['artist_id']['S']
-                # if obj['title']['S'] == title and obj['year']['S'] == year and obj['artist_surname']['S'] == surname:
-                #     id_object = obj['id_object']['S']
         try:
+            # record the data in the table
             client.put_item(TableName=PROTOV_TABLE, Item={
                 "id_object": {'S': id_object},
                 "artist_surname": {'S': surname},
@@ -43,7 +43,7 @@ class AwsObjectService:
                 "year": {'S': year},
                 "title": {'S': title},
             })
-
+            # return data about the created object to the front end
             return {
                 "artist_surname": surname,
                 "artist_firstname": name,
