@@ -7,9 +7,11 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { Amplify } from 'aws-amplify';
-import config from './aws-exports.js';
 
-Amplify.configure(config);
+// connect to amplify backend
+
+// import config from './aws-exports.js';
+// Amplify.configure(config);
 
 ReactDOM.render(
   <React.StrictMode>
