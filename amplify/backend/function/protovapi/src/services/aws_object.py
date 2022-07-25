@@ -20,7 +20,7 @@ class AwsObjectService:
         id_object = str(uuid4())
         artist_id = uuid4().hex
 
-        objects = get_objects()
+        objects = client.get_objects()
 
         if len(objects['Items']) > 0:
             for obj in objects['Items']:
@@ -70,9 +70,30 @@ class AwsObjectService:
             "search_item": search_item,
         }
 
+    @staticmethod
+    def get_objects():
+        data_objects = client.scan(TableName=PROTOV_TABLE)
+        data = json.dumps(data_objects)
+        objects = json.loads(data)
+        return objects
 
-def get_objects():
-    data_objects = client.scan(TableName=PROTOV_TABLE)
-    data = json.dumps(data_objects)
-    objects = json.loads(data)
-    return objects
+    @staticmethod
+    def verify_object_info(verify_object_pass: str, enter_password: str):
+        if verify_object_pass.strip() == enter_password.strip():
+            return {
+                # "artist_surname": object['artist_surname']['S'],
+                # "artist_firstname": object['artist_firstname']['S'],
+                # "title": object['title']['S'],
+                # "year": object['year']['S'],
+                # "id_object": object['id_object']['S'],
+                "owner_ver_status": True
+            }
+        else:
+            return {
+                # "artist_surname": object['artist_surname']['S'],
+                # "artist_firstname": object['artist_firstname']['S'],
+                # "title": object['title']['S'],
+                # "year": object['year']['S'],
+                # "id_object": "",
+                "owner_ver_status": False
+            }

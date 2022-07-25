@@ -2,7 +2,7 @@ import os
 import re
 from uuid import uuid4
 import datetime
-from services.aws_object import AwsObjectService, get_objects
+from services.aws_object import AwsObjectService
 from services.aws_transaction import AwsTransactionService
 import schemas
 from flask import Blueprint, jsonify, request
@@ -91,7 +91,7 @@ def verify_objects() -> schemas.EnterInfoResponse:
     length_send_data = len([value for value in send_data if value])
 
     # get all objects from db
-    objects = get_objects()
+    objects = AwsObjectService.get_objects()
 
     objects_data = []
 
@@ -110,6 +110,48 @@ def verify_objects() -> schemas.EnterInfoResponse:
         objects_data = [object_services.get_object_info(
             obj, search_item) for obj in objects_data]
     return jsonify(data=objects_data)
+
+
+@aws_object_blueprint.route(BASE_ROUTE + 'transactionobject/verify_owner', methods=["POST"])
+def verify_owner():
+    request_json: schemas.VerifyOwnerRequest = request.get_json()
+    id_object = request_json.get('id_object')
+    password = request_json.get('owner_password')
+
+    objects = AwsObjectService.get_objects()
+    objects_transaction = AwsTransactionService.get_transaction_objects()
+
+    modify_objects_transaction = []
+    if len(objects_transaction) > 0:
+        for obj in objects_transaction['Items']:
+            for key, value in obj.items():
+                obj[key] = value["S"]
+
+            modify_objects_transaction.append(obj)
+
+    print("verify_owner: modify_objects_transaction =>>>",
+          modify_objects_transaction)
+
+    # object = None
+    # for obj in objects['Items']:
+    #     if obj['id_object']['S'] == id_object:
+    #         object = obj
+
+    verify_objects = []
+    for obj in modify_objects_transaction:
+        if obj['id_object'] == id_object:
+            verify_objects.append(obj)
+
+    if len(verify_objects) > 1:
+        sorted_verify_objects = sorted(
+            verify_objects, key=lambda row: row['date'])
+        verify_object = sorted_verify_objects[-1]
+        id = verify_object['new_owner_id']
+        if len(id) == 0:
+            id = verify_object['owner_id']
+        return AwsObjectService.verify_object_info(id, password)
+    elif len(verify_objects) == 1:
+        return AwsObjectService.verify_object_info(verify_objects[0]['owner_id'], password)
 
 
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject', methods=["GET"])
@@ -131,7 +173,7 @@ def get_object():
     # title = request_json.get('title')
     # year = request_json.get('year')
 
-    objects = get_objects()
+    objects = AwsObjectService.get_objects()
 
     objects_data = []
     for obj in objects['Items']:
@@ -156,76 +198,6 @@ def get_object():
     return jsonify(data=objects_data)
 
 
-@aws_object_blueprint.route(BASE_ROUTE + 'transactionobject/verify_owner', methods=["POST"])
-def verify_owner():
-    request_json = request.get_json()
-    id_object = request_json.get('id_object')
-    password = request_json.get('owner_password')
-
-    objects = get_objects()
-    objects_transaction = AwsTransactionService.get_transaction_objects()
-
-    modify_objects_transaction = []
-    if len(objects_transaction) > 0:
-        for obj in objects_transaction['Items']:
-            for key, value in obj.items():
-                obj[key] = value["S"]
-
-            modify_objects_transaction.append(obj)
-
-    print("verify_owner: modify_objects_transaction =>>>",
-          modify_objects_transaction)
-
-    # print("verify_owner: sorted_objects_transaction =>>>",
-    #       sorted_objects_transaction)
-
-    object = None
-    for obj in objects['Items']:
-        if obj['id_object']['S'] == id_object:
-            object = obj
-
-    verify_objects = []
-    for obj in modify_objects_transaction:
-        if obj['id_object'] == id_object:
-            verify_objects.append(obj)
-
-    def verify_object_info(object, verify_object_pass: str, enter_password: str):
-        print("verify_object_info => verify_object_pass ", verify_object_pass)
-        print("verify_object_info => enter_password ", enter_password)
-        if verify_object_pass.strip() == enter_password.strip():
-            return {
-                "artist_surname": object['artist_surname']['S'],
-                "artist_firstname": object['artist_firstname']['S'],
-                "title": object['title']['S'],
-                "year": object['year']['S'],
-                "id_object": object['id_object']['S'],
-                "owner_ver_status": True
-            }
-        else:
-            return {
-                "artist_surname": object['artist_surname']['S'],
-                "artist_firstname": object['artist_firstname']['S'],
-                "title": object['title']['S'],
-                "year": object['year']['S'],
-                "id_object": id_object,
-                "owner_ver_status": False
-            }
-    if len(verify_objects) > 1:
-        sorted_verify_objects = sorted(
-            verify_objects, key=lambda row: row['date'])
-        print("==>>> verify_owner: sorted_verify_objects ", sorted_verify_objects)
-        print("==>>> verify_owner: verify_object ", sorted_verify_objects[-1])
-        verify_object = sorted_verify_objects[-1]
-        print("verify_object_info => verify_object ", verify_object)
-        print("verify_object_info => password ", password)
-        id = verify_object['new_owner_id']
-        if len(id) == 0:
-            id = verify_object['owner_id']
-        return verify_object_info(object, id, password)
-    elif len(verify_objects) == 1:
-        return verify_object_info(object, verify_objects[0]['owner_id'], password)
-
-
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/<id_object>', methods=['DELETE'])
 def delete_object(id_object):
     client.delete_item(
@@ -243,7 +215,7 @@ def add_method():
     methods2 = request_json.get("methods2")
     image_method2_key = request_json.get("image_method2_key")
 
-    objects = get_objects()
+    objects = AwsObjectService.get_objects()
     transaction_objects = AwsTransactionService.get_transaction_objects()
 
     modify_objects_transaction = []
