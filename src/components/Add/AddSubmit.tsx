@@ -16,7 +16,7 @@ export default function AddSubmit(): ReactElement {
   const getObjectFileUrl = async () => {
     try {
       if (location.responseData.message.add_object_success){
-        const urlFile = await Storage.get(location.responseData.message.object_file_key);
+        const urlFile = await Storage.get(location.responseData.message.image_file_key);
         setObjectFileUrl(urlFile);
       }
     } catch (error) {
@@ -28,7 +28,7 @@ export default function AddSubmit(): ReactElement {
   useEffect(() => {
       getObjectFileUrl();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.responseData.message.add_object_success, location.responseData.message.object_file_key]);
+  }, [location.responseData.message.add_object_success, location.responseData.message.image_file_key]);
 
   useEffect(() => {
       if (location.responseData.message.add_object_success) {
@@ -37,7 +37,7 @@ export default function AddSubmit(): ReactElement {
           setStatus("Fail!");
       }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.responseData.message.add_object_success, location.responseData.message.object_file_key, objectFileUrl.length]);
+  }, [location.responseData.message.add_object_success, location.responseData.message.image_file_key, objectFileUrl.length]);
 
   const handleHome = () => {
       navigate("/");
