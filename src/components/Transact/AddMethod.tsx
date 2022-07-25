@@ -171,11 +171,11 @@ export default function AddMethod(): ReactElement {
       } else {
         console.log("uploadFile: ", "fileMethod2 needed")
       }
-      
+      const methods1 = mutableRows.find((el) => el.method === InputMethod.STRING)?.value
       const data = {
         artist_id: location.data.artist_id,
         id_object: location.data.id_object,
-        methods1: mutableRows.length > 0 ? mutableRows.filter((i) => i.method === 0) : "",
+        methods1: methods1? methods1 : "",
         methods2: fileMethod2 ? fileMethod2[0].name : "",
         image_method2_key: fileMethod2 ? fileMethod2Key : "",
       };
