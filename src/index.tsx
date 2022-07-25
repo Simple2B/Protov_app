@@ -9,7 +9,6 @@ import { store } from "./store";
 import { Amplify } from 'aws-amplify';
 
 // connect to amplify backend
-
 import config from './aws-exports.js';
 Amplify.configure(config);
 
