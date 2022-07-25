@@ -249,7 +249,7 @@ const Add = () =>  {
           artist_id: awsObject.message.artist_id,
           owner_id: awsObject.message.owner_id,
           new_owner_id: awsObject.message.new_owner_id,
-          object_image: image,
+          // object_image: image,
           methods: {
             methods1: methods1 !== undefined ? methods1 : "",
             methods2: fileMethod2 ? fileMethod2[0].name : "",
@@ -260,7 +260,6 @@ const Add = () =>  {
       }
     }
     createAwsObject();
-    setFile(null);
     setOpen(false); 
     setFileMethod2(null);
     setOpenMethod2(false);

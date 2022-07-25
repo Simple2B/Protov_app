@@ -8,55 +8,40 @@ const typeImages = ["jpeg", "jpg", "png", "svg", "gif", "ico"];
 
 export default function AddSubmit(): ReactElement {
   const [status, setStatus] = useState<string>();
-  const [check, setCheck] = useState<boolean>(false);
-  const [objectFileKey, setObjectFileKey] = useState<string>("");
-  const [imageMethod2Key, setImageMethod2Key] = useState<string>("");
-
   const [objectFileUrl, setObjectFileUrl] = useState<string>("");
-  
   console.log("ADD: objectFileUrl ", objectFileUrl);
-  
-  const [imageMethod2Url, setImageMethod2Url] = useState<string>("");
   const location: any = useLocation().state;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (location.responseData.message.add_object_success) {
-      setStatus("Success!");
-      setObjectFileKey(location.responseData.message.object_file_key);
-      setImageMethod2Key(location.responseData.message.image_method2_key);
-    } else {
-      setStatus("Fail!");
-    }
-  }, [location.responseData.message.add_object_success, location.responseData.message.image_method2_key, location.responseData.message.object_file_key]);
-
-  const handleHome = () => {
-    navigate("/");
-  };
-
-  const getFileUrl = async (key: string) => {
-    const fileUrl = await Storage.get(key);
-    return fileUrl;
-  };
-
-  useEffect(() => {
-    if(objectFileKey.length > 0) {
-      const getObjectFileUrl = async() => {
-        const urlFile = await getFileUrl(objectFileKey)
+  const getObjectFileUrl = async () => {
+    try {
+      if (location.responseData.message.add_object_success){
+        const urlFile = await Storage.get(location.responseData.message.object_file_key);
         setObjectFileUrl(urlFile);
       }
-      getObjectFileUrl()
+    } catch (error) {
+        console.error("error accessing the Image from s3", error);
+        setObjectFileUrl("");
     }
+  };
 
-    if(imageMethod2Key.length > 0) {
-      const getImageMethod2Url = async() => {
-        const urlImageMethod2 = await getFileUrl(imageMethod2Key)
-        setImageMethod2Url(urlImageMethod2);
+  useEffect(() => {
+      getObjectFileUrl();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.responseData.message.add_object_success, location.responseData.message.object_file_key]);
+
+  useEffect(() => {
+      if (location.responseData.message.add_object_success) {
+          setStatus("Success!");
+      } else {
+          setStatus("Fail!");
       }
-      getImageMethod2Url()
-    }
-  }, [imageMethod2Key, objectFileKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.responseData.message.add_object_success, location.responseData.message.object_file_key, objectFileUrl.length]);
 
+  const handleHome = () => {
+      navigate("/");
+  };
   
   return (
     <div className="add_submit">
@@ -75,7 +60,7 @@ export default function AddSubmit(): ReactElement {
       <div className="add_submit-id"><strong>object:</strong> {location.responseData.message.object}</div>
 
       { 
-        (objectFileUrl.length > 0) && (
+        objectFileUrl.length > 0 && (
           <div className="add_submit-objects">
             {/* <div className="add_submit-objectsTitle">Uploaded {(objectFileUrl.length > 0 && imageMethod2Url.length > 0)? 'objects:' : 'object:'}</div> */}
             {
@@ -90,25 +75,9 @@ export default function AddSubmit(): ReactElement {
                 </div>
              )
             }
-            
-
-            {/* { location.responseData.message.methods2.length > 0 && typeImages.includes(location.responseData.message.methods2.split('.')[1]) ?
-              (
-                <div className="add_submit-object">
-                  <span className="add_submit-objectLink">2). Image of object from method2</span>
-                  <img src={imageMethod2Url} alt={imageMethod2Url} />
-                </div>
-              ) : location.responseData.message.methods2.length > 0 &&
-              (
-                <div className="add_submit-objectLink">
-                  2). <a href={imageMethod2Url} target="_blank" rel="noreferrer"> File of object from method2</a>
-                </div>
-              )
-            } */}
           </div>
         )
       }
-
       <div className="add_submit-id"><strong>object ID:</strong> {location.responseData.message.id_object}</div>
 
       <h2 className="verify_methods-title">Verification methods:</h2>

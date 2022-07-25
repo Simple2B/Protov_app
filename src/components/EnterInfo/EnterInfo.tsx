@@ -65,9 +65,6 @@ export default function EnterInfo(): ReactElement {
   const [title, setTitle] = useState<string>("");
   const [year, setYear] = useState<string>("");
   const [objectID, setObjectID] = useState<string>("");
-  const [artistId, setArtistId] = useState<string>("");
-  const [methods1, setMethod1] = useState<string>("");
-  const [methods2, setMethod2] = useState<string>("");
   const [checkData, setCheckData] = useState<boolean>(false);
   const [isLoad, setLoad] = useState(false);
 
@@ -78,30 +75,6 @@ export default function EnterInfo(): ReactElement {
   }, [location])
 
   useEffect(() => {
-
-    // if(searchItem === "Verify owner") {
-    //   if(name.length > 0 && surname.length > 0 && objectID.length > 0){
-    //     setCheckData(true);
-    //   } else {
-    //     setCheckData(false);
-    //   }
-    // }
-
-    // if(searchItem === "Verify object") {
-    //   if((title.length > 0 && year.length > 0) || objectID.length > 0){
-    //     setCheckData(true);
-    //   } else {
-    //     setCheckData(false);
-    //   }
-    // }
-
-    // if(searchItem === "Transact" || searchItem === "Provenance") {
-    //   if((title.length > 0 && year.length > 0) || objectID.length > 0 || (name.length > 0 && surname.length > 0)){
-    //     setCheckData(true);
-    //   } else {
-    //     setCheckData(false);
-    //   }
-    // }
     
   }, [name, surname, objectID, searchItem, title.length, year.length])
 
@@ -173,9 +146,6 @@ export default function EnterInfo(): ReactElement {
       search_item: searchItem,
       artist_surname: surname,
       artist_firstname: name,
-      artist_id: artistId,
-      methods1: methods1,
-      methods2: methods2,
       title: title,
       year: year,
       id_object: objectID,
@@ -184,13 +154,10 @@ export default function EnterInfo(): ReactElement {
     console.log("EnterInfo: data => ", data)
 
     const getObjects = async () => {
-      setLoad(true);
-      const dataObjects = await API.post('protovapi', `/protovobject/enter_info`, {body: data})
-
-      navigate("/result", { state: { searchItem, responseData: dataObjects.data } });
-
-      setLoad(false);
-    
+        setLoad(true);
+        const dataObjects = await API.post('protovapi', `/protovobject/enter_info`, {body: data})
+        navigate("/result", { state: { searchItem, responseData: dataObjects.data } });
+        setLoad(false);
     };
     getObjects();
   };
