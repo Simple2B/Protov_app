@@ -4,7 +4,6 @@ import { store } from "../../store";
 import "./VerifyOwner.css";
 import { API } from "aws-amplify";
 import Loader from "../Loader/Loader";
-// cbbd92d20aa44f7699db738f6ee5fc5b
 export default function VerifyOwner(): ReactElement {
   const location: any = useLocation().state;
   const [password, setPassword] = useState<string>();
