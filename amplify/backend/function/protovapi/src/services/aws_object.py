@@ -78,22 +78,8 @@ class AwsObjectService:
         }
 
     @staticmethod
-    def verify_object_info(verify_object_pass: str, enter_password: str):
+    def verify_object_info(verify_object_pass: str, enter_password: str) -> schemas.VerifyOwnerResponse:
         if verify_object_pass.strip() == enter_password.strip():
-            return {
-                # "artist_surname": object['artist_surname']['S'],
-                # "artist_firstname": object['artist_firstname']['S'],
-                # "title": object['title']['S'],
-                # "year": object['year']['S'],
-                # "id_object": object['id_object']['S'],
-                "owner_ver_status": True
-            }
+            return {"owner_ver_status": True}
         else:
-            return {
-                # "artist_surname": object['artist_surname']['S'],
-                # "artist_firstname": object['artist_firstname']['S'],
-                # "title": object['title']['S'],
-                # "year": object['year']['S'],
-                # "id_object": "",
-                "owner_ver_status": False
-            }
+            return {"owner_ver_status": False}

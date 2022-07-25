@@ -77,7 +77,7 @@ def create_object() -> schemas.AddObjectResponse:
 
 
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/enter_info', methods=['POST'])
-def verify_objects() -> schemas.EnterInfoResponse:
+def enter_info() -> schemas.EnterInfoResponse:
     request_json: schemas.EnterInfoRequest = request.get_json()
     id_object = request_json.get('id_object')
     surname = request_json.get('artist_surname')
@@ -113,14 +113,12 @@ def verify_objects() -> schemas.EnterInfoResponse:
 
 
 @aws_object_blueprint.route(BASE_ROUTE + 'transactionobject/verify_owner', methods=["POST"])
-def verify_owner():
+def verify_owner() -> schemas.VerifyOwnerResponse:
     request_json: schemas.VerifyOwnerRequest = request.get_json()
     id_object = request_json.get('id_object')
     password = request_json.get('owner_password')
-
     # objects = get_objects(client)
     objects_transaction = AwsTransactionService.get_transaction_objects()
-
     modify_objects_transaction = []
     if len(objects_transaction) > 0:
         for obj in objects_transaction['Items']:
@@ -128,9 +126,6 @@ def verify_owner():
                 obj[key] = value["S"]
 
             modify_objects_transaction.append(obj)
-
-    print("verify_owner: modify_objects_transaction =>>>",
-          modify_objects_transaction)
 
     # object = None
     # for obj in objects['Items']:
@@ -154,19 +149,10 @@ def verify_owner():
         return AwsObjectService.verify_object_info(verify_objects[0]['owner_id'], password)
 
 
-@aws_object_blueprint.route(BASE_ROUTE + 'protovobject', methods=["GET"])
-def list_objects():
-    data = client.scan(TableName=PROTOV_TABLE)
-    print("list_objects: data =>", data)
-    return jsonify(data=data)
-
-
-@aws_object_blueprint.route(BASE_ROUTE + 'protovobject/object', methods=["POST"])
-def get_object():
-    request_json = request.get_json()
-    print("get_object: request_json => ", request_json)
+@aws_object_blueprint.route(BASE_ROUTE + 'protovobject/verify_object', methods=["POST"])
+def verify_object() -> schemas.VerifyObjectResponse:
+    request_json: schemas.VerifyObjectRequest = request.get_json()
     id_object = request_json.get('id_object')
-    print("get_object: id_object => ", id_object)
 
     artist_surname = request_json.get('artist_surname')
     artist_firstname = request_json.get('artist_firstname')
@@ -175,27 +161,31 @@ def get_object():
 
     objects = get_objects(client)
 
-    objects_data = []
     for obj in objects['Items']:
         is_verify_artist = obj['artist_firstname']['S'] == artist_firstname and obj['artist_surname']['S'] == artist_surname
         if obj['id_object']['S'] == id_object and is_verify_artist or obj['id_object']['S'] == id_object:
-            objects_data.append(obj)
-        print("get_object: objects_data => ", objects_data)
-    if len(objects_data) > 0:
-        objects_data = [{
-            'artist_firstname': obj['artist_firstname']['S'],
-            'artist_id': obj['artist_id']['S'],
-            'artist_surname': obj['artist_surname']['S'],
-            'id_object': obj['id_object']['S'],
-            'image_file_key': obj['image_file_key']['S'],
-            'image_method2_key': obj['image_method2_key']['S'],
-            'methods1': obj['methods1']['S'],
-            'methods2': obj['methods2']['S'],
-            'object_image': obj['object_image']['S'],
-            'title': obj['title']['S'],
-            'year': obj['year']['S'],
-        } for obj in objects_data]
-    return jsonify(data=objects_data)
+            obj_data = {
+                # 'artist_firstname': obj['artist_firstname']['S'],
+                # 'artist_id': obj['artist_id']['S'],
+                # 'artist_surname': obj['artist_surname']['S'],
+                # 'id_object': obj['id_object']['S'],
+                'object_image': obj['object_image']['S'],
+                'image_file_key': obj['image_file_key']['S'],
+                'methods1': obj['methods1']['S'],
+                'methods2': obj['methods2']['S'],
+                'image_method2_key': obj['image_method2_key']['S'],
+
+                # 'title': obj['title']['S'],
+                # 'year': obj['year']['S'],
+            }
+            return jsonify(data=obj_data)
+
+
+@aws_object_blueprint.route(BASE_ROUTE + 'protovobject', methods=["GET"])
+def list_objects():
+    data = client.scan(TableName=PROTOV_TABLE)
+    print("list_objects: data =>", data)
+    return jsonify(data=data)
 
 
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/<id_object>', methods=['DELETE'])
