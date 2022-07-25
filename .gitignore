@@ -24,7 +24,7 @@ yarn-error.log*
 .venv/
 amplify
 
-#amplify-do-not-edit-beginamplify
+#amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
 amplify/.config/local-*
 amplify/logs
