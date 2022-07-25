@@ -56,13 +56,11 @@ export default function Transact(): ReactElement {
   const ownerStatus = store.getState().owner;
 
   const handleBack = () => {
-    store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
-    store.dispatch({ type: "ADD_OWNER_STATUS", payload: "" });
-    navigate("/result", {
-      state: { searchItem: "Transact", responseData: location.allData },
-    });
-    
-    
+      store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
+      store.dispatch({ type: "ADD_OWNER_STATUS", payload: "" });
+      navigate("/result", {
+        state: { searchItem: "Transact", responseData: location.allData },
+      });
   };
 
   const handleHome = () => {
@@ -114,22 +112,19 @@ export default function Transact(): ReactElement {
     navigate("/sale", { state: { data: data, allData: location.allData } });
   };
 
-  console.log(" handleSales => location.allData", location.allData);
-
   const handleAddMethod = () => {
-    
-    const data = {
-      artist_id: location.data.artist_id,
-      artist_firstname: location.data.artist_firstname,
-      artist_surname: location.data.artist_surname,
-      title: location.data.title,
-      year: location.data.year,
-      id_object: location.data.id_object,
-      methods: location.data.methods
-    };
-    navigate("/add-method", {
-      state: { data: data, allData: location.allData },
-    });
+      const data = {
+          artist_id: location.data.artist_id,
+          artist_firstname: location.data.artist_firstname,
+          artist_surname: location.data.artist_surname,
+          title: location.data.title,
+          year: location.data.year,
+          id_object: location.data.id_object,
+          methods: location.data.methods
+      };
+      navigate("/add-method", {
+          state: { data: data, allData: location.allData },
+      });
   };
 
   return (

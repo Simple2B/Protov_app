@@ -87,15 +87,15 @@ export default function Sale(): ReactElement {
   const handleSubmit = async () => {
     if (passwordError.length > 0 ) {
       return
-    }
+    };
     setLoad(true);
     setHideButton(true);
     const data = {
-      id_object: location.data.id_object,
-      owner_password: currentPassword,
-      new_owner_id: newPassword,
-      methods1: location.data.methods.methods1,
-      methods2: location.data.methods.methods2,
+        id_object: location.data.id_object,
+        owner_password: currentPassword,
+        new_owner_id: newPassword,
+        methods1: location.data.methods.methods1 ?? "",
+        methods2: location.data.methods.methods2 ?? "",
     };
 
     console.log("Sale: data => ", data)
