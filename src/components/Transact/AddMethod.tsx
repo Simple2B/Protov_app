@@ -194,11 +194,8 @@ export default function AddMethod(): ReactElement {
         setCheck("FAIL");
       }
   };
-  // b55d5d4deda14bdb97e4d4bf1cfa0ea5
   console.log("!!!!!!artist_id ", location.data.artist_id);
-
-  const isDisabled = mutableRows.length === 0 || !fileMethod2;
-
+  // const isDisabled = mutableRows.length === 0 || !fileMethod2;
   return (
     <div className={isLoad ? "addMethodContainer": "method"}>
       <div className="header">
