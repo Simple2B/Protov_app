@@ -22,6 +22,7 @@ yarn-debug.log*
 yarn-error.log*
 
 .venv/
+amplify
 amplify/*
 
 #amplify-do-not-edit-begin
