@@ -33,8 +33,6 @@ class AwsObjectService:
             for obj in objects['Items']:
                 if obj['artist_firstname']['S'] == name and obj['artist_surname']['S'] == surname:
                     artist_id = obj['artist_id']['S']
-                # if obj['title']['S'] == title and obj['year']['S'] == year and obj['artist_surname']['S'] == surname:
-                #     id_object = obj['id_object']['S']
         try:
             client.put_item(TableName=PROTOV_TABLE, Item={
                 "id_object": {'S': id_object},

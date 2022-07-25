@@ -1,14 +1,14 @@
 import os
-import re
-from uuid import uuid4
 import datetime
+import re
+import json
+from uuid import uuid4
+from flask import Blueprint, jsonify, request
+import boto3
+from boto3.dynamodb.conditions import Key
 from services.aws_object import AwsObjectService, get_objects
 from services.aws_transaction import AwsTransactionService
 import schemas
-from flask import Blueprint, jsonify, request
-import json
-import boto3
-from boto3.dynamodb.conditions import Key
 
 
 BASE_ROUTE = "/"
@@ -117,7 +117,6 @@ def verify_owner() -> schemas.VerifyOwnerResponse:
     request_json: schemas.VerifyOwnerRequest = request.get_json()
     id_object = request_json.get('id_object')
     password = request_json.get('owner_password')
-    # objects = get_objects(client)
     objects_transaction = AwsTransactionService.get_transaction_objects()
     modify_objects_transaction = []
     if len(objects_transaction) > 0:
@@ -126,11 +125,6 @@ def verify_owner() -> schemas.VerifyOwnerResponse:
                 obj[key] = value["S"]
 
             modify_objects_transaction.append(obj)
-
-    # object = None
-    # for obj in objects['Items']:
-    #     if obj['id_object']['S'] == id_object:
-    #         object = obj
 
     verify_objects = []
     for obj in modify_objects_transaction:
@@ -153,7 +147,6 @@ def verify_owner() -> schemas.VerifyOwnerResponse:
 def verify_object() -> schemas.VerifyObjectResponse:
     request_json: schemas.VerifyObjectRequest = request.get_json()
     id_object = request_json.get('id_object')
-
     artist_surname = request_json.get('artist_surname')
     artist_firstname = request_json.get('artist_firstname')
     # title = request_json.get('title')
@@ -165,113 +158,25 @@ def verify_object() -> schemas.VerifyObjectResponse:
         is_verify_artist = obj['artist_firstname']['S'] == artist_firstname and obj['artist_surname']['S'] == artist_surname
         if obj['id_object']['S'] == id_object and is_verify_artist or obj['id_object']['S'] == id_object:
             obj_data = {
-                # 'artist_firstname': obj['artist_firstname']['S'],
-                # 'artist_id': obj['artist_id']['S'],
-                # 'artist_surname': obj['artist_surname']['S'],
-                # 'id_object': obj['id_object']['S'],
                 'object_image': obj['object_image']['S'],
                 'image_file_key': obj['image_file_key']['S'],
                 'methods1': obj['methods1']['S'],
                 'methods2': obj['methods2']['S'],
                 'image_method2_key': obj['image_method2_key']['S'],
-
-                # 'title': obj['title']['S'],
-                # 'year': obj['year']['S'],
             }
             return jsonify(data=obj_data)
 
 
-@aws_object_blueprint.route(BASE_ROUTE + 'protovobject', methods=["GET"])
-def list_objects():
-    data = client.scan(TableName=PROTOV_TABLE)
-    print("list_objects: data =>", data)
-    return jsonify(data=data)
+# @aws_object_blueprint.route(BASE_ROUTE + 'protovobject', methods=["GET"])
+# def list_objects():
+#     data = client.scan(TableName=PROTOV_TABLE)
+#     print("list_objects: data =>", data)
+#     return jsonify(data=data)
 
 
-@aws_object_blueprint.route(BASE_ROUTE + 'protovobject/<id_object>', methods=['DELETE'])
-def delete_object(id_object):
-    client.delete_item(
-        TableName=PROTOV_TABLE,
-        Key={'id_object': {'S': id_object}})
-    return jsonify(message='object deleted')
-
-
-@aws_object_blueprint.route(BASE_ROUTE + 'protovobject/add_method', methods=['POST'])
-def add_method():
-    request_json = request.get_json()
-    artist_id = request_json.get("artist_id")
-    id_object = request_json.get("id_object")
-    methods1 = request_json.get("methods1")
-    methods2 = request_json.get("methods2")
-    image_method2_key = request_json.get("image_method2_key")
-
-    objects = get_objects(client)
-    transaction_objects = AwsTransactionService.get_transaction_objects()
-
-    modify_objects_transaction = []
-    if len(transaction_objects) > 0:
-        for obj in transaction_objects['Items']:
-            for key, value in obj.items():
-                obj[key] = value["S"]
-
-            modify_objects_transaction.append(obj)
-
-    print("verify_owner: modify_objects_transaction =>>>",
-          modify_objects_transaction)
-
-    object = None
-    for obj in objects['Items']:
-        if obj['id_object']['S'] == id_object:
-            object = obj
-
-    transaction_objects = []
-    for obj in modify_objects_transaction:
-        if obj['id_object'] == id_object:
-            transaction_objects.append(obj)
-
-    transaction_object = None
-    if len(transaction_objects) > 0:
-        sorted_verify_objects = sorted(
-            transaction_objects, key=lambda row: row['date'])
-        transaction_object = sorted_verify_objects[-1]
-
-    if object and transaction_object:
-        client.put_item(TableName=PROTOV_TABLE, Item={
-            "id_object": {'S': id_object},
-            "artist_surname": {'S': object['artist_surname']['S']},
-            "artist_firstname": {'S': object['artist_firstname']['S']},
-            "artist_id": {'S': object['artist_id']['S']},
-            "methods1": {'S': methods1 if methods1 else object['methods1']['S']},
-            "methods2": {'S': methods2 if methods2 else object['methods2']['S']},
-            "image_method2_key": {'S': image_method2_key if len(methods2) > 0 else object['image_method2_key']['S']},
-            "object_image": {'S': object['object_image']['S']},
-            "image_file_key": {'S': object['image_file_key']['S']},
-            "year": {'S': object['year']['S']},
-            "title": {'S': object['title']['S']},
-        })
-
-        today = datetime.datetime.today().strftime("%m/%d/%Y, %H:%M:%S")
-        action = transaction_object['action']
-        print("add => id_transaction",
-              transaction_object['id_transaction'])
-        print("add => methods1", methods1)
-        print("add => methods2", methods2)
-
-        if len(methods1) > 0 or len(methods2) > 0:
-            action = 'added'
-
-        print("add => action", action)
-        id_transaction = str(uuid4())
-        client.put_item(TableName=PROTOV_TRANSACTION_TABLE, Item={
-            "id_transaction": {'S': id_transaction},
-            "id_object": {'S': id_object},
-            "action": {'S': action},
-            "date": {'S': today},
-            "methods1": {'S': methods1 if methods1 else ""},
-            "methods2": {'S': methods2 if methods2 else ""},
-            "owner_id": {'S': transaction_object['owner_id']},
-            "new_owner_id": {'S': transaction_object['new_owner_id']},
-        })
-
-        return jsonify(message={"add_method_success": True})
-    return jsonify(message={"add_method_success": False})
+# @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/<id_object>', methods=['DELETE'])
+# def delete_object(id_object):
+#     client.delete_item(
+#         TableName=PROTOV_TABLE,
+#         Key={'id_object': {'S': id_object}})
+#     return jsonify(message='object deleted')
