@@ -10,6 +10,13 @@ PROTOV_TABLE = os.environ.get("STORAGE_DYNAMODB_NAME")
 client = boto3.client('dynamodb')
 
 
+def get_objects(client):
+    data_objects = client.scan(TableName=PROTOV_TABLE)
+    data = json.dumps(data_objects)
+    objects = json.loads(data)
+    return objects
+
+
 class AwsObjectService:
     def create_aws_object(client, request_json: schemas.AddObject) -> schemas.CreateObjectResponse:
         name = request_json.get('artist_firstname')
@@ -20,7 +27,7 @@ class AwsObjectService:
         id_object = str(uuid4())
         artist_id = uuid4().hex
 
-        objects = client.get_objects()
+        objects = get_objects(client)
 
         if len(objects['Items']) > 0:
             for obj in objects['Items']:
@@ -69,13 +76,6 @@ class AwsObjectService:
             'year': object['year']['S'],
             "search_item": search_item,
         }
-
-    @staticmethod
-    def get_objects():
-        data_objects = client.scan(TableName=PROTOV_TABLE)
-        data = json.dumps(data_objects)
-        objects = json.loads(data)
-        return objects
 
     @staticmethod
     def verify_object_info(verify_object_pass: str, enter_password: str):

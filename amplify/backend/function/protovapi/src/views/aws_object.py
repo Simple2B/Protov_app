@@ -2,7 +2,7 @@ import os
 import re
 from uuid import uuid4
 import datetime
-from services.aws_object import AwsObjectService
+from services.aws_object import AwsObjectService, get_objects
 from services.aws_transaction import AwsTransactionService
 import schemas
 from flask import Blueprint, jsonify, request
@@ -91,7 +91,7 @@ def verify_objects() -> schemas.EnterInfoResponse:
     length_send_data = len([value for value in send_data if value])
 
     # get all objects from db
-    objects = AwsObjectService.get_objects()
+    objects = get_objects(client)
 
     objects_data = []
 
@@ -118,7 +118,7 @@ def verify_owner():
     id_object = request_json.get('id_object')
     password = request_json.get('owner_password')
 
-    objects = AwsObjectService.get_objects()
+    # objects = get_objects(client)
     objects_transaction = AwsTransactionService.get_transaction_objects()
 
     modify_objects_transaction = []
@@ -173,7 +173,7 @@ def get_object():
     # title = request_json.get('title')
     # year = request_json.get('year')
 
-    objects = AwsObjectService.get_objects()
+    objects = get_objects(client)
 
     objects_data = []
     for obj in objects['Items']:
@@ -215,7 +215,7 @@ def add_method():
     methods2 = request_json.get("methods2")
     image_method2_key = request_json.get("image_method2_key")
 
-    objects = AwsObjectService.get_objects()
+    objects = get_objects(client)
     transaction_objects = AwsTransactionService.get_transaction_objects()
 
     modify_objects_transaction = []
