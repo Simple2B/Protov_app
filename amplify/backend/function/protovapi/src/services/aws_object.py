@@ -54,13 +54,12 @@ class AwsObjectService:
             return jsonify(message={"add_object_success": 'false'})
 
     @staticmethod
-    def get_object_info(object, search_item):
+    def get_object_info(object: schemas.EnterInfoResponse, search_item: str) -> schemas.EnterInfoResponse:
         return {
-            'search_item': search_item,
-            'artist_firstname': object['artist_firstname']['S'],
-            'artist_id': object['artist_id']['S'],
-            'artist_surname': object['artist_surname']['S'],
             'id_object': object['id_object']['S'],
+            'artist_id': object['artist_id']['S'],
+            'artist_firstname': object['artist_firstname']['S'],
+            'artist_surname': object['artist_surname']['S'],
             'image_file_key': object['image_file_key']['S'],
             'image_method2_key': object['image_method2_key']['S'],
             'methods1': object['methods1']['S'],
@@ -68,6 +67,7 @@ class AwsObjectService:
             'object_image': object['object_image']['S'],
             'title': object['title']['S'],
             'year': object['year']['S'],
+            "search_item": search_item,
         }
 
 

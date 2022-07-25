@@ -24,7 +24,6 @@ client = boto3.client('dynamodb')
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject', methods=["POST"])
 def create_object() -> schemas.AddObjectResponse:
     request_json: schemas.AddObject = request.get_json()
-    print("create_object: request_json =>> ", request_json)
     object = request_json.get('object_image')
     object_file_key = request_json.get('image_file_key')
     year = request_json.get('year')
@@ -77,37 +76,29 @@ def create_object() -> schemas.AddObjectResponse:
     })
 
 
-@aws_object_blueprint.route(BASE_ROUTE + 'protovobject', methods=["GET"])
-def list_objects():
-    data = client.scan(TableName=PROTOV_TABLE)
-    print("list_objects: data =>", data)
-    return jsonify(data=data)
-
-
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/enter_info', methods=['POST'])
-def verify_objects():
-    request_json = request.get_json()
-
-    search_item = request_json.get('search_item')
+def verify_objects() -> schemas.EnterInfoResponse:
+    request_json: schemas.EnterInfoRequest = request.get_json()
     id_object = request_json.get('id_object')
-    print("verify_objects: id_object =>>>> ", id_object)
     surname = request_json.get('artist_surname')
     name = request_json.get('artist_firstname')
     title = request_json.get('title')
     year = request_json.get('year')
+    search_item = request_json.get('search_item')
 
+    # request data
     send_data = [name, surname, title, year, id_object]
     length_send_data = len([value for value in send_data if value])
 
+    # get all objects from db
     objects = get_objects()
 
     objects_data = []
 
+    # search object or objects
     for obj in objects['Items']:
-
         verify_data = [obj['artist_firstname']['S'], obj['artist_surname']
                        ['S'], obj['title']['S'], obj['year']['S'], obj['id_object']['S']]
-
         var_objects = [i for i, j in zip(send_data, verify_data) if i == j]
         length_var_objects = len([value for value in var_objects if value])
 
@@ -119,6 +110,13 @@ def verify_objects():
         objects_data = [object_services.get_object_info(
             obj, search_item) for obj in objects_data]
     return jsonify(data=objects_data)
+
+
+@aws_object_blueprint.route(BASE_ROUTE + 'protovobject', methods=["GET"])
+def list_objects():
+    data = client.scan(TableName=PROTOV_TABLE)
+    print("list_objects: data =>", data)
+    return jsonify(data=data)
 
 
 @aws_object_blueprint.route(BASE_ROUTE + 'protovobject/object', methods=["POST"])
