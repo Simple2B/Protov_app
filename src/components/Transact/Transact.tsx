@@ -64,8 +64,6 @@ export default function Transact(): ReactElement {
     
     
   };
-  const d = location.allData
-  console.log("d!" , d);
 
   const handleHome = () => {
     store.dispatch({ type: "ADD_OBJECT_STATUS", payload: "" });
@@ -112,7 +110,6 @@ export default function Transact(): ReactElement {
       id_object: location.data.id_object,
       methods: location.data.methods,
     };
-    console.log("======!!!!!!!!!! handleSales => data !!!!!!!!!!!!=====", data);
     
     navigate("/sale", { state: { data: data, allData: location.allData } });
   };
@@ -134,8 +131,6 @@ export default function Transact(): ReactElement {
       state: { data: data, allData: location.allData },
     });
   };
-
-  console.log("Transact: handleAddMethod =>>> artist_id ", location.data.artist_id);
 
   return (
     <div className="transact">

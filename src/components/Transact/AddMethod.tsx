@@ -182,7 +182,7 @@ export default function AddMethod(): ReactElement {
 
       console.log("AddMethod data => ", data);
 
-      const awsObject = await API.post('protovapi', '/protovobject/add_method', {body: data});
+      const awsObject = await API.post('protovapi', '/transactionobject/add_method', {body: data});
       setLoad(false);
       // axiosInstance.post("/", data).then(function (response) {
       //   const responseData = response.data;
