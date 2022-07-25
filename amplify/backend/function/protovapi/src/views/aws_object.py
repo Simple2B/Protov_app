@@ -180,3 +180,5 @@ def verify_object() -> schemas.VerifyObjectResponse:
 #         TableName=PROTOV_TABLE,
 #         Key={'id_object': {'S': id_object}})
 #     return jsonify(message='object deleted')
+
+# 1c0b1b005a594cb9953edac87ca835ec
