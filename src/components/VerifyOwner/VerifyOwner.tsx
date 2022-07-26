@@ -50,7 +50,7 @@ export default function VerifyOwner(): ReactElement {
       owner_password: password,
     };
 
-    const ownerData = await API.post('protovapi', '/transactionobject/verify_owner', {body: data});
+    const ownerData = await API.post('protovapi', '/protovobject/verify_owner', {body: data});
     console.log("VerifyOwner ownerData => ", ownerData);
 
     if (location.data.path === "/transact") {

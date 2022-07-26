@@ -234,7 +234,9 @@ const Add = () =>  {
 
         const createAwsObject = async() => {
         setLoad(true);
-        const awsObject = await API.post('protovapi', '/protovobject', {body: dataToBack});
+
+        // post data to create object, 'protovapi' - API in AWS, '/protovobject/add' - route
+        const awsObject = await API.post('protovapi', '/protovobject/add', {body: dataToBack});
         console.log(" awsObject => ", awsObject);
         if (awsObject.message.add_object_success === 'true') {
             setLoad(false);
