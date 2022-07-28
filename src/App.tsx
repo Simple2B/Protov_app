@@ -13,11 +13,23 @@ import Sale from "./components/Transact/Sale";
 import Transact from "./components/Transact/Transact";
 import VerifyObject from "./components/VerifyObject/VerifyObject";
 import VerifyOwner from "./components/VerifyOwner/VerifyOwner";
+import { API } from 'aws-amplify';
 
 export default function App() {
+  // example code 
+  // const idObject = 'sajhbdkjb8999';
+
+  // const deleteObject = async (id: string) => {
+  //   const awsObject = await API.del('protovapi', `/protovobject/${id}`, {});
+  //       console.log(" awsObject => ", awsObject);
+  // }
   return (
     <div className="App">
-      {/* <button onClick={deleteObject} style={{marginTop: '50px'}}>Test delete object</button> */}
+
+      {/* <button onClick={() => deleteObject(idObject)} style={{marginTop: '50px'}}>
+        Test delete object
+      </button> */}
+
       <StylesProvider injectFirst>
         <Routes>
           <Route path="/" element={<MainScreen />} />
