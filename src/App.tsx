@@ -13,7 +13,7 @@ import Sale from "./components/Transact/Sale";
 import Transact from "./components/Transact/Transact";
 import VerifyObject from "./components/VerifyObject/VerifyObject";
 import VerifyOwner from "./components/VerifyOwner/VerifyOwner";
-import { API } from 'aws-amplify';
+// import { API } from 'aws-amplify';
 
 export default function App() {
   // example code 
